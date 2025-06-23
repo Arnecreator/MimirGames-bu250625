@@ -1,0 +1,62 @@
+<!-- public/users.html -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Användarlista – MimirGames</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 2rem;
+        background: #111;
+        color: #f0f0f0;
+      }
+      h1 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+      }
+      li {
+        background: #222;
+        padding: 1rem;
+        margin-bottom: 0.5rem;
+        border-radius: 8px;
+      }
+      .error {
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Registrerade användare</h1>
+    <ul id="userList"></ul>
+    <p id="errorMsg" class="error"></p>
+
+    <script>
+      fetch("/api/users")
+        .then((res) => {
+          if (!res.ok) throw new Error("Något gick fel vid hämtning.");
+          return res.json();
+        })
+        .then((users) => {
+          const list = document.getElementById("userList");
+          if (users.length === 0) {
+            list.innerHTML = "<li>Inga användare hittades.</li>";
+          } else {
+            users.forEach((user) => {
+              const li = document.createElement("li");
+              li.textContent = `${user.username} – ${user.email}`;
+              list.appendChild(li);
+            });
+          }
+        })
+        .catch((err) => {
+          document.getElementById("errorMsg").textContent = err.message;
+        });
+    </script>
+  </body>
+</html>
