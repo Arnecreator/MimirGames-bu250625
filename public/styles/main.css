@@ -290,17 +290,12 @@ body {
     border-radius: 17px;
     font-size: 12px;
     transition: all 0.2s ease;
-    display: none; /* Hidden by default, shown via JS */
+    display: inline-block; /* Always visible in test mode */
   }
 
   #adminUsersLink:hover {
     background: rgba(0, 255, 204, 0.2);
     transform: translateY(-1px);
-  }
-
-  /* Show admin link when admin class is present */
-  .admin-mode #adminUsersLink {
-    display: inline-block;
   }
 
 /* Mobilanpassning */

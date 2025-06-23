@@ -31,17 +31,9 @@ class MimirGames {
   }
 
   checkAdminStatus() {
-    // You can set this variable to true for admin users
-    // For now, showing it in dev mode or for specific usernames
-    const isAdmin = localStorage.getItem("mimirDevMode") === "true" || 
-                   localStorage.getItem("mimirUsername") === "Putte68";
-    
-    if (isAdmin) {
-      document.body.classList.add("admin-mode");
-      console.log("%c👤 Admin mode enabled - showing admin controls", "color: #00ffcc; font-weight: bold");
-    } else {
-      document.body.classList.remove("admin-mode");
-    }
+    // Test mode: Admin link is always visible
+    // Remove this method later when implementing proper admin authentication
+    console.log("%c🛡️ Test mode: Admin link always visible", "color: #00ffcc; font-weight: bold");
   }
 
   checkLoginStatus() {
