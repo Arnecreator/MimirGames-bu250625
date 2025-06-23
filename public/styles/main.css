@@ -282,6 +282,27 @@ body {
   color: #ccc;
 }
 
+  /* Admin Users Link Styling */
+  #adminUsersLink {
+    background: rgba(0, 255, 204, 0.1);
+    border: 1px solid #00ffcc;
+    padding: 6px 12px;
+    border-radius: 17px;
+    font-size: 12px;
+    transition: all 0.2s ease;
+    display: none; /* Hidden by default, shown via JS */
+  }
+
+  #adminUsersLink:hover {
+    background: rgba(0, 255, 204, 0.2);
+    transform: translateY(-1px);
+  }
+
+  /* Show admin link when admin class is present */
+  .admin-mode #adminUsersLink {
+    display: inline-block;
+  }
+
 /* Mobilanpassning */
 @media (max-width: 768px) {
   .welcome-message {

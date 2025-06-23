@@ -25,6 +25,23 @@ class MimirGames {
       const banner = document.getElementById("devBanner");
       if (banner) banner.style.display = "block";
     }
+    
+    // Check admin status and show admin links
+    this.checkAdminStatus();
+  }
+
+  checkAdminStatus() {
+    // You can set this variable to true for admin users
+    // For now, showing it in dev mode or for specific usernames
+    const isAdmin = localStorage.getItem("mimirDevMode") === "true" || 
+                   localStorage.getItem("mimirUsername") === "Putte68";
+    
+    if (isAdmin) {
+      document.body.classList.add("admin-mode");
+      console.log("%c👤 Admin mode enabled - showing admin controls", "color: #00ffcc; font-weight: bold");
+    } else {
+      document.body.classList.remove("admin-mode");
+    }
   }
 
   checkLoginStatus() {
