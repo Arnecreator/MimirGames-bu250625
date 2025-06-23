@@ -14,7 +14,7 @@
 
       body {
         font-family: 'Courier New', Monaco, 'Lucida Console', monospace;
-        font-size: 10px;
+        font-size: 11px;
         line-height: 1.2;
         background: #ffffff;
         color: #000000;
@@ -55,37 +55,31 @@
         border: 1px solid #000;
         max-height: 85vh;
         overflow-y: auto;
-        width: 100%;
       }
 
       table {
         width: 100%;
         border-collapse: collapse;
         font-size: 10px;
-        min-width: 1000px;
-        table-layout: fixed;
+        min-width: 800px;
       }
 
       th {
         background: #f0f0f0;
-        border: 1px solid #ccc;
-        padding: 4px 3px;
-        text-align: center;
+        border: 1px solid #000;
+        padding: 3px 6px;
+        text-align: left;
         font-weight: bold;
         position: sticky;
         top: 0;
         z-index: 10;
-        font-size: 9px;
-        line-height: 1.1;
       }
 
       td {
-        border: 1px solid #ddd;
-        padding: 2px 4px;
+        border: 1px solid #ccc;
+        padding: 2px 6px;
         white-space: nowrap;
         vertical-align: middle;
-        overflow: hidden;
-        text-overflow: ellipsis;
       }
 
       tr:nth-child(even) {
@@ -96,55 +90,30 @@
         background: #e6f3ff;
       }
 
-      /* Fixed column widths */
-      .col-user { width: 90px; }
-      .col-mail { width: 120px; }
-      .col-pwd { width: 80px; }
-      .col-games { width: 60px; }
-      .col-corr { width: 60px; }
-      .col-full { width: 50px; }
-      .col-fs-pct { width: 50px; }
-      .col-streak { width: 60px; }
-      .col-frnd { width: 50px; }
-      .col-created { width: 80px; }
-      .col-actions { width: 70px; }
-
       .username {
         font-weight: bold;
+        min-width: 80px;
       }
 
       .email {
-        color: #333;
-      }
-
-      .password {
-        font-family: monospace;
-        color: #666;
-        font-size: 9px;
-      }
-
-      .stats-num {
-        text-align: center;
-        font-family: monospace;
-      }
-
-      .date {
-        font-size: 9px;
-        color: #666;
+        min-width: 150px;
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       .actions {
         white-space: nowrap;
-        text-align: center;
+        min-width: 60px;
       }
 
       .btn {
         background: none;
         border: 1px solid #666;
-        padding: 1px 3px;
+        padding: 1px 4px;
         margin: 0 1px;
         cursor: pointer;
-        font-size: 8px;
+        font-size: 9px;
         line-height: 1;
       }
 
@@ -180,23 +149,36 @@
         color: #cc0000;
       }
 
+      .stats-num {
+        text-align: right;
+        font-family: monospace;
+      }
+
+      .user-id {
+        font-family: monospace;
+        font-size: 9px;
+        color: #666;
+        max-width: 80px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
       @media (max-width: 768px) {
         body {
           padding: 4px;
-          font-size: 9px;
+          font-size: 10px;
         }
         
         table {
           font-size: 9px;
-          min-width: 800px;
         }
         
         th, td {
-          padding: 1px 2px;
+          padding: 1px 3px;
         }
         
         .btn {
-          font-size: 7px;
+          font-size: 8px;
           padding: 1px 2px;
         }
       }
@@ -215,17 +197,17 @@
       <table>
         <thead>
           <tr>
-            <th class="col-user">User</th>
-            <th class="col-mail">Mail</th>
-            <th class="col-pwd">Pwd</th>
-            <th class="col-games">Games</th>
-            <th class="col-corr">Corr<br>Ans</th>
-            <th class="col-full">Full</th>
-            <th class="col-fs-pct">FS %</th>
-            <th class="col-streak">Streak</th>
-            <th class="col-frnd">Frnd</th>
-            <th class="col-created">Created</th>
-            <th class="col-actions">Actions</th>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Friends</th>
+            <th>Reg Date</th>
+            <th>Quiz Played</th>
+            <th>Quiz Score</th>
+            <th>Quiz %</th>
+            <th>Total Games</th>
+            <th>Win Rate</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody id="usersTable">
@@ -258,25 +240,23 @@
           
           loadingState.style.display = "none";
           
-          // Always show table, even if empty
-          tableContainer.style.display = "block";
-          
           if (users.length === 0) {
-            usersTable.innerHTML = '<tr><td colspan="11" style="text-align: center; padding: 20px; color: #666;">No users found.</td></tr>';
+            emptyState.style.display = "block";
           } else {
+            tableContainer.style.display = "block";
             usersTable.innerHTML = users.map(user => `
               <tr>
-                <td class="username col-user">${escapeHtml(user.username)}</td>
-                <td class="email col-mail">${user.email ? escapeHtml(user.email) : 'N/A'}</td>
-                <td class="password col-pwd">${user.plainPassword || 'N/A'}</td>
-                <td class="stats-num col-games">${user.gamesPlayed || 0}</td>
-                <td class="stats-num col-corr">${user.correctAnswers || 0}</td>
-                <td class="stats-num col-full">${user.fullScores || 0}</td>
-                <td class="stats-num col-fs-pct">${user.fullScorePercentage || '0%'}</td>
-                <td class="stats-num col-streak">${user.bestStreak || 0}</td>
-                <td class="stats-num col-frnd">${user.friends ? user.friends.length : 0}</td>
-                <td class="date col-created">${user.createdAt ? new Date(user.createdAt).toLocaleDateString('sv-SE') : 'N/A'}</td>
-                <td class="actions col-actions">
+                <td class="user-id">${user._id ? user._id.slice(-6) : 'N/A'}</td>
+                <td class="username">${escapeHtml(user.username)}</td>
+                <td class="email">${user.email ? escapeHtml(user.email) : 'N/A'}</td>
+                <td class="stats-num">${user.friends ? user.friends.length : 0}</td>
+                <td>N/A</td>
+                <td class="stats-num">0</td>
+                <td class="stats-num">0</td>
+                <td class="stats-num">0%</td>
+                <td class="stats-num">0</td>
+                <td class="stats-num">0%</td>
+                <td class="actions">
                   <button class="btn btn-edit" onclick="editUser('${user._id}')" title="Edit">✏️</button>
                   <button class="btn btn-delete" onclick="deleteUser('${user._id}', '${escapeHtml(user.username)}')" title="Delete">🗑️</button>
                 </td>
