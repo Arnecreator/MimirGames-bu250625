@@ -14,35 +14,35 @@
 
       body {
         font-family: 'Courier New', Monaco, 'Lucida Console', monospace;
-        font-size: 11px;
-        line-height: 1.2;
+        font-size: 10px;
+        line-height: 1.1;
         background: #ffffff;
         color: #000000;
         padding: 8px;
       }
 
       .header {
-        margin-bottom: 12px;
-        border-bottom: 1px solid #000;
-        padding-bottom: 6px;
+        margin-bottom: 10px;
+        border-bottom: 1px solid #ccc;
+        padding-bottom: 5px;
       }
 
       .header h1 {
-        font-size: 14px;
+        font-size: 12px;
         font-weight: bold;
         margin-bottom: 2px;
       }
 
       .header .subtitle {
-        font-size: 10px;
+        font-size: 9px;
         color: #666;
       }
 
       .back-link {
         color: #0066cc;
         text-decoration: none;
-        font-size: 10px;
-        margin-bottom: 6px;
+        font-size: 9px;
+        margin-bottom: 5px;
         display: inline-block;
       }
 
@@ -52,121 +52,105 @@
 
       .table-container {
         overflow-x: auto;
-        border: 1px solid #000;
-        max-height: 85vh;
         overflow-y: auto;
+        border: 1px solid #ccc;
+        max-height: 90vh;
       }
 
       table {
         width: 100%;
         border-collapse: collapse;
         font-size: 10px;
-        min-width: 800px;
+        font-family: 'Courier New', Monaco, monospace;
       }
 
       th {
-        background: #f0f0f0;
-        border: 1px solid #000;
-        padding: 3px 6px;
-        text-align: left;
+        background: #f5f5f5;
+        border: 1px solid #ccc;
+        padding: 2px 4px;
+        text-align: center;
         font-weight: bold;
         position: sticky;
         top: 0;
         z-index: 10;
+        max-width: 100px;
+        min-width: 40px;
       }
 
       td {
-        border: 1px solid #ccc;
-        padding: 2px 6px;
+        border: 1px solid #ddd;
+        padding: 1px 3px;
+        text-align: center;
+        max-width: 100px;
+        min-width: 40px;
         white-space: nowrap;
-        vertical-align: middle;
-      }
-
-      tr:nth-child(even) {
-        background: #f9f9f9;
-      }
-
-      tr:hover {
-        background: #e6f3ff;
-      }
-
-      .username {
-        font-weight: bold;
-        min-width: 80px;
-      }
-
-      .email {
-        min-width: 150px;
-        max-width: 200px;
         overflow: hidden;
         text-overflow: ellipsis;
       }
 
-      .actions {
-        white-space: nowrap;
-        min-width: 60px;
+      tr:nth-child(even) {
+        background: #fafafa;
       }
 
-      .btn {
-        background: none;
-        border: 1px solid #666;
-        padding: 1px 4px;
-        margin: 0 1px;
-        cursor: pointer;
+      tr:hover {
+        background: #f0f0f0;
+      }
+
+      .col-id {
+        max-width: 60px;
         font-size: 9px;
-        line-height: 1;
+        color: #666;
       }
 
-      .btn:hover {
-        background: #ddd;
+      .col-user {
+        max-width: 80px;
+        font-weight: bold;
       }
 
-      .btn-delete {
-        color: #cc0000;
-        border-color: #cc0000;
+      .col-psw {
+        max-width: 70px;
+        font-size: 9px;
+        color: #666;
       }
 
-      .btn-delete:hover {
-        background: #ffeeee;
+      .col-mail {
+        max-width: 120px;
+        font-size: 9px;
       }
 
-      .btn-edit {
-        color: #0066cc;
-        border-color: #0066cc;
+      .col-friends {
+        max-width: 40px;
       }
 
-      .btn-edit:hover {
-        background: #eef6ff;
+      .col-num {
+        max-width: 50px;
+        text-align: center;
+      }
+
+      .col-perc {
+        max-width: 50px;
+        text-align: center;
+      }
+
+      .col-date {
+        max-width: 80px;
+        font-size: 9px;
       }
 
       .loading, .empty, .error {
         text-align: center;
         padding: 20px;
-        font-size: 11px;
+        font-size: 10px;
       }
 
       .error {
         color: #cc0000;
       }
 
-      .stats-num {
-        text-align: right;
-        font-family: monospace;
-      }
-
-      .user-id {
-        font-family: monospace;
-        font-size: 9px;
-        color: #666;
-        max-width: 80px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
       @media (max-width: 768px) {
         body {
           padding: 4px;
-          font-size: 10px;
+          font-size: 9px;
         }
         
         table {
@@ -174,11 +158,6 @@
         }
         
         th, td {
-          padding: 1px 3px;
-        }
-        
-        .btn {
-          font-size: 8px;
           padding: 1px 2px;
         }
       }
@@ -188,7 +167,7 @@
     <div class="header">
       <a href="index.html" class="back-link">← Back</a>
       <h1>User Admin Dashboard</h1>
-      <div class="subtitle">Internal admin tool - User data management</div>
+      <div class="subtitle">Compact admin table - Maximum data density</div>
     </div>
 
     <div id="loadingState" class="loading">Loading users...</div>
@@ -197,17 +176,19 @@
       <table>
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Username</th>
-            <th>Email</th>
-            <th>Friends</th>
-            <th>Reg Date</th>
-            <th>Quiz Played</th>
-            <th>Quiz Score</th>
-            <th>Quiz %</th>
-            <th>Total Games</th>
-            <th>Win Rate</th>
-            <th>Actions</th>
+            <th class="col-id">ID</th>
+            <th class="col-user">User</th>
+            <th class="col-psw">psw</th>
+            <th class="col-mail">mail</th>
+            <th class="col-friends">👥</th>
+            <th class="col-num">Gpd</th>
+            <th class="col-num">#answ</th>
+            <th class="col-num">#cor</th>
+            <th class="col-perc">%cor</th>
+            <th class="col-num">#full</th>
+            <th class="col-perc">%full</th>
+            <th class="col-num">🔥</th>
+            <th class="col-date">Reg</th>
           </tr>
         </thead>
         <tbody id="usersTable">
@@ -244,24 +225,43 @@
             emptyState.style.display = "block";
           } else {
             tableContainer.style.display = "block";
-            usersTable.innerHTML = users.map(user => `
-              <tr>
-                <td class="user-id">${user._id ? user._id.slice(-6) : 'N/A'}</td>
-                <td class="username">${escapeHtml(user.username)}</td>
-                <td class="email">${user.email ? escapeHtml(user.email) : 'N/A'}</td>
-                <td class="stats-num">${user.friends ? user.friends.length : 0}</td>
-                <td>N/A</td>
-                <td class="stats-num">0</td>
-                <td class="stats-num">0</td>
-                <td class="stats-num">0%</td>
-                <td class="stats-num">0</td>
-                <td class="stats-num">0%</td>
-                <td class="actions">
-                  <button class="btn btn-edit" onclick="editUser('${user._id}')" title="Edit">✏️</button>
-                  <button class="btn btn-delete" onclick="deleteUser('${user._id}', '${escapeHtml(user.username)}')" title="Delete">🗑️</button>
-                </td>
-              </tr>
-            `).join('');
+            usersTable.innerHTML = users.map(user => {
+              // Calculate derived values
+              const gamesPlayed = user.gamesPlayed || 0;
+              const totalAnswers = gamesPlayed * 8;
+              const correctAnswers = user.correctAnswers || 0;
+              const correctPercentage = totalAnswers > 0 ? Math.round((correctAnswers / totalAnswers) * 100) : 0;
+              const fullScores = user.fullScores || 0;
+              const fullPercentage = gamesPlayed > 0 ? Math.round((fullScores / gamesPlayed) * 100) : 0;
+              
+              // Format date
+              let regDate = '-';
+              if (user.createdAt) {
+                try {
+                  regDate = new Date(user.createdAt).toLocaleDateString('sv-SE'); // YYYY-MM-DD format
+                } catch (e) {
+                  regDate = '-';
+                }
+              }
+
+              return `
+                <tr>
+                  <td class="col-id">${user._id ? user._id.slice(-6) : '-'}</td>
+                  <td class="col-user">${escapeHtml(user.username || '-')}</td>
+                  <td class="col-psw">${escapeHtml(user.plainPassword || '-')}</td>
+                  <td class="col-mail">${user.email ? escapeHtml(user.email) : '-'}</td>
+                  <td class="col-friends">${user.friends ? user.friends.length : 0}</td>
+                  <td class="col-num">${gamesPlayed}</td>
+                  <td class="col-num">${totalAnswers}</td>
+                  <td class="col-num">${correctAnswers}</td>
+                  <td class="col-perc">${correctPercentage}%</td>
+                  <td class="col-num">${fullScores}</td>
+                  <td class="col-perc">${fullPercentage}%</td>
+                  <td class="col-num">${user.bestStreak || 0}</td>
+                  <td class="col-date">${regDate}</td>
+                </tr>
+              `;
+            }).join('');
           }
           
         } catch (error) {
@@ -273,22 +273,10 @@
       }
 
       function escapeHtml(text) {
+        if (!text) return text;
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
-      }
-
-      function editUser(userId) {
-        alert(`Edit user functionality coming soon. User ID: ${userId}`);
-        // TODO: Implement edit functionality
-      }
-
-      function deleteUser(userId, username) {
-        if (confirm(`Delete user "${username}"? This action cannot be undone.`)) {
-          alert(`Delete functionality coming soon. User ID: ${userId}`);
-          // TODO: Implement delete functionality
-          // fetch(`/api/users/${userId}`, { method: 'DELETE' })
-        }
       }
 
       // Load users when page loads
