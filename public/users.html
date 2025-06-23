@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -204,7 +205,7 @@
   </head>
   <body>
     <div class="header">
-      <a href="/index.html" class="back-link" style="margin-right: 8px">🏠</a>
+      <a href="index.html" class="back-link" style="margin-right: 8px">🏠</a>
       <a href="javascript:history.back()" class="back-link">← Back</a>
       <h1>User Admin Dashboard</h1>
       <div class="subtitle">Compact admin table - Maximum data density</div>
@@ -262,6 +263,7 @@
         const usersTable = document.getElementById("usersTable");
 
         try {
+          // Use relative URL to work with current domain
           const response = await fetch("/api/users");
 
           if (!response.ok) {
@@ -269,6 +271,7 @@
           }
 
           const users = await response.json();
+          console.log("Loaded users:", users);
 
           loadingState.style.display = "none";
 
@@ -297,22 +300,25 @@
                 if (user.createdAt) {
                   try {
                     const date = new Date(user.createdAt);
-                    const year = date.getFullYear().toString().slice(-2); // Last 2 digits of year
+                    const year = date.getFullYear().toString().slice(-2);
                     const month = (date.getMonth() + 1)
                       .toString()
-                      .padStart(2, "0"); // Month with leading zero
-                    const day = date.getDate().toString().padStart(2, "0"); // Day with leading zero
-                    regDate = year + month + day; // YYMMDD format
+                      .padStart(2, "0");
+                    const day = date.getDate().toString().padStart(2, "0");
+                    regDate = year + month + day;
                   } catch (e) {
                     regDate = "------";
                   }
                 }
 
+                // Show plaintext password from your auth system (if available)
+                const plainPassword = user.plainPassword || "hidden";
+
                 return `
                 <tr>
                   <td class="col-id">${user._id ? user._id.slice(-6) : "-"}</td>
                   <td class="col-user">${escapeHtml(user.username || "-")}</td>
-                  <td class="col-psw">${escapeHtml(user.plainPassword || "-")}</td>
+                  <td class="col-psw">${escapeHtml(plainPassword)}</td>
                   <td class="col-mail">${user.email ? escapeHtml(user.email) : "-"}</td>
                   <td class="col-friends">${user.friends ? user.friends.length : 0}</td>
                   <td class="col-num">${gamesPlayed}</td>
@@ -359,7 +365,7 @@
       // Load users when page loads
       document.addEventListener("DOMContentLoaded", loadUsers);
 
-      // Auto-refresh every 30 seconds
+      // Auto-refresh every 30 seconds to show new registrations
       setInterval(loadUsers, 30000);
 
       // Edit user function
