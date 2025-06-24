@@ -1,0 +1,104 @@
+Instruction for Replit: Load Real Friend Data in addition to Dummy Data
+Goal:
+Keep the existing hardcoded dummy friend data in friends.html for demo/testing purposes, but also dynamically load and append real data from the MongoDB users collection based on the logged-in user's friend list.
+
+✅ Steps for Replit to implement:
+1. ✅ Keep the dummy data array as is:
+javascript
+Copy
+Edit
+const friends = [
+  {
+    username: "alice2024",
+    quizPlayedDays: 23,
+    quizAnswers: 184,
+    quizCorrect: 156,
+    quizPercentCorrect: 85,
+    quizFullScoreGames: 8,
+    quizStreak: 8,
+    regDate: "240203"
+  },
+  {
+    username: "bob456",
+    quizPlayedDays: 26,
+    quizAnswers: 248,
+    quizCorrect: 189,
+    quizPercentCorrect: 76,
+    quizFullScoreGames: 15,
+    quizStreak: 7,
+    regDate: "240128"
+  }
+];
+2. 🧠 Then dynamically fetch real friends from the backend:
+javascript
+Copy
+Edit
+async function fetchFriendsFromDB() {
+  try {
+    const res = await fetch('/api/friends');
+    const data = await res.json();
+    return Array.isArray(data.friends) ? data.friends : [];
+  } catch (err) {
+    console.error("Failed to load friends from DB:", err);
+    return [];
+  }
+}
+3. 🔍 For each friend username, fetch full user stats:
+javascript
+Copy
+Edit
+async function fetchUserStats(username) {
+  try {
+    const res = await fetch(`/api/users/${username}`);
+    return await res.json();
+  } catch (err) {
+    console.error(`Failed to fetch user: ${username}`, err);
+    return null;
+  }
+}
+4. 📊 Combine dummy data + live DB data:
+javascript
+Copy
+Edit
+async function renderQuizTable() {
+  const tableBody = document.getElementById("quizFriendsTable");
+  tableBody.innerHTML = "";
+
+  // Step 1: Add dummy data first
+  friends.forEach(user => appendUserRow(user, tableBody));
+
+  // Step 2: Add real data from DB
+  const friendUsernames = await fetchFriendsFromDB();
+  for (const username of friendUsernames) {
+    const user = await fetchUserStats(username);
+    if (user) appendUserRow(user, tableBody);
+  }
+}
+5. 🔧 Rendering logic:
+javascript
+Copy
+Edit
+function appendUserRow(user, tableBody) {
+  const fullScorePercent = user.quizPlayedDays > 0
+    ? ((user.quizFullScoreGames / user.quizPlayedDays) * 100).toFixed(0)
+    : 0;
+
+  const row = document.createElement("tr");
+  row.innerHTML = `
+    <td>${user.username}</td>
+    <td>${user.quizPlayedDays}</td>
+    <td>${user.quizAnswers}</td>
+    <td>${user.quizCorrect}</td>
+    <td>${user.quizPercentCorrect}%</td>
+    <td>${user.quizFullScoreGames}</td>
+    <td>${fullScorePercent}%</td>
+    <td>${user.quizStreak}</td>
+    <td>${user.regDate}</td>
+    <td><button onclick="removeFriend('${user.username}')">🗑️</button></td>
+  `;
+  tableBody.appendChild(row);
+}
+🔒 Backend endpoints required:
+GET /api/friends → Returns { friends: ["charlie", "diana8888", ...] }
+
+GET /api/users/:username → Returns full quiz data for given username
