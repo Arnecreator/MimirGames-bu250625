@@ -1,146 +1,124 @@
-
 // Test Questions JavaScript
-async function checkCoverage() {
-    try {
-        const response = await fetch('/api/questions/distribution');
-        const data = await response.json();
-        
-        let html = `<h3>📊 Question Coverage Analysis</h3>`;
-        html += `<p><strong>Total Questions:</strong> ${data.totalQuestions} | <strong>Target:</strong> ${data.targetTotal}</p>`;
-        html += `<p><strong>Status:</strong> ${data.recommendations}</p>`;
-        html += `<div class="category-stats">`;
-        
-        data.distribution.forEach(cat => {
-            const className = cat.count < 10 ? 'category-item low-count' : 'category-item';
-            const statusIcon = cat.count >= 10 ? '✅' : '⚠️';
-            html += `<div class="${className}">
-                ${statusIcon} <strong>${cat._id}:</strong> ${cat.count} questions
-            </div>`;
-        });
-        
-        html += `</div>`;
-        
-        if (data.underPopulatedCategories.length > 0) {
-            html += `<h4>⚠️ Categories needing more questions:</h4><ul>`;
-            data.underPopulatedCategories.forEach(cat => {
-                html += `<li>${cat._id}: ${cat.count}/10 questions</li>`;
-            });
-            html += `</ul>`;
-        }
-        
-        document.getElementById('coverageResult').innerHTML = html;
-    } catch (error) {
-        document.getElementById('coverageResult').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
-    }
-}
+document.addEventListener('DOMContentLoaded', function() {
+    // Check Question Coverage
+    const checkCoverageBtn = document.getElementById('checkCoverageBtn');
+    if (checkCoverageBtn) {
+        checkCoverageBtn.addEventListener('click', async function() {
+            try {
+                console.log('🔍 Checking question coverage...');
+                const response = await fetch('/api/questions/verify');
+                const data = await response.json();
 
-async function testRandomSelection(count) {
-    try {
-        // Simulate session storage for deduplication
-        let usedIds = JSON.parse(sessionStorage.getItem('usedQuestionIds') || '[]');
-        const sessionId = 'test-session-' + Date.now();
-        
-        const excludeParam = usedIds.length > 0 ? `&exclude=${usedIds.join(',')}` : '';
-        const response = await fetch(`/api/questions/random/${count}?sessionId=${sessionId}${excludeParam}`);
-        const data = await response.json();
-        
-        // Store used IDs for next request
-        const newUsedIds = data.questions.map(q => q._id);
-        usedIds.push(...newUsedIds);
-        sessionStorage.setItem('usedQuestionIds', JSON.stringify(usedIds));
-        
-        let html = `<h3>🎯 Random Selection Test (${count} questions)</h3>`;
-        html += `<p><strong>Session ID:</strong> ${data.sessionId}</p>`;
-        html += `<p><strong>Excluded:</strong> ${data.excludedCount} previously asked questions</p>`;
-        html += `<p><strong>Total Available:</strong> ${data.totalAvailable} questions</p>`;
-        html += `<p><strong>Session Used:</strong> ${usedIds.length} questions total</p>`;
-        
-        // Check for duplicates
-        const questionIds = data.questions.map(q => q._id);
-        const duplicateIds = questionIds.filter((id, index) => questionIds.indexOf(id) !== index);
-        if (duplicateIds.length > 0) {
-            html += `<p style="color: #ff6b6b;"><strong>⚠️ Duplicates Found:</strong> ${duplicateIds.length}</p>`;
-        } else {
-            html += `<p style="color: #7fffd4;"><strong>✅ No Duplicates:</strong> All questions unique</p>`;
-        }
-        
-        html += `<h4>Category Distribution:</h4><div class="distribution-grid">`;
-        Object.entries(data.categoryDistribution).forEach(([category, count]) => {
-            html += `<span class="category-badge">${category}: ${count}</span>`;
-        });
-        html += `</div>`;
-        
-        html += `<h4>Selected Questions:</h4><div class="questions-list">`;
-        data.questions.forEach((q, index) => {
-            html += `<div class="question-item">
-                <strong>${index + 1}. [${q.category}]</strong> ${q.question}<br>
-                <small>ID: ${q._id} | Correct: ${q.answers[q.correct]} | Difficulty: ${q.difficulty}</small>
-            </div>`;
-        });
-        html += `</div>`;
-        
-        html += `<div style="margin-top: 15px;">
-            <button onclick="sessionStorage.removeItem('usedQuestionIds'); location.reload();" style="margin-right: 10px;">🔄 Reset Session</button>
-            <button onclick="testRandomSelection(${count})">🎲 Get More Questions</button>
-        </div>`;
-        
-        document.getElementById('selectionResult').innerHTML = html;
-    } catch (error) {
-        document.getElementById('selectionResult').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
-    }
-}
+                console.log('📊 Question Coverage Response:', data);
 
-// Test session deduplication
-async function testSessionDeduplication() {
-    try {
-        const results = [];
-        
-        // Clear session first
-        sessionStorage.removeItem('usedQuestionIds');
-        
-        // Make 3 requests for 5 questions each
-        for (let i = 1; i <= 3; i++) {
-            const response = await fetch(`/api/questions/random/5`);
-            const data = await response.json();
-            results.push({
-                round: i,
-                questions: data.questions,
-                categoryDistribution: data.categoryDistribution
-            });
-            
-            // Update session storage
-            let usedIds = JSON.parse(sessionStorage.getItem('usedQuestionIds') || '[]');
-            usedIds.push(...data.questions.map(q => q._id));
-            sessionStorage.setItem('usedQuestionIds', JSON.stringify(usedIds));
-        }
-        
-        // Check for duplicates across all rounds
-        const allQuestionIds = results.flatMap(r => r.questions.map(q => q._id));
-        const uniqueIds = [...new Set(allQuestionIds)];
-        const hasDuplicates = allQuestionIds.length !== uniqueIds.length;
-        
-        let html = `<h3>🧪 Session Deduplication Test</h3>`;
-        html += `<p><strong>Total Questions:</strong> ${allQuestionIds.length}</p>`;
-        html += `<p><strong>Unique Questions:</strong> ${uniqueIds.length}</p>`;
-        
-        if (hasDuplicates) {
-            html += `<p style="color: #ff6b6b;"><strong>❌ FAILED:</strong> Found ${allQuestionIds.length - uniqueIds.length} duplicates</p>`;
-        } else {
-            html += `<p style="color: #7fffd4;"><strong>✅ PASSED:</strong> No duplicates found across sessions</p>`;
-        }
-        
-        results.forEach((result, index) => {
-            html += `<h4>Round ${result.round} Results:</h4>`;
-            html += `<div class="distribution-grid">`;
-            Object.entries(result.categoryDistribution).forEach(([category, count]) => {
-                html += `<span class="category-badge">${category}: ${count}</span>`;
-            });
-            html += `</div>`;
+                // Show in alert as well
+                alert(`Question Coverage:\nTotal: ${data.totalQuestions || 'N/A'}\nCheck console for detailed breakdown`);
+
+            } catch (error) {
+                console.error('❌ Error checking coverage:', error);
+                alert('Error checking coverage. Check console for details.');
+            }
         });
-        
-        document.getElementById('selectionResult').innerHTML = html;
-        
-    } catch (error) {
-        document.getElementById('selectionResult').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
     }
-}
+
+    // Get 8 Random Questions
+    const get8QuestionsBtn = document.getElementById('get8QuestionsBtn');
+    if (get8QuestionsBtn) {
+        get8QuestionsBtn.addEventListener('click', async function() {
+            try {
+                console.log('🎲 Fetching 8 random questions...');
+                const response = await fetch('/api/questions/random?count=8');
+                const data = await response.json();
+
+                console.log('📋 8 Random Questions Response:', data);
+
+                // Show summary in alert
+                alert(`Fetched 8 questions:\nCategories: ${Object.keys(data.categoryDistribution || {}).length}\nCheck console for full details`);
+
+            } catch (error) {
+                console.error('❌ Error fetching 8 questions:', error);
+                alert('Error fetching questions. Check console for details.');
+            }
+        });
+    }
+
+    // Get 12 Random Questions
+    const get12QuestionsBtn = document.getElementById('get12QuestionsBtn');
+    if (get12QuestionsBtn) {
+        get12QuestionsBtn.addEventListener('click', async function() {
+            try {
+                console.log('🎲 Fetching 12 random questions...');
+                const response = await fetch('/api/questions/random?count=12');
+                const data = await response.json();
+
+                console.log('📋 12 Random Questions Response:', data);
+
+                // Show summary in alert
+                alert(`Fetched 12 questions:\nCategories: ${Object.keys(data.categoryDistribution || {}).length}\nCheck console for full details`);
+
+            } catch (error) {
+                console.error('❌ Error fetching 12 questions:', error);
+                alert('Error fetching questions. Check console for details.');
+            }
+        });
+    }
+
+    // Test Session Deduplication
+    const testDeduplicationBtn = document.getElementById('testDeduplicationBtn');
+    if (testDeduplicationBtn) {
+        testDeduplicationBtn.addEventListener('click', async function() {
+            try {
+                console.log('🧪 Testing session deduplication...');
+
+                // Check if QuestionManager is available
+                if (typeof QuestionManager === 'undefined') {
+                    console.error('❌ QuestionManager class not found');
+                    alert('QuestionManager class not available. Make sure questionManager.js is loaded.');
+                    return;
+                }
+
+                // Create or use existing QuestionManager instance
+                const qm = new QuestionManager();
+
+                // Get current session stats
+                const sessionStats = qm.getSessionStats();
+                console.log('📊 Current Session Stats:', sessionStats);
+
+                // Check sessionStorage directly
+                const storedData = sessionStorage.getItem('usedQuestionIds');
+                console.log('💾 SessionStorage Data:', storedData);
+
+                // Test fetching questions to see deduplication in action
+                console.log('🔄 Testing question fetch with deduplication...');
+                const result = await qm.getRandomQuestions(5);
+
+                console.log('✅ Deduplication Test Results:', {
+                    sessionId: result.sessionInfo.sessionId,
+                    totalUsed: result.sessionInfo.totalUsed,
+                    excludedThisRequest: result.sessionInfo.excludedThisRequest,
+                    questionsReturned: result.questions.length,
+                    categoryDistribution: result.categoryDistribution
+                });
+
+                // Check for duplicates in returned questions
+                const questionIds = result.questions.map(q => q._id);
+                const uniqueIds = [...new Set(questionIds)];
+                const hasDuplicates = questionIds.length !== uniqueIds.length;
+
+                console.log('🔍 Duplicate Check:', {
+                    totalQuestions: questionIds.length,
+                    uniqueQuestions: uniqueIds.length,
+                    hasDuplicates: hasDuplicates
+                });
+
+                alert(`Session Deduplication Test:\nSession ID: ${result.sessionInfo.sessionId}\nTotal Used: ${result.sessionInfo.totalUsed}\nExcluded: ${result.sessionInfo.excludedThisRequest}\nDuplicates: ${hasDuplicates ? 'YES ❌' : 'NO ✅'}\n\nCheck console for detailed results.`);
+
+            } catch (error) {
+                console.error('❌ Error testing deduplication:', error);
+                alert('Error testing deduplication. Check console for details.');
+            }
+        });
+    }
+
+    console.log('✅ Test Questions script loaded and event listeners attached');
+});
