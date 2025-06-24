@@ -474,21 +474,12 @@ h3 {
 }
 
 .game-status {
-  display: block;
-  padding: 5px 10px;
-  background: #4a4a4a;
-  color: #cccccc;
-  border-radius: 16px;
+  background: #777;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 15px;
   font-size: 12px;
-  font-weight: 500;
-  margin: 8px auto;
-  text-align: center;
-  width: fit-content;
-}
-
-.game-status.available {
-  background: linear-gradient(135deg, #7fffd4 0%, #5fb3a3 100%);
-  color: #000;
+  margin: 8px 0;
 }
 
 .btn-play {
