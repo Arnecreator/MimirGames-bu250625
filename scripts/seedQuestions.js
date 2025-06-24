@@ -1334,6 +1334,31 @@ async function seedQuestions() {
     });
 
     console.log(`\n🎯 Total: ${initialQuestions.length} questions across ${stats.length} categories`);
+    
+    // Verify we have exactly 10 questions per category
+    const targetCategories = 12;
+    const questionsPerCategory = 10;
+    const expectedTotal = targetCategories * questionsPerCategory;
+    
+    console.log(`\n📋 Quality Check:`);
+    console.log(`Expected: ${expectedTotal} questions (${questionsPerCategory} per category)`);
+    console.log(`Actual: ${initialQuestions.length} questions`);
+    
+    const categoriesWithWrongCount = stats.filter(stat => stat.count !== questionsPerCategory);
+    if (categoriesWithWrongCount.length > 0) {
+      console.log(`⚠️ Categories with incorrect count:`);
+      categoriesWithWrongCount.forEach(cat => {
+        console.log(`  - ${cat._id}: ${cat.count} questions (should be ${questionsPerCategory})`);
+      });
+    } else {
+      console.log(`✅ Perfect! All ${stats.length} categories have exactly ${questionsPerCategory} questions each`);
+    }
+    
+    if (initialQuestions.length === expectedTotal) {
+      console.log(`🎉 Database is ready with ${expectedTotal} questions for production use!`);
+    } else {
+      console.log(`❌ Total count mismatch. Please review question data.`);
+    }
 
   } catch (error) {
     console.error("❌ Error seeding questions:", error);

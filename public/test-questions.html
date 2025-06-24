@@ -55,6 +55,105 @@
         }
     </style>
 </head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question Distribution Test</title>
+    <style>
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: #0a0b1e;
+            color: white;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .section {
+            background: #1a1d3a;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid #333;
+        }
+        
+        button {
+            background: #7fffd4;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+            transition: all 0.2s ease;
+        }
+        
+        button:hover {
+            background: #5fb3a3;
+            transform: translateY(-1px);
+        }
+        
+        .category-item {
+            background: #252951;
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border-left: 4px solid #7fffd4;
+        }
+        
+        .category-item.low-count {
+            border-left-color: #ff6b6b;
+            background: #3d1f1f;
+        }
+        
+        .distribution-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        
+        .category-badge {
+            background: #111335;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            border: 1px solid #7fffd4;
+        }
+        
+        .questions-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #333;
+            border-radius: 5px;
+            background: #111335;
+        }
+        
+        .question-item {
+            padding: 10px;
+            border-bottom: 1px solid #333;
+            font-size: 14px;
+        }
+        
+        .question-item:last-child {
+            border-bottom: none;
+        }
+        
+        h1, h2, h3, h4 {
+            color: #7fffd4;
+        }
+        
+        p, li {
+            margin: 8px 0;
+        }
+        
+        small {
+            color: #aaa;
+        }
+    </style>
+</head>
+
 <body>
     <h1>🔍 Question Distribution Test</h1>
     
@@ -74,15 +173,80 @@
     <script>
         async function checkCoverage() {
             try {
-                const response = await fetch('/api/questions/count-per-category');
+                const response = await fetch('/api/questions/distribution');
                 const data = await response.json();
                 
-                let html = `<h3>Total Questions: ${data.totalQuestions}</h3>`;
+                let html = `<h3>📊 Question Coverage Analysis</h3>`;
+                html += `<p><strong>Total Questions:</strong> ${data.totalQuestions} | <strong>Target:</strong> ${data.targetTotal}</p>`;
+                html += `<p><strong>Status:</strong> ${data.recommendations}</p>`;
                 html += `<div class="category-stats">`;
                 
-                data.categoryBreakdown.forEach(cat => {
+                data.distribution.forEach(cat => {
                     const className = cat.count < 10 ? 'category-item low-count' : 'category-item';
-                    html += `<div class="${className}">${cat._id}: ${cat.count}</div>`;
+                    const statusIcon = cat.count >= 10 ? '✅' : '⚠️';
+                    html += `<div class="${className}">
+                        ${statusIcon} <strong>${cat._id}:</strong> ${cat.count} questions
+                    </div>`;
+                });
+                
+                html += `</div>`;
+                
+                if (data.underPopulatedCategories.length > 0) {
+                    html += `<h4>⚠️ Categories needing more questions:</h4><ul>`;
+                    data.underPopulatedCategories.forEach(cat => {
+                        html += `<li>${cat._id}: ${cat.count}/10 questions</li>`;
+                    });
+                    html += `</ul>`;
+                }
+                
+                document.getElementById('coverageResult').innerHTML = html;
+            } catch (error) {
+                document.getElementById('coverageResult').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+
+        async function testRandomSelection(count) {
+            try {
+                // Simulate session storage for deduplication
+                let usedIds = JSON.parse(sessionStorage.getItem('usedQuestionIds') || '[]');
+                const sessionId = 'test-session-' + Date.now();
+                
+                const excludeParam = usedIds.length > 0 ? `&exclude=${usedIds.join(',')}` : '';
+                const response = await fetch(`/api/questions/random/${count}?sessionId=${sessionId}${excludeParam}`);
+                const data = await response.json();
+                
+                // Store used IDs for next request
+                const newUsedIds = data.questions.map(q => q._id);
+                usedIds.push(...newUsedIds);
+                sessionStorage.setItem('usedQuestionIds', JSON.stringify(usedIds));
+                
+                let html = `<h3>🎯 Random Selection Test (${count} questions)</h3>`;
+                html += `<p><strong>Session ID:</strong> ${data.sessionId}</p>`;
+                html += `<p><strong>Excluded:</strong> ${data.excludedCount} previously asked questions</p>`;
+                html += `<p><strong>Total Available:</strong> ${data.totalAvailable} questions</p>`;
+                
+                html += `<h4>Category Distribution:</h4><div class="distribution-grid">`;
+                Object.entries(data.categoryDistribution).forEach(([category, count]) => {
+                    html += `<span class="category-badge">${category}: ${count}</span>`;
+                });
+                html += `</div>`;
+                
+                html += `<h4>Selected Questions:</h4><div class="questions-list">`;
+                data.questions.forEach((q, index) => {
+                    html += `<div class="question-item">
+                        <strong>${index + 1}. [${q.category}]</strong> ${q.question}<br>
+                        <small>Correct: ${q.answers[q.correct]} | Difficulty: ${q.difficulty}</small>
+                    </div>`;
+                });
+                html += `</div>`;
+                
+                html += `<button onclick="sessionStorage.removeItem('usedQuestionIds'); location.reload();" style="margin-top: 10px;">🔄 Reset Session</button>`;
+                
+                document.getElementById('selectionResult').innerHTML = html;
+            } catch (error) {
+                document.getElementById('selectionResult').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }= `<div class="${className}">${cat._id}: ${cat.count}</div>`;
                 });
                 
                 html += `</div>`;

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -226,6 +225,7 @@
       font-size: 1.2rem;
       color: #ccc;
       margin-bottom: 40px;
+      line-height: 1.5;
     }
 
     .results-buttons {
@@ -302,7 +302,7 @@
   <div id="devBanner" style="display: none; background: #222; color: lime; text-align: center; padding: 8px; font-weight: bold;">
     🧪 Dev Mode Active: Logged in as Putte68!
   </div>
-  
+
   <!-- Shared Topbar -->
   <div id="topbar-placeholder"></div>
   <script>
@@ -398,7 +398,7 @@
       // Check login status
       const loggedIn = localStorage.getItem('mimirIsLoggedIn') === 'true';
       const username = localStorage.getItem('mimirUsername');
-      
+
       if (!loggedIn || !username) {
         window.location.href = 'index.html';
         return;
@@ -416,30 +416,30 @@
       score = 0;
       answersLocked = false;
       answeredQuestions.clear();
-      
+
       // Create new game session
       gameSessionId = 'quiz_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-      
+
       // Show loading state
       welcomeScreen.style.display = 'none';
       resultsScreen.style.display = 'none';
       quizGame.style.display = 'block';
       questionText.textContent = 'Loading questions...';
       answersContainer.innerHTML = '<div style="text-align: center; padding: 20px; color: #ccc;">Please wait...</div>';
-      
+
       try {
         // Load random questions from API
         selectedQuestions = await loadQuestions();
-        
+
         if (selectedQuestions.length === 0) {
           questionText.textContent = 'Error: No questions available';
           answersContainer.innerHTML = '<div style="text-align: center; padding: 20px; color: #ff6b6b;">Failed to load questions. Please try again.</div>';
           return;
         }
-        
+
         // Start first question
         showQuestion();
-        
+
       } catch (error) {
         console.error('Error starting quiz:', error);
         questionText.textContent = 'Error loading quiz';
@@ -495,7 +495,7 @@
 
     function startTimer() {
       timerProgress.style.width = '100%';
-      
+
       timer = setInterval(() => {
         timeLeft--;
         const percentage = (timeLeft / 12) * 100;
@@ -519,11 +519,11 @@
 
       const question = selectedQuestions[currentQuestionIndex];
       const answerButtons = document.querySelectorAll('.answer-btn');
-      
+
       // Save this answer immediately
       const isCorrect = selectedIndex === question.correct;
       saveAnswerImmediately(currentQuestionIndex, isCorrect);
-      
+
       // Highlight correct and wrong answers
       answerButtons.forEach((button, index) => {
         button.classList.add('disabled');
@@ -551,10 +551,10 @@
       answersLocked = true;
       const question = selectedQuestions[currentQuestionIndex];
       const answerButtons = document.querySelectorAll('.answer-btn');
-      
+
       // Save this unanswered question as incorrect
       saveAnswerImmediately(currentQuestionIndex, false);
-      
+
       // Highlight correct answer
       answerButtons.forEach((button, index) => {
         button.classList.add('disabled');
@@ -587,7 +587,7 @@
       } else {
         message = "Perfect score!";
       }
-      
+
       scoreMessage.textContent = message;
 
       // Save quiz results to database
@@ -641,9 +641,9 @@
       if (!username || answeredQuestions.has(questionIndex)) {
         return; // Skip if no user or already saved this question
       }
-      
+
       answeredQuestions.add(questionIndex);
-      
+
       try {
         await fetch('/api/stats/quiz-answer', {
           method: 'POST',
@@ -670,7 +670,7 @@
         const totalAnswered = answeredQuestions.size;
         const totalQuestions = selectedQuestions.length;
         const unattempted = totalQuestions - totalAnswered;
-        
+
         // Save final game result (treating unattempted as incorrect)
         saveQuizStats(true); // true indicates early exit
       }
@@ -683,5 +683,54 @@
     // Initialize when page loads
     document.addEventListener('DOMContentLoaded', init);
   </script>
-</body>
+  <script src="scripts/questionManager.js"></script>
+  <script src="scripts/auth.js"></script>
+  <script>
+    // Initialize Question Manager for deduplication
+    let questionManager;
+
+    // Replace the existing question fetching logic
+    async function loadQuestions() {
+      try {
+        if (!questionManager) {
+          questionManager = new QuestionManager();
+        }
+
+        const result = await questionManager.getRandomQuestions(8);
+
+        // Store questions globally for game logic
+        window.currentQuestions = result.questions;
+
+        console.log('📊 Session Info:', result.sessionInfo);
+        console.log('📋 Category Distribution:', result.categoryDistribution);
+
+        return result.questions;
+      } catch (error) {
+        console.error('Failed to load questions:', error);
+        throw error;
+      }
+    }
+
+    // Add session stats to game completion
+    function addSessionStatsToResults() {
+      if (questionManager) {
+        const stats = questionManager.getSessionStats();
+        console.log('🎯 Final Session Stats:', stats);
+
+        // Optionally display to user
+        const sessionInfo = document.createElement('div');
+        sessionInfo.innerHTML = `
+          <small style="color: #666; margin-top: 10px; display: block;">
+            Session: ${stats.questionsUsed} questions used | ID: ${stats.sessionId.substr(-8)}
+          </small>
+        `;
+
+        const resultsContainer = document.querySelector('.game-results, .quiz-complete');
+        if (resultsContainer) {
+          resultsContainer.appendChild(sessionInfo);
+        }
+      }
+    }
+  </script>
+  </body>
 </html>
