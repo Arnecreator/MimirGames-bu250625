@@ -1,7 +1,6 @@
-
 <style>
 .topbar {
-  background-color: #1c1c2c;
+  background: linear-gradient(135deg, #1a1d3a 0%, #2a2d5a 100%);
   padding: 0.5rem;
   display: flex;
   flex-wrap: wrap;
@@ -16,9 +15,9 @@
 .topbar a, .topbar button, .topbar span {
   color: white;
   text-decoration: none;
-  font-size: 14px;
+  font-size: 12px;
   white-space: nowrap;
-  margin: 4px 6px;
+  margin: 2px 4px;
   padding: 4px 8px;
   border-radius: 4px;
   transition: background-color 0.2s;
@@ -29,15 +28,15 @@
 }
 
 .topbar a[href="users.html"] {
-  color: #00ffcc;
-  background: rgba(0, 255, 204, 0.1);
-  border: 1px solid rgba(0, 255, 204, 0.3);
+  color: #7fffd4;
+  background: rgba(127, 255, 212, 0.1);
+  border: 1px solid rgba(127, 255, 212, 0.3);
 }
 
 .topbar a[onclick="logout()"] {
-  color: orange;
-  background: rgba(255, 165, 0, 0.1);
-  border: 1px solid rgba(255, 165, 0, 0.3);
+  color: #ffb366;
+  background: rgba(255, 179, 102, 0.1);
+  border: 1px solid rgba(255, 179, 102, 0.3);
 }
 
 .topbar-left {
@@ -61,14 +60,14 @@
     align-items: flex-start;
     padding: 8px;
   }
-  
+
   .topbar-left,
   .topbar-right {
     width: 100%;
     justify-content: flex-start;
     margin: 2px 0;
   }
-  
+
   .topbar a, .topbar button, .topbar span {
     font-size: 12px;
     margin: 2px 4px;
@@ -81,17 +80,17 @@
   .topbar {
     padding: 6px;
   }
-  
+
   .topbar a, .topbar button, .topbar span {
     font-size: 11px;
     margin: 1px 2px;
     padding: 2px 4px;
   }
-  
+
   .topbar-left {
     gap: 0.2rem;
   }
-  
+
   .topbar-right {
     gap: 0.2rem;
   }
@@ -102,13 +101,13 @@
   .topbar {
     padding: 4px;
   }
-  
+
   .topbar a, .topbar button, .topbar span {
     font-size: 10px;
     margin: 1px;
     padding: 2px 3px;
   }
-  
+
   .topbar-left,
   .topbar-right {
     gap: 0.1rem;
@@ -122,7 +121,7 @@
     font-size: 9px;
     padding: 1px 2px;
   }
-  
+
   .topbar-left,
   .topbar-right {
     justify-content: center;

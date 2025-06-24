@@ -5,6 +5,65 @@ body {
   margin: 0;
 }
 
+/* Compact table styling */
+.table th, .table td {
+  padding: 4px 6px;
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+@media (max-width: 600px) {
+  .table th, .table td {
+    padding: 2px 4px;
+    font-size: 10px;
+  }
+}
+
+/* Media Queries for Mobile Responsiveness */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+  }
+
+  .logo-container {
+    margin-bottom: 8px;
+  }
+
+  .user-info {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .button-group {
+    gap: 8px;
+  }
+
+  .games-container {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 0 10px;
+  }
+
+  .game-card {
+    padding: 16px;
+  }
+
+  .game-icon {
+    font-size: 2rem;
+  }
+
+  .game-card h3 {
+    font-size: 1.1rem;
+  }
+
+  .game-description {
+    font-size: 0.85rem;
+  }
+}
+
 /* Mobile optimizations */
 @media (max-width: 768px) {
   .games-container {
@@ -122,14 +181,21 @@ body {
 }
 
 .btn-primary {
-  padding: 12px 20px;
-  background: #00ffcc;
+  background: linear-gradient(135deg, #7fffd4 0%, #5fb3a3 100%);
+  color: #000;
   border: none;
-  cursor: pointer;
-  border-radius: 5px;
+  padding: 12px 24px;
+  border-radius: 26px;
+  font-size: 16px;
   font-weight: bold;
-  color: #111335;
-  flex: 1;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(127, 255, 212, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(127, 255, 212, 0.4);
 }
 
 .btn-secondary {
@@ -141,10 +207,6 @@ body {
   font-weight: bold;
   color: #00ffcc;
   flex: 1;
-}
-
-.btn-primary:hover {
-  background: #00e6b8;
 }
 
 .btn-secondary:hover {
@@ -203,6 +265,46 @@ body {
   font-size: 11px;
   margin: -5px 0 10px 0;
   text-align: left;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 6px 0;
+  color: inherit;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+h1 {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+h3 {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+@media screen and (max-width: 600px) {
+  h1, h2, h3, h4, h5, h6 {
+    font-size: 14px;
+  }
+
+  h1 {
+    font-size: 16px;
+  }
+
+  h2 {
+    font-size: 14px;
+  }
+
+  h3 {
+    font-size: 13px;
+  }
 }
 
 /* Header - logga, text och användarinfo */
@@ -385,8 +487,8 @@ body {
 }
 
 .game-status.available {
-  background: #666666;
-  color: #cccccc;
+  background: linear-gradient(135deg, #7fffd4 0%, #5fb3a3 100%);
+  color: #000;
 }
 
 .btn-play {

@@ -28,9 +28,10 @@
       }
 
       .header h1 {
-        font-size: 12px;
-        font-weight: bold;
-        margin-bottom: 2px;
+        font-size: 16px;
+        font-weight: 600;
+        color: #7fffd4;
+        margin: 0;
       }
 
       .header .subtitle {
@@ -64,18 +65,15 @@
         font-family: "Courier New", Monaco, monospace;
       }
 
-      th {
-        background: #f5f5f5;
-        border: 1px solid #ccc;
-        padding: 2px 4px;
-        text-align: left;
-        font-weight: bold;
+      table th {
+        background: #111335;
+        font-weight: 600;
+        color: #7fffd4;
         position: sticky;
         top: 0;
         z-index: 10;
-        max-width: 100px;
-        min-width: 25px;
-        line-height: 1;
+        cursor: pointer;
+        user-select: none;
       }
 
       td {
@@ -383,7 +381,7 @@
         input.type = "text";
         input.value = originalValue;
         input.classList.add("inline-input");
-        
+
         td.textContent = "";
         td.appendChild(input);
         input.focus();
@@ -400,7 +398,7 @@
               });
               if (!res.ok) throw new Error("Update failed");
               td.textContent = newValue || "-";
-              
+
               Swal.fire({
                 title: 'Updated!',
                 text: `${field} updated successfully.`,
@@ -531,7 +529,7 @@
             const username = document.getElementById('edit-username').value.trim();
             const password = document.getElementById('edit-password').value.trim();
             const email = document.getElementById('edit-email').value.trim();
-            
+
             if (!username) {
               Swal.showValidationMessage('Username is required');
               return false;
@@ -540,7 +538,7 @@
               Swal.showValidationMessage('Password is required');
               return false;
             }
-            
+
             return { username, password, email };
           }
         });
@@ -616,11 +614,11 @@
             const response = await fetch(`/api/users/${userId}`, {
               method: "DELETE",
             });
-            
+
             if (response.ok) {
               const data = await response.json();
               console.log('Deletion successful:', data);
-              
+
               Swal.fire({
                 title: 'Deleted!',
                 text: `${username} has been removed successfully.`,

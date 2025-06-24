@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,20 +16,20 @@
       margin: 0;
       padding: 20px;
     }
-    
+
     .leaderboard-container {
       max-width: 1200px;
       margin: 0 auto;
     }
-    
+
     .title {
-      font-size: 2rem;
-      margin-bottom: 10px;
+      font-size: 18px;
+      margin-bottom: 1rem;
       text-align: center;
-      color: #00ffcc;
-      font-weight: 700;
+      color: #7fffd4;
+      font-weight: 600;
     }
-    
+
     .your-rank {
       margin-bottom: 20px;
       font-weight: bold;
@@ -42,7 +41,7 @@
       border-radius: 8px;
       border: 1px solid rgba(0, 255, 204, 0.3);
     }
-    
+
     .leaderboard-table {
       width: 100%;
       border-collapse: collapse;
@@ -51,73 +50,79 @@
       overflow: hidden;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     }
-    
+
     .leaderboard-table th,
     .leaderboard-table td {
-      padding: 12px 8px;
+      padding: 6px 8px;
       text-align: left;
       border-bottom: 1px solid #333;
-      font-size: 14px;
+      font-size: 12px;
+      line-height: 1.2;
     }
-    
+
     .leaderboard-table th {
-      background: #111335;
-      cursor: pointer;
+      background: linear-gradient(135deg, #111335 0%, #1a1d3a 100%);
+      color: #7fffd4;
       font-weight: 600;
-      color: #00ffcc;
-      transition: background-color 0.2s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 12px;
+      padding: 8px;
       position: sticky;
       top: 0;
       z-index: 10;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.2s ease;
     }
-    
+
     .leaderboard-table th:hover {
       background: #1a1a3a;
     }
-    
+
     .leaderboard-table th[data-column] {
       user-select: none;
       transition: all 0.2s ease;
     }
-    
+
     .leaderboard-table th[data-column]:hover {
       background: #1a1a3a;
       transform: translateY(-1px);
     }
-    
+
     .leaderboard-table tr:nth-child(even) {
       background-color: #1e2147;
     }
-    
+
     .leaderboard-table tr:hover {
       background-color: #252951;
     }
-    
+
     .highlight {
       background-color: rgba(0, 255, 204, 0.2) !important;
       border: 1px solid rgba(0, 255, 204, 0.5);
     }
-    
+
     .rank-cell {
       font-weight: bold;
       color: #00ffcc;
       text-align: center;
       width: 60px;
     }
-    
+
     .username-cell {
       font-weight: 600;
       color: #ffffff;
       min-width: 120px;
     }
-    
+
     .stat-cell {
       text-align: center;
       font-family: 'Courier New', monospace;
       font-size: 13px;
       width: 70px;
     }
-    
+
     .percent-cell {
       text-align: center;
       font-family: 'Courier New', monospace;
@@ -125,37 +130,37 @@
       font-weight: 600;
       width: 70px;
     }
-    
+
     .date-cell {
       text-align: center;
       font-size: 12px;
       color: #aaa;
       width: 80px;
     }
-    
+
     .top-10-row {
       background-color: #111144 !important;
     }
-    
+
     .top-10-row:hover {
       background-color: #1a1a55 !important;
     }
-    
+
     @media (max-width: 768px) {
       body {
         padding: 10px;
       }
-      
+
       .leaderboard-table th,
       .leaderboard-table td {
         padding: 8px 4px;
         font-size: 12px;
       }
-      
+
       .title {
         font-size: 1.5rem;
       }
-      
+
       .your-rank {
         font-size: 1rem;
         padding: 8px;
@@ -168,7 +173,7 @@
   <div id="devBanner" style="display: none; background: #222; color: lime; text-align: center; padding: 8px; font-weight: bold;">
     🧪 Dev Mode Active: Logged in as Putte68!
   </div>
-  
+
   <!-- Shared Topbar -->
   <div id="topbar-placeholder"></div>
   <script>
@@ -215,11 +220,11 @@
       const banner = document.getElementById('devBanner');
       if (banner) banner.style.display = 'block';
     }
-    
+
     // Check login status
     const loggedIn = localStorage.getItem('mimirIsLoggedIn') === 'true';
     const username = localStorage.getItem('mimirUsername');
-    
+
     if (!loggedIn || !username) {
       window.location.href = 'index.html';
     }
