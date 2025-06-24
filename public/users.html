@@ -583,12 +583,29 @@
 
       // Delete user function
       async function deleteUser(userId) {
+        // First get the username for better feedback
+        let username = 'User';
+        try {
+          const userRows = document.querySelectorAll('#usersTable tr');
+          userRows.forEach(row => {
+            const deleteBtn = row.querySelector(`button[onclick*="${userId}"]`);
+            if (deleteBtn) {
+              const usernameCell = row.querySelector('.col-user');
+              if (usernameCell) {
+                username = usernameCell.textContent.trim();
+              }
+            }
+          });
+        } catch (e) {
+          console.log('Could not extract username for feedback');
+        }
+
         const result = await Swal.fire({
           title: 'Delete user?',
-          text: 'This cannot be undone!',
+          text: `This will permanently delete ${username} and all their data. This cannot be undone!`,
           icon: 'warning',
           showCancelButton: true,
-          confirmButtonText: 'Delete',
+          confirmButtonText: 'Yes, Delete',
           cancelButtonText: 'Cancel',
           confirmButtonColor: '#dc3545',
           cancelButtonColor: '#6c757d'
@@ -599,19 +616,25 @@
             const response = await fetch(`/api/users/${userId}`, {
               method: "DELETE",
             });
+            
             if (response.ok) {
+              const data = await response.json();
+              console.log('Deletion successful:', data);
+              
               Swal.fire({
                 title: 'Deleted!',
-                text: 'User removed.',
+                text: `${username} has been removed successfully.`,
                 icon: 'success',
-                timer: 1200,
+                timer: 1500,
                 showConfirmButton: false
+              }).then(() => {
+                loadUsers(); // Refresh the table immediately after success message
               });
-              setTimeout(() => loadUsers(), 500); // refresh list with slight delay
             } else {
+              const errorData = await response.json();
               Swal.fire({
                 title: 'Error!',
-                text: 'Failed to delete user.',
+                text: errorData.error || 'Failed to delete user.',
                 icon: 'error',
                 confirmButtonText: 'OK'
               });
@@ -620,7 +643,7 @@
             console.error("Error deleting user:", err);
             Swal.fire({
               title: 'Error!',
-              text: 'Network error occurred.',
+              text: 'Network error occurred while deleting user.',
               icon: 'error',
               confirmButtonText: 'OK'
             });
