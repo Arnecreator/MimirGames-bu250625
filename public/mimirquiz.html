@@ -371,6 +371,8 @@
     let timer;
     let timeLeft = 12;
     let answersLocked = false;
+    let gameSessionId = null;
+    let answeredQuestions = new Set();
 
     // DOM elements
     const welcomeScreen = document.getElementById('welcomeScreen');
@@ -416,6 +418,10 @@
       currentQuestionIndex = 0;
       score = 0;
       answersLocked = false;
+      answeredQuestions.clear();
+      
+      // Create new game session
+      gameSessionId = 'quiz_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
       
       // Show loading state
       welcomeScreen.style.display = 'none';
@@ -517,6 +523,10 @@
       const question = selectedQuestions[currentQuestionIndex];
       const answerButtons = document.querySelectorAll('.answer-btn');
       
+      // Save this answer immediately
+      const isCorrect = selectedIndex === question.correct;
+      saveAnswerImmediately(currentQuestionIndex, isCorrect);
+      
       // Highlight correct and wrong answers
       answerButtons.forEach((button, index) => {
         button.classList.add('disabled');
@@ -528,7 +538,7 @@
       });
 
       // Update score
-      if (selectedIndex === question.correct) {
+      if (isCorrect) {
         score++;
         scoreDisplay.textContent = `Score: ${score}`;
       }
@@ -544,6 +554,9 @@
       answersLocked = true;
       const question = selectedQuestions[currentQuestionIndex];
       const answerButtons = document.querySelectorAll('.answer-btn');
+      
+      // Save this unanswered question as incorrect
+      saveAnswerImmediately(currentQuestionIndex, false);
       
       // Highlight correct answer
       answerButtons.forEach((button, index) => {
@@ -584,7 +597,7 @@
       saveQuizStats();
     }
 
-    async function saveQuizStats() {
+    async function saveQuizStats(isEarlyExit = false) {
       const username = localStorage.getItem('mimirUsername');
       if (!username) {
         console.log('No username found, skipping stats save');
@@ -592,16 +605,19 @@
       }
 
       try {
-        const response = await fetch('/api/stats/quiz', {
+        const response = await fetch('/api/stats/quiz-final', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
             username: username,
+            gameSessionId: gameSessionId,
             totalQuestions: selectedQuestions.length,
+            answeredQuestions: answeredQuestions.size,
             correctAnswers: score,
-            isFullScore: score === selectedQuestions.length
+            isFullScore: score === selectedQuestions.length && !isEarlyExit,
+            isCompleted: !isEarlyExit
           })
         });
 
@@ -621,6 +637,51 @@
       localStorage.removeItem('mimirUsername');
       window.location.href = 'index.html';
     }
+
+    // Save individual answers immediately
+    async function saveAnswerImmediately(questionIndex, isCorrect) {
+      const username = localStorage.getItem('mimirUsername');
+      if (!username || answeredQuestions.has(questionIndex)) {
+        return; // Skip if no user or already saved this question
+      }
+      
+      answeredQuestions.add(questionIndex);
+      
+      try {
+        await fetch('/api/stats/quiz-answer', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            username: username,
+            gameSessionId: gameSessionId,
+            questionIndex: questionIndex,
+            isCorrect: isCorrect,
+            totalQuestions: selectedQuestions.length
+          })
+        });
+      } catch (error) {
+        console.error('Error saving answer:', error);
+      }
+    }
+
+    // Handle early exit scenarios
+    function handleEarlyExit() {
+      if (gameSessionId && selectedQuestions.length > 0) {
+        // Calculate final stats based on answered vs total questions
+        const totalAnswered = answeredQuestions.size;
+        const totalQuestions = selectedQuestions.length;
+        const unattempted = totalQuestions - totalAnswered;
+        
+        // Save final game result (treating unattempted as incorrect)
+        saveQuizStats(true); // true indicates early exit
+      }
+    }
+
+    // Listen for page unload (browser close, refresh, navigation away)
+    window.addEventListener('beforeunload', handleEarlyExit);
+    window.addEventListener('pagehide', handleEarlyExit);
 
     // Initialize when page loads
     document.addEventListener('DOMContentLoaded', init);
