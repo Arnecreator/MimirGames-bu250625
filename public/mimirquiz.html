@@ -12,53 +12,287 @@
       color: #fff;
       font-family: 'Inter', sans-serif;
       margin: 0;
-      padding: 20px;
-      max-width: 480px;
-      margin-left: auto;
-      margin-right: auto;
-      text-align: center;
+      padding: 0;
+      min-height: 100vh;
       box-sizing: border-box;
     }
-    h1 {
-      margin-bottom: 20px;
-      font-size: 2rem;
-      color: #00ffcc;
+
+    /* Navigation styling */
+    nav {
+      background-color: #222;
+      padding: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      justify-content: space-between;
+      align-items: center;
     }
-    p {
-      font-size: 1rem;
-      line-height: 1.5;
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 5px;
+      white-space: nowrap;
+      transition: background-color 0.2s;
+    }
+
+    nav a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    #adminUsersLink {
+      color: #00ffcc !important;
+      font-weight: bold;
+    }
+
+    /* Quiz container */
+    .quiz-container {
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+      text-align: center;
+    }
+
+    /* Welcome screen */
+    .welcome-screen {
+      background: #1a1d3a;
+      border-radius: 10px;
+      padding: 40px 20px;
+    }
+
+    .welcome-screen h1 {
+      font-size: 2.5rem;
+      color: #00ffcc;
+      margin-bottom: 20px;
+    }
+
+    .welcome-screen p {
+      font-size: 1.1rem;
       color: #ccc;
       margin-bottom: 30px;
+      line-height: 1.5;
     }
-    .back-btn {
-      display: inline-block;
-      padding: 12px 24px;
+
+    .start-btn {
       background: #00ffcc;
       color: #000;
-      text-decoration: none;
+      border: none;
+      padding: 15px 30px;
       border-radius: 26px;
+      font-size: 16px;
       font-weight: bold;
+      cursor: pointer;
       transition: all 0.2s ease;
-      font-size: 14px;
-      margin-top: 20px;
     }
-    .back-btn:hover {
+
+    .start-btn:hover {
+      background: #00e6b8;
+      transform: translateY(-2px);
+    }
+
+    /* Quiz game screen */
+    .quiz-game {
+      display: none;
+      background: #1a1d3a;
+      border-radius: 10px;
+      padding: 30px 20px;
+    }
+
+    .quiz-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .question-counter {
+      font-size: 14px;
+      color: #ccc;
+    }
+
+    .score {
+      font-size: 14px;
+      color: #00ffcc;
+      font-weight: bold;
+    }
+
+    .category {
+      background: #00ffcc;
+      color: #000;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      display: inline-block;
+    }
+
+    .timer-container {
+      margin-bottom: 25px;
+    }
+
+    .timer-bar {
+      width: 100%;
+      height: 8px;
+      background: #333;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .timer-progress {
+      height: 100%;
+      background: #00ffcc;
+      width: 100%;
+      transition: width 0.1s linear;
+    }
+
+    .timer-text {
+      font-size: 14px;
+      color: #ccc;
+    }
+
+    .question {
+      font-size: 1.4rem;
+      margin-bottom: 30px;
+      line-height: 1.4;
+      color: #fff;
+    }
+
+    .answers {
+      display: grid;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .answer-btn {
+      background: #333;
+      color: #fff;
+      border: 2px solid #555;
+      padding: 15px 20px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: left;
+    }
+
+    .answer-btn:hover {
+      background: #444;
+      border-color: #666;
+    }
+
+    .answer-btn.correct {
+      background: #00ffcc;
+      color: #000;
+      border-color: #00ffcc;
+    }
+
+    .answer-btn.wrong {
+      background: #ff6b6b;
+      color: #fff;
+      border-color: #ff6b6b;
+    }
+
+    .answer-btn.disabled {
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    /* Results screen */
+    .results-screen {
+      display: none;
+      background: #1a1d3a;
+      border-radius: 10px;
+      padding: 40px 20px;
+    }
+
+    .results-screen h2 {
+      font-size: 2rem;
+      color: #00ffcc;
+      margin-bottom: 20px;
+    }
+
+    .final-score {
+      font-size: 3rem;
+      color: #fff;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+
+    .score-message {
+      font-size: 1.2rem;
+      color: #ccc;
+      margin-bottom: 40px;
+    }
+
+    .results-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border-radius: 26px;
+      font-size: 14px;
+      font-weight: bold;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: #00ffcc;
+      color: #000;
+    }
+
+    .btn-primary:hover {
       background: #00e6b8;
       transform: translateY(-1px);
     }
-    @media (max-width: 320px) {
-      body {
-        padding: 10px;
+
+    .btn-secondary {
+      background: transparent;
+      color: #00ffcc;
+      border: 2px solid #00ffcc;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(0, 255, 204, 0.1);
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+      .quiz-container {
+        margin: 10px;
+        padding: 15px;
       }
-      h1 {
-        font-size: 1.6rem;
+
+      .welcome-screen h1 {
+        font-size: 2rem;
       }
-      p {
-        font-size: 0.9rem;
+
+      .question {
+        font-size: 1.2rem;
       }
-      .back-btn {
-        padding: 10px 20px;
-        font-size: 13px;
+
+      .answer-btn {
+        padding: 12px 15px;
+        font-size: 14px;
+      }
+
+      .results-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .btn {
+        width: 200px;
       }
     }
   </style>
@@ -70,59 +304,356 @@
   </div>
   
   <!-- Top Navigation -->
-  <nav style="background-color: #222; padding: 10px; display: flex; flex-wrap: wrap; gap: 4px; justify-content: space-between; align-items: center;">
+  <nav>
     <div style="display: flex; gap: 4px;">
-      <a href="index.html" style="color: white; text-decoration: none; font-size: 11px; padding: 4px 8px; border-radius: 5px; white-space: nowrap;">🏠 Home</a>
-      <a href="leaderboard.html" style="color: white; text-decoration: none; font-size: 11px; padding: 4px 8px; border-radius: 5px; white-space: nowrap;">🏆 Leaderboard</a>
-      <a href="friends.html" style="color: white; text-decoration: none; font-size: 11px; padding: 4px 8px; border-radius: 5px; white-space: nowrap;">👥 Friends</a>
-      <a href="users.html" id="adminUsersLink" style="color: #00ffcc; text-decoration: none; font-weight: bold; font-size: 11px; padding: 4px 8px; border-radius: 5px; white-space: nowrap;">🛡️ Admin – View Users</a>
+      <a href="index.html">🏠 Home</a>
+      <a href="leaderboard.html">🏆 Leaderboard</a>
+      <a href="friends.html">👥 Friends</a>
+      <a href="users.html" id="adminUsersLink">🛡️ Admin – View Users</a>
     </div>
     <div style="display: flex; gap: 4px;">
-      <a href="#" id="logoutLink" style="color: white; text-decoration: none; font-size: 11px; padding: 4px 8px; border-radius: 5px; white-space: nowrap;">🚪 Logout</a>
+      <a href="#" id="logoutLink">🚪 Logout</a>
     </div>
   </nav>
 
-  <div id="quizContent">
-    <h1>🧠 Welcome to Mimir Quiz!</h1>
-    <p>This is the starting point for building the quiz game.</p>
-    <p>Get ready to test your knowledge with challenging questions!</p>
-    <a href="index.html" class="back-btn">Back to Main Menu</a>
+  <div class="quiz-container">
+    <!-- Welcome Screen -->
+    <div class="welcome-screen" id="welcomeScreen">
+      <h1>🧠 Mimir Quiz</h1>
+      <p>Test your knowledge with 10 challenging questions!</p>
+      <p>You have 12 seconds to answer each question. Ready to begin?</p>
+      <button class="start-btn" id="startQuizBtn">Start Quiz</button>
+    </div>
+
+    <!-- Quiz Game Screen -->
+    <div class="quiz-game" id="quizGame">
+      <div class="quiz-header">
+        <div class="question-counter" id="questionCounter">Question 1 of 10</div>
+        <div class="score" id="scoreDisplay">Score: 0</div>
+      </div>
+
+      <div class="category" id="questionCategory">Category</div>
+
+      <div class="timer-container">
+        <div class="timer-bar">
+          <div class="timer-progress" id="timerProgress"></div>
+        </div>
+        <div class="timer-text" id="timerText">12 seconds remaining</div>
+      </div>
+
+      <div class="question" id="questionText">Loading question...</div>
+
+      <div class="answers" id="answersContainer">
+        <!-- Answer buttons will be generated here -->
+      </div>
+    </div>
+
+    <!-- Results Screen -->
+    <div class="results-screen" id="resultsScreen">
+      <h2>Quiz Complete!</h2>
+      <div class="final-score" id="finalScore">0/10</div>
+      <div class="score-message" id="scoreMessage">Better luck next time!</div>
+      <div class="results-buttons">
+        <button class="btn btn-primary" id="playAgainBtn">Play Again</button>
+        <a href="index.html" class="btn btn-secondary">Back to Menu</a>
+      </div>
+    </div>
   </div>
-  
+
   <script>
-    // Check dev mode first
-    const devMode = localStorage.getItem('mimirDevMode') === 'true';
-    if (devMode) {
-      const banner = document.getElementById('devBanner');
-      if (banner) banner.style.display = 'block';
+    // Quiz questions data
+    const quizQuestions = [
+      {
+        category: "Science",
+        question: "What is the chemical symbol for gold?",
+        answers: ["Au", "Ag", "Fe", "Cu"],
+        correct: 0
+      },
+      {
+        category: "History",
+        question: "In which year did World War II end?",
+        answers: ["1944", "1945", "1946", "1947"],
+        correct: 1
+      },
+      {
+        category: "Geography",
+        question: "What is the capital of Australia?",
+        answers: ["Sydney", "Melbourne", "Canberra", "Perth"],
+        correct: 2
+      },
+      {
+        category: "Literature",
+        question: "Who wrote 'Pride and Prejudice'?",
+        answers: ["Charlotte Brontë", "Emily Dickinson", "Virginia Woolf", "Jane Austen"],
+        correct: 3
+      },
+      {
+        category: "Science",
+        question: "What is the speed of light in vacuum?",
+        answers: ["299,792,458 m/s", "150,000,000 m/s", "343 m/s", "1,125 ft/s"],
+        correct: 0
+      },
+      {
+        category: "Sports",
+        question: "How many players are on a basketball team on the court at one time?",
+        answers: ["4", "5", "6", "7"],
+        correct: 1
+      },
+      {
+        category: "Technology",
+        question: "What does 'HTTP' stand for?",
+        answers: ["High Tech Transfer Protocol", "Hypertext Transfer Protocol", "Home Tool Transfer Protocol", "Hyperlink Text Transfer Protocol"],
+        correct: 1
+      },
+      {
+        category: "Mathematics",
+        question: "What is the value of π (pi) to two decimal places?",
+        answers: ["3.14", "3.15", "3.16", "3.13"],
+        correct: 0
+      },
+      {
+        category: "Art",
+        question: "Who painted 'The Starry Night'?",
+        answers: ["Pablo Picasso", "Leonardo da Vinci", "Vincent van Gogh", "Claude Monet"],
+        correct: 2
+      },
+      {
+        category: "Music",
+        question: "How many strings does a standard guitar have?",
+        answers: ["4", "5", "6", "7"],
+        correct: 2
+      },
+      {
+        category: "Space",
+        question: "Which planet is known as the 'Red Planet'?",
+        answers: ["Venus", "Mars", "Jupiter", "Saturn"],
+        correct: 1
+      },
+      {
+        category: "Biology",
+        question: "What is the largest organ in the human body?",
+        answers: ["Heart", "Liver", "Brain", "Skin"],
+        correct: 3
+      },
+      {
+        category: "Food",
+        question: "What spice is derived from the Crocus flower?",
+        answers: ["Cinnamon", "Saffron", "Turmeric", "Paprika"],
+        correct: 1
+      },
+      {
+        category: "Movies",
+        question: "Which movie won the Academy Award for Best Picture in 1994?",
+        answers: ["Forrest Gump", "The Lion King", "Pulp Fiction", "The Shawshank Redemption"],
+        correct: 0
+      },
+      {
+        category: "Philosophy",
+        question: "Who said 'I think, therefore I am'?",
+        answers: ["Socrates", "Plato", "René Descartes", "Aristotle"],
+        correct: 2
+      }
+    ];
+
+    // Game state
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let selectedQuestions = [];
+    let timer;
+    let timeLeft = 12;
+    let answersLocked = false;
+
+    // DOM elements
+    const welcomeScreen = document.getElementById('welcomeScreen');
+    const quizGame = document.getElementById('quizGame');
+    const resultsScreen = document.getElementById('resultsScreen');
+    const startQuizBtn = document.getElementById('startQuizBtn');
+    const playAgainBtn = document.getElementById('playAgainBtn');
+    const questionCounter = document.getElementById('questionCounter');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const questionCategory = document.getElementById('questionCategory');
+    const questionText = document.getElementById('questionText');
+    const answersContainer = document.getElementById('answersContainer');
+    const timerProgress = document.getElementById('timerProgress');
+    const timerText = document.getElementById('timerText');
+    const finalScore = document.getElementById('finalScore');
+    const scoreMessage = document.getElementById('scoreMessage');
+
+    // Initialize the app
+    function init() {
+      // Check dev mode
+      const devMode = localStorage.getItem('mimirDevMode') === 'true';
+      if (devMode) {
+        document.getElementById('devBanner').style.display = 'block';
+      }
+
+      // Check login status
+      const loggedIn = localStorage.getItem('mimirIsLoggedIn') === 'true';
+      const username = localStorage.getItem('mimirUsername');
+      
+      if (!loggedIn || !username) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      // Event listeners
+      startQuizBtn.addEventListener('click', startQuiz);
+      playAgainBtn.addEventListener('click', startQuiz);
+      document.getElementById('logoutLink').addEventListener('click', logout);
     }
-    
-    // Check login status on page load
-    const loggedIn = localStorage.getItem('mimirIsLoggedIn') === 'true';
-    const username = localStorage.getItem('mimirUsername');
-    
-    if (!loggedIn || !username) {
-      // Redirect to main page if not logged in
+
+    function startQuiz() {
+      // Reset game state
+      currentQuestionIndex = 0;
+      score = 0;
+      answersLocked = false;
+      
+      // Select 10 random questions
+      selectedQuestions = getRandomQuestions(10);
+      
+      // Show quiz game screen
+      welcomeScreen.style.display = 'none';
+      resultsScreen.style.display = 'none';
+      quizGame.style.display = 'block';
+      
+      // Start first question
+      showQuestion();
+    }
+
+    function getRandomQuestions(count) {
+      const shuffled = [...quizQuestions].sort(() => Math.random() - 0.5);
+      return shuffled.slice(0, count);
+    }
+
+    function showQuestion() {
+      if (currentQuestionIndex >= selectedQuestions.length) {
+        showResults();
+        return;
+      }
+
+      const question = selectedQuestions[currentQuestionIndex];
+      answersLocked = false;
+      timeLeft = 12;
+
+      // Update UI
+      questionCounter.textContent = `Question ${currentQuestionIndex + 1} of ${selectedQuestions.length}`;
+      scoreDisplay.textContent = `Score: ${score}`;
+      questionCategory.textContent = question.category;
+      questionText.textContent = question.question;
+
+      // Generate answer buttons
+      answersContainer.innerHTML = '';
+      question.answers.forEach((answer, index) => {
+        const button = document.createElement('button');
+        button.className = 'answer-btn';
+        button.textContent = answer;
+        button.addEventListener('click', () => selectAnswer(index));
+        answersContainer.appendChild(button);
+      });
+
+      // Start timer
+      startTimer();
+    }
+
+    function startTimer() {
+      timerProgress.style.width = '100%';
+      
+      timer = setInterval(() => {
+        timeLeft--;
+        const percentage = (timeLeft / 12) * 100;
+        timerProgress.style.width = percentage + '%';
+        timerText.textContent = `${timeLeft} seconds remaining`;
+
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          if (!answersLocked) {
+            timeUp();
+          }
+        }
+      }, 1000);
+    }
+
+    function selectAnswer(selectedIndex) {
+      if (answersLocked) return;
+
+      answersLocked = true;
+      clearInterval(timer);
+
+      const question = selectedQuestions[currentQuestionIndex];
+      const answerButtons = document.querySelectorAll('.answer-btn');
+      
+      // Highlight correct and wrong answers
+      answerButtons.forEach((button, index) => {
+        button.classList.add('disabled');
+        if (index === question.correct) {
+          button.classList.add('correct');
+        } else if (index === selectedIndex && selectedIndex !== question.correct) {
+          button.classList.add('wrong');
+        }
+      });
+
+      // Update score
+      if (selectedIndex === question.correct) {
+        score++;
+        scoreDisplay.textContent = `Score: ${score}`;
+      }
+
+      // Move to next question after delay
+      setTimeout(() => {
+        currentQuestionIndex++;
+        showQuestion();
+      }, 1500);
+    }
+
+    function timeUp() {
+      answersLocked = true;
+      const question = selectedQuestions[currentQuestionIndex];
+      const answerButtons = document.querySelectorAll('.answer-btn');
+      
+      // Highlight correct answer
+      answerButtons.forEach((button, index) => {
+        button.classList.add('disabled');
+        if (index === question.correct) {
+          button.classList.add('correct');
+        }
+      });
+
+      // Move to next question after delay
+      setTimeout(() => {
+        currentQuestionIndex++;
+        showQuestion();
+      }, 1500);
+    }
+
+    function showResults() {
+      quizGame.style.display = 'none';
+      resultsScreen.style.display = 'block';
+
+      finalScore.textContent = `${score}/10`;
+
+      // Set message based on score
+      let message;
+      if (score <= 3) {
+        message = "Better luck next time!";
+      } else if (score <= 6) {
+        message = "Good effort!";
+      } else if (score <= 9) {
+        message = "Well done!";
+      } else {
+        message = "Perfect score!";
+      }
+      
+      scoreMessage.textContent = message;
+    }
+
+    function logout() {
+      localStorage.removeItem('mimirIsLoggedIn');
+      localStorage.removeItem('mimirUsername');
       window.location.href = 'index.html';
-    } else {
-      // Update welcome message with username
-      const heading = document.querySelector('h1');
-      heading.textContent = `🧠 Welcome to Mimir Quiz, ${username}!`;
     }
-    
-    // Add logout functionality for navigation bar
-    document.getElementById('logoutLink')?.addEventListener('click', (e) => {
-        e.preventDefault();
-        localStorage.removeItem('mimirIsLoggedIn');
-        localStorage.removeItem('mimirUsername');
-        window.location.href = 'index.html';
-    });
-    
-    // Add leaderboard functionality
-    document.getElementById('leaderboardLink')?.addEventListener('click', (e) => {
-        e.preventDefault();
-        window.location.href = 'index.html';
-    });
+
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
 </html>
