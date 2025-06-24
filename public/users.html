@@ -154,6 +154,17 @@
         text-align: left;
       }
 
+      .inline-input {
+        width: 100%;
+        box-sizing: border-box;
+        font-family: inherit;
+        font-size: inherit;
+        border: 1px solid #007bff;
+        background: #fff;
+        color: #000;
+        padding: 1px 2px;
+      }
+
       .edit-btn,
       .delete-btn {
         background: none;
@@ -318,9 +329,9 @@
                 return `
                 <tr>
                   <td class="col-id">${user._id ? user._id.slice(-6) : "-"}</td>
-                  <td class="col-user" onclick="makeCellEditable(this, 'username', '${user._id}')">${escapeHtml(user.username || "-")}</td>
+                  <td class="col-user" ondblclick="makeInlineEditable(this, '${user._id}', 'username', '${escapeHtml(user.username || "")}')">${escapeHtml(user.username || "-")}</td>
                   <td class="col-psw" onclick="makeCellEditable(this, 'plainPassword', '${user._id}')">${escapeHtml(plainPassword)}</td>
-                  <td class="col-mail" onclick="makeCellEditable(this, 'email', '${user._id}')">${user.email ? escapeHtml(user.email) : "-"}</td>
+                  <td class="col-mail" ondblclick="makeInlineEditable(this, '${user._id}', 'email', '${escapeHtml(user.email || "")}')">${user.email ? escapeHtml(user.email) : "-"}</td>
                   <td class="col-friends">${user.friends ? user.friends.length : 0}</td>
                   <td class="col-num">${gamesPlayed}</td>
                   <td class="col-num">${totalAnswers}</td>
@@ -360,6 +371,58 @@
         const div = document.createElement("div");
         div.textContent = text;
         return div.innerHTML;
+      }
+
+      // Make cell editable for inline editing (double-click for username/email)
+      function makeInlineEditable(td, userId, field, originalValue) {
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = originalValue;
+        input.classList.add("inline-input");
+        
+        td.textContent = "";
+        td.appendChild(input);
+        input.focus();
+        input.select();
+
+        input.addEventListener("keydown", async (e) => {
+          if (e.key === "Enter") {
+            const newValue = input.value.trim();
+            try {
+              const res = await fetch(`/api/users/${userId}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ [field]: newValue })
+              });
+              if (!res.ok) throw new Error("Update failed");
+              td.textContent = newValue || "-";
+              
+              Swal.fire({
+                title: 'Updated!',
+                text: `${field} updated successfully.`,
+                icon: 'success',
+                timer: 1000,
+                showConfirmButton: false
+              });
+            } catch (err) {
+              td.textContent = originalValue || "-";
+              Swal.fire({
+                title: 'Error!',
+                text: 'Failed to update: ' + err.message,
+                icon: 'error',
+                confirmButtonText: 'OK'
+              });
+            }
+          } else if (e.key === "Escape") {
+            td.textContent = originalValue || "-";
+          }
+        });
+
+        input.addEventListener("blur", () => {
+          if (td.contains(input)) {
+            td.textContent = originalValue || "-";
+          }
+        });
       }
 
       // Make cell editable for inline editing
