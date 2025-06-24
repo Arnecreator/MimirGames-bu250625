@@ -167,20 +167,28 @@
           min-width: 15px;
         }
 
-        #friendTools {
-          flex-direction: column;
-          align-items: flex-start;
+        #addFriendRow {
+          flex-wrap: wrap;
           gap: 4px;
         }
 
-        #friendTools input {
+        #addFriendRow input {
           width: 100px;
-          font-size: 8px;
+          font-size: 10px;
         }
 
-        #friendTools button {
-          font-size: 8px;
+        #addFriendRow button {
+          font-size: 10px;
           padding: 1px 6px;
+        }
+
+        #addFriendRow label {
+          font-size: 10px;
+        }
+
+        #addFriendMessage {
+          font-size: 9px;
+          margin-left: 4px;
         }
 
         .header h1 {
@@ -242,11 +250,11 @@
       </table>
     </div>
 
-    <div id="friendTools" style="margin: 8px 0 6px 0; display: flex; align-items: center; flex-wrap: wrap; gap: 6px;">
-      <span style="font-size: 9px; color: #333;">Add friend:</span>
-      <input type="text" id="friendInput" placeholder="Username" style="width: 120px; font-size: 9px; padding: 2px 6px; border: 1px solid #ccc;" />
-      <button onclick="addFriend()" style="font-size: 9px; padding: 2px 8px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">+ Add</button>
-      <span id="addFriendMessage" style="font-size: 8px; color: gray;"></span>
+    <div id="addFriendRow" style="display: flex; align-items: center; gap: 8px; margin: 6px 0; flex-wrap: nowrap;">
+      <label for="friendInput" style="font-size: 12px; color: #333; white-space: nowrap;">Add friend:</label>
+      <input type="text" id="friendInput" placeholder="Username" style="width: 120px; font-size: 12px; padding: 2px 6px; border: 1px solid #ccc; border-radius: 3px;" />
+      <button onclick="addFriend()" style="font-size: 12px; padding: 2px 6px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; white-space: nowrap;">+ Add</button>
+      <span id="addFriendMessage" style="font-size: 11px; color: gray; margin-left: 8px; flex-shrink: 1;"></span>
     </div>
 
     <h2 style="font-size: 10px; margin: 6px 0 4px 0;">Your Friends – Quiz Stats</h2>
