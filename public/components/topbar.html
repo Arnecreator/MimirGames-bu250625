@@ -1,14 +1,79 @@
 
-<nav style="background-color:#1c1c2c; padding: 0.6rem 1rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem;">
-  <div style="display: flex; gap: 1rem; align-items: center;">
-    <a href="index.html" style="color: white; text-decoration: none;">🏠 Home</a>
-    <a href="leaderboard.html" style="color: white; text-decoration: none;">🏆 Leaderboard</a>
-    <a href="friends.html" style="color: white; text-decoration: none;">🧑‍🤝‍🧑 Friends & Stats</a>
-    <a href="musicquiz.html" style="color: white; text-decoration: none;">🎵 Music Quiz</a>
+<style>
+.topbar {
+  background-color: #1c1c2c;
+  padding: 0.6rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.topbar a {
+  color: white;
+  text-decoration: none;
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+.topbar a[href="users.html"] {
+  color: #00ffcc;
+}
+
+.topbar a[onclick="logout()"] {
+  color: orange;
+}
+
+.topbar-left {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.topbar-right {
+  display: flex;
+  gap: 0.8rem;
+}
+
+@media (max-width: 600px) {
+  .topbar a {
+    font-size: 13px;
+  }
+  
+  .topbar-left {
+    gap: 0.7rem;
+  }
+  
+  .topbar-right {
+    gap: 0.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .topbar a {
+    font-size: 12px;
+  }
+  
+  .topbar-left {
+    gap: 0.5rem;
+  }
+  
+  .topbar-right {
+    gap: 0.4rem;
+  }
+}
+</style>
+
+<nav class="topbar">
+  <div class="topbar-left">
+    <a href="index.html">🏠 Home</a>
+    <a href="leaderboard.html">🏆 Leaderboard</a>
+    <a href="friends.html">🧑‍🤝‍🧑 Friends & Stats</a>
+    <a href="musicquiz.html">🎵 Music Quiz</a>
   </div>
-  <div style="display: flex; gap: 0.8rem;">
-    <a href="users.html" style="color: #00ffcc; text-decoration: none;">🛡️ Admin</a>
-    <a href="#" onclick="logout()" style="color: orange; text-decoration: none;">🔒 Logout</a>
+  <div class="topbar-right">
+    <a href="users.html">🛡️ Admin</a>
+    <a href="#" onclick="logout()">🔒 Logout</a>
   </div>
 </nav>
 
