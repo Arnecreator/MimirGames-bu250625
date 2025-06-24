@@ -169,18 +169,15 @@
     🧪 Dev Mode Active: Logged in as Putte68!
   </div>
   
-  <!-- Top Navigation -->
-  <nav style="background-color: #222; padding: 10px; display: flex; flex-wrap: wrap; gap: 4px; justify-content: space-between; align-items: center; margin: -20px -20px 20px -20px;">
-    <div style="display: flex; gap: 4px;">
-      <a href="index.html" style="color: white; text-decoration: none; font-size: 11px; padding: 4px 8px; border-radius: 5px; white-space: nowrap;">🏠 Home</a>
-      <a href="leaderboard.html" style="color: white; text-decoration: none; font-size: 11px; padding: 4px 8px; border-radius: 5px; white-space: nowrap;">🏆 Leaderboard</a>
-      <a href="friends.html" style="color: white; text-decoration: none; font-size: 11px; padding: 4px 8px; border-radius: 5px; white-space: nowrap;">👥 Friends</a>
-    </div>
-    <div style="display: flex; gap: 4px;">
-      <a href="users.html" id="adminUsersLink" style="color: #00ffcc; text-decoration: none; font-weight: bold; font-size: 10px; padding: 3px 6px; border-radius: 4px; white-space: nowrap;">🛡️ Admin</a>
-      <a href="#" id="logoutLink" style="color: white; text-decoration: none; font-size: 11px; padding: 4px 8px; border-radius: 5px; white-space: nowrap;">🚪 Logout</a>
-    </div>
-  </nav>
+  <!-- Shared Topbar -->
+  <div id="topbar-placeholder"></div>
+  <script>
+    fetch("/components/topbar.html")
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById("topbar-placeholder").innerHTML = html;
+      });
+  </script>
 
   <div class="leaderboard-container">
     <div class="title">🏆 Leaderboard</div>
