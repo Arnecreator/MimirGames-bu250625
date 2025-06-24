@@ -58,45 +58,50 @@
         max-height: 90vh;
       }
 
-      table {
+      table.admin-table {
         width: 100%;
         border-collapse: collapse;
         font-size: 10px;
         font-family: "Courier New", Monaco, monospace;
       }
 
-      table th {
-        background: #111335;
+      table.admin-table th {
+        background: #f5f5f5;
         font-weight: 600;
-        color: #7fffd4;
+        color: #333;
         position: sticky;
         top: 0;
         z-index: 10;
         cursor: pointer;
         user-select: none;
+        text-align: left;
+        padding: 4px 6px;
+        border: 1px solid #ddd;
+        font-size: 11px;
       }
 
-      td {
+      table.admin-table td {
         border: 1px solid #ddd;
-        border-top: 1px solid #e0e0e0;
-        border-bottom: 1px solid #e0e0e0;
-        padding: 2px 4px;
+        padding: 4px 6px;
         text-align: left;
         max-width: 100px;
         min-width: 25px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        line-height: 1;
-        cursor: pointer; /* Add this line */
+        line-height: 1.2;
+        cursor: pointer;
+        background-color: #fff;
+        color: #000;
+        font-size: 10px;
       }
 
-      tr:nth-child(even) {
-        background: #f9f9f9;
+      table.admin-table tr:nth-child(even) td {
+        background-color: #fff;
       }
 
-      tr:hover {
-        background: #f1f1f1;
+      table.admin-table tr:hover td {
+        background-color: #f8f8f8;
       }
 
       .col-id {
@@ -127,31 +132,24 @@
 
       .col-num {
         max-width: 50px;
-        text-align: left;
       }
 
       .col-perc {
         max-width: 50px;
-        text-align: left;
       }
 
       .col-date {
         max-width: 80px;
-        font-size: 9px;
       }
 
       .col-info {
         max-width: 40px;
         min-width: 25px;
-        font-size: 9px;
-        color: #888;
-        text-align: left;
       }
 
       .col-actions {
         max-width: 60px;
         min-width: 50px;
-        text-align: left;
       }
 
       .inline-input {
@@ -169,20 +167,23 @@
       .delete-btn {
         background: none;
         border: none;
-        font-size: 11px;
+        font-size: 10px;
         cursor: pointer;
-        padding: 1px 2px;
-        margin: 0 1px;
+        padding: 2px 4px;
+        margin: 0 2px;
         border-radius: 2px;
         transition: background-color 0.2s;
+        color: #666;
       }
 
       .edit-btn:hover {
         background: rgba(0, 123, 255, 0.1);
+        color: #007bff;
       }
 
       .delete-btn:hover {
         background: rgba(220, 53, 69, 0.1);
+        color: #dc3545;
       }
 
       .loading,
@@ -239,7 +240,7 @@
     <div id="loadingState" class="loading">Loading users...</div>
 
     <div id="tableContainer" class="table-container" style="display: none">
-      <table>
+      <table class="admin-table">
         <thead>
           <tr>
             <th class="col-id">ID</th>
