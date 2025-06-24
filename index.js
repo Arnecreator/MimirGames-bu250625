@@ -11,6 +11,7 @@ const statsRoutes = require("./routes/stats");
 const leaderboardRoutes = require("./routes/leaderboard");
 const usersRoutes = require("./routes/users"); // ⬅️ NY RAD
 const adminRoutes = require("./routes/admin");
+const questionsRoutes = require("./routes/questions");
 
 const app = express();
 app.use(cors());
@@ -31,6 +32,7 @@ app.use("/api/stats", statsRoutes);
 app.use("/api/leaderboard", leaderboardRoutes);
 app.use("/api/users", usersRoutes); // ⬅️ NY ROUTE
 app.use("/api/admin", adminRoutes);
+app.use("/api/questions", questionsRoutes);
 
 // 🛑 Fallback för ogiltiga endpoints
 app.use((req, res) => {

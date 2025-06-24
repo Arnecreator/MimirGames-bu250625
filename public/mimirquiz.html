@@ -361,99 +361,8 @@
   </div>
 
   <script>
-    // Quiz questions data
-    const quizQuestions = [
-      {
-        category: "Science",
-        question: "What is the chemical symbol for gold?",
-        answers: ["Au", "Ag", "Fe", "Cu"],
-        correct: 0
-      },
-      {
-        category: "History",
-        question: "In which year did World War II end?",
-        answers: ["1944", "1945", "1946", "1947"],
-        correct: 1
-      },
-      {
-        category: "Geography",
-        question: "What is the capital of Australia?",
-        answers: ["Sydney", "Melbourne", "Canberra", "Perth"],
-        correct: 2
-      },
-      {
-        category: "Literature",
-        question: "Who wrote 'Pride and Prejudice'?",
-        answers: ["Charlotte Brontë", "Emily Dickinson", "Virginia Woolf", "Jane Austen"],
-        correct: 3
-      },
-      {
-        category: "Science",
-        question: "What is the speed of light in vacuum?",
-        answers: ["299,792,458 m/s", "150,000,000 m/s", "343 m/s", "1,125 ft/s"],
-        correct: 0
-      },
-      {
-        category: "Sports",
-        question: "How many players are on a basketball team on the court at one time?",
-        answers: ["4", "5", "6", "7"],
-        correct: 1
-      },
-      {
-        category: "Technology",
-        question: "What does 'HTTP' stand for?",
-        answers: ["High Tech Transfer Protocol", "Hypertext Transfer Protocol", "Home Tool Transfer Protocol", "Hyperlink Text Transfer Protocol"],
-        correct: 1
-      },
-      {
-        category: "Mathematics",
-        question: "What is the value of π (pi) to two decimal places?",
-        answers: ["3.14", "3.15", "3.16", "3.13"],
-        correct: 0
-      },
-      {
-        category: "Art",
-        question: "Who painted 'The Starry Night'?",
-        answers: ["Pablo Picasso", "Leonardo da Vinci", "Vincent van Gogh", "Claude Monet"],
-        correct: 2
-      },
-      {
-        category: "Music",
-        question: "How many strings does a standard guitar have?",
-        answers: ["4", "5", "6", "7"],
-        correct: 2
-      },
-      {
-        category: "Space",
-        question: "Which planet is known as the 'Red Planet'?",
-        answers: ["Venus", "Mars", "Jupiter", "Saturn"],
-        correct: 1
-      },
-      {
-        category: "Biology",
-        question: "What is the largest organ in the human body?",
-        answers: ["Heart", "Liver", "Brain", "Skin"],
-        correct: 3
-      },
-      {
-        category: "Food",
-        question: "What spice is derived from the Crocus flower?",
-        answers: ["Cinnamon", "Saffron", "Turmeric", "Paprika"],
-        correct: 1
-      },
-      {
-        category: "Movies",
-        question: "Which movie won the Academy Award for Best Picture in 1994?",
-        answers: ["Forrest Gump", "The Lion King", "Pulp Fiction", "The Shawshank Redemption"],
-        correct: 0
-      },
-      {
-        category: "Philosophy",
-        question: "Who said 'I think, therefore I am'?",
-        answers: ["Socrates", "Plato", "René Descartes", "Aristotle"],
-        correct: 2
-      }
-    ];
+    // Quiz questions will be loaded from API
+    let quizQuestions = [];
 
     // Game state
     let currentQuestionIndex = 0;
@@ -502,27 +411,53 @@
       document.getElementById('logoutLink').addEventListener('click', logout);
     }
 
-    function startQuiz() {
+    async function startQuiz() {
       // Reset game state
       currentQuestionIndex = 0;
       score = 0;
       answersLocked = false;
       
-      // Select 10 random questions
-      selectedQuestions = getRandomQuestions(10);
-      
-      // Show quiz game screen
+      // Show loading state
       welcomeScreen.style.display = 'none';
       resultsScreen.style.display = 'none';
       quizGame.style.display = 'block';
+      questionText.textContent = 'Loading questions...';
+      answersContainer.innerHTML = '<div style="text-align: center; padding: 20px; color: #ccc;">Please wait...</div>';
       
-      // Start first question
-      showQuestion();
+      try {
+        // Load random questions from API
+        selectedQuestions = await loadQuestions();
+        
+        if (selectedQuestions.length === 0) {
+          questionText.textContent = 'Error: No questions available';
+          answersContainer.innerHTML = '<div style="text-align: center; padding: 20px; color: #ff6b6b;">Failed to load questions. Please try again.</div>';
+          return;
+        }
+        
+        // Start first question
+        showQuestion();
+        
+      } catch (error) {
+        console.error('Error starting quiz:', error);
+        questionText.textContent = 'Error loading quiz';
+        answersContainer.innerHTML = '<div style="text-align: center; padding: 20px; color: #ff6b6b;">Failed to load questions. Please refresh and try again.</div>';
+      }
     }
 
-    function getRandomQuestions(count) {
-      const shuffled = [...quizQuestions].sort(() => Math.random() - 0.5);
-      return shuffled.slice(0, count);
+    // Load questions from API with proper randomization
+    async function loadQuestions() {
+      try {
+        const response = await fetch('/api/questions/random/10');
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        const data = await response.json();
+        return data.questions;
+      } catch (error) {
+        console.error('Error loading questions:', error);
+        // Fallback to empty array - will show error in UI
+        return [];
+      }
     }
 
     function showQuestion() {
