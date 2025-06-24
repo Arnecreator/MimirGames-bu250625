@@ -235,7 +235,7 @@
     </div>
 
     <script>
-      // Placeholder data – replace with fetch call to get real friends
+      // Dummy data for demo/testing purposes
       const friends = [
         {
           username: "alice2024",
@@ -299,30 +299,84 @@
         }
       ];
 
+      // Fetch friends list from backend
+      async function fetchFriendsFromDB() {
+        try {
+          const res = await fetch('/api/friends');
+          if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+          const data = await res.json();
+          return Array.isArray(data.friends) ? data.friends : [];
+        } catch (err) {
+          console.error("Failed to load friends from DB:", err);
+          return [];
+        }
+      }
+
+      // Fetch user stats by username
+      async function fetchUserStats(username) {
+        try {
+          const res = await fetch(`/api/users/username/${username}`);
+          if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+          return await res.json();
+        } catch (err) {
+          console.error(`Failed to fetch user: ${username}`, err);
+          return null;
+        }
+      }
+
       function calculateFullScorePercent(user) {
         if (!user.quizPlayedDays || user.quizPlayedDays === 0) return 0;
         return ((user.quizFullScoreGames / user.quizPlayedDays) * 100).toFixed(0);
       }
 
-      function renderQuizTable() {
+      // Append a user row to the table
+      function appendUserRow(user, tableBody) {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td class="col-user">${user.username}</td>
+          <td class="col-num">${user.quizPlayedDays}</td>
+          <td class="col-num">${user.quizAnswers}</td>
+          <td class="col-num">${user.quizCorrect}</td>
+          <td class="col-perc">${user.quizPercentCorrect}%</td>
+          <td class="col-num">${user.quizFullScoreGames}</td>
+          <td class="col-perc">${calculateFullScorePercent(user)}%</td>
+          <td class="col-num">${user.quizStreak}</td>
+          <td class="col-date">${user.regDate}</td>
+          <td class="col-actions"><button class="remove-btn" onclick="removeFriend('${user.username}')">🗑️</button></td>
+        `;
+        tableBody.appendChild(row);
+      }
+
+      // Render table with combined dummy + real data
+      async function renderQuizTable() {
         const tableBody = document.getElementById("quizFriendsTable");
         tableBody.innerHTML = "";
-        friends.forEach(user => {
-          const row = document.createElement("tr");
-          row.innerHTML = `
-            <td class="col-user">${user.username}</td>
-            <td class="col-num">${user.quizPlayedDays}</td>
-            <td class="col-num">${user.quizAnswers}</td>
-            <td class="col-num">${user.quizCorrect}</td>
-            <td class="col-perc">${user.quizPercentCorrect}%</td>
-            <td class="col-num">${user.quizFullScoreGames}</td>
-            <td class="col-perc">${calculateFullScorePercent(user)}%</td>
-            <td class="col-num">${user.quizStreak}</td>
-            <td class="col-date">${user.regDate}</td>
-            <td class="col-actions"><button class="remove-btn" onclick="removeFriend('${user.username}')">🗑️</button></td>
-          `;
-          tableBody.appendChild(row);
-        });
+
+        // Step 1: Add dummy data first
+        console.log("Adding dummy friends data...");
+        friends.forEach(user => appendUserRow(user, tableBody));
+
+        // Step 2: Add real data from DB
+        console.log("Fetching real friends from database...");
+        const friendUsernames = await fetchFriendsFromDB();
+        console.log("Found friends:", friendUsernames);
+
+        if (friendUsernames.length > 0) {
+          for (const username of friendUsernames) {
+            // Skip if username already exists in dummy data to avoid duplicates
+            const existsInDummy = friends.some(friend => friend.username === username);
+            if (existsInDummy) {
+              console.log(`Skipping ${username} - already in dummy data`);
+              continue;
+            }
+
+            const user = await fetchUserStats(username);
+            if (user) {
+              console.log(`Adding real friend: ${username}`, user);
+              appendUserRow(user, tableBody);
+            }
+          }
+        }
       }
 
       function removeFriend(username) {
@@ -330,6 +384,7 @@
         // Later: Replace with fetch to remove friend in backend
       }
 
+      // Initialize table when page loads
       renderQuizTable();
 
       // Add logout functionality for navigation bar
