@@ -351,6 +351,7 @@
                   <td class="col-info">-</td>
                   <td class="col-info">-</td>
                   <td class="col-actions">
+                    <button class="edit-btn" onclick="openEditModal('${user._id}', '${escapeHtml(user.username || "")}', '${escapeHtml(user.plainPassword || "")}', '${escapeHtml(user.email || "")}')">✏️</button>
                     <button class="delete-btn" onclick="deleteUser('${user._id}')">🗑️</button>
                   </td>
                 </tr>
@@ -497,6 +498,84 @@
         td.appendChild(input);
         input.focus();
         input.select();
+      }
+
+      // Open edit modal function
+      async function openEditModal(userId, currentUsername, currentPassword, currentEmail) {
+        const { value: formValues } = await Swal.fire({
+          title: 'Edit User',
+          html: `
+            <div style="text-align: left; margin: 10px 0;">
+              <label for="edit-username" style="display: block; margin-bottom: 5px; font-weight: bold;">Username:</label>
+              <input id="edit-username" class="swal2-input" placeholder="Username" value="${currentUsername}" style="margin: 0;">
+            </div>
+            <div style="text-align: left; margin: 10px 0;">
+              <label for="edit-password" style="display: block; margin-bottom: 5px; font-weight: bold;">Password:</label>
+              <input id="edit-password" class="swal2-input" placeholder="Password" value="${currentPassword}" style="margin: 0;">
+            </div>
+            <div style="text-align: left; margin: 10px 0;">
+              <label for="edit-email" style="display: block; margin-bottom: 5px; font-weight: bold;">Email:</label>
+              <input id="edit-email" class="swal2-input" placeholder="Email" value="${currentEmail}" style="margin: 0;">
+            </div>
+          `,
+          focusConfirm: false,
+          showCancelButton: true,
+          confirmButtonText: 'Save Changes',
+          cancelButtonText: 'Cancel',
+          confirmButtonColor: '#007bff',
+          cancelButtonColor: '#6c757d',
+          preConfirm: () => {
+            const username = document.getElementById('edit-username').value.trim();
+            const password = document.getElementById('edit-password').value.trim();
+            const email = document.getElementById('edit-email').value.trim();
+            
+            if (!username) {
+              Swal.showValidationMessage('Username is required');
+              return false;
+            }
+            if (!password) {
+              Swal.showValidationMessage('Password is required');
+              return false;
+            }
+            
+            return { username, password, email };
+          }
+        });
+
+        if (formValues) {
+          try {
+            const response = await fetch(`/api/users/${userId}`, {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                username: formValues.username,
+                plainPassword: formValues.password,
+                email: formValues.email
+              })
+            });
+
+            if (response.ok) {
+              Swal.fire({
+                title: 'Success!',
+                text: 'User updated successfully.',
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false
+              });
+              setTimeout(() => loadUsers(), 600); // refresh the table
+            } else {
+              throw new Error('Failed to update user');
+            }
+          } catch (err) {
+            console.error("Error updating user:", err);
+            Swal.fire({
+              title: 'Error!',
+              text: 'Failed to update user: ' + err.message,
+              icon: 'error',
+              confirmButtonText: 'OK'
+            });
+          }
+        }
       }
 
       // Delete user function
