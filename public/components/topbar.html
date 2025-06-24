@@ -15,7 +15,7 @@
 .topbar a, .topbar button, .topbar span {
   color: white;
   text-decoration: none;
-  font-size: 12px;
+  font-size: 11px;
   white-space: nowrap;
   margin: 2px 4px;
   padding: 4px 8px;
@@ -127,6 +127,19 @@
     justify-content: center;
   }
 }
+
+/* Additional responsive improvements */
+@media (max-width: 600px) {
+  .topbar {
+    justify-content: center;
+  }
+  
+  .topbar-left,
+  .topbar-right {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
 </style>
 
 <nav class="topbar">
@@ -134,7 +147,7 @@
     <a href="index.html">🏠 Home</a>
     <a href="leaderboard.html">🏆 Leaderboard</a>
     <a href="friends.html">🧑‍🤝‍🧑 Friends & Stats</a>
-    <a href="musicquiz.html">🎵 Music Quiz</a>
+    <a href="mimirquiz.html">🧠 Mimir Quiz</a>
   </div>
   <div class="topbar-right">
     <a href="users.html">🛡️ Admin</a>
