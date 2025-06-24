@@ -166,6 +166,16 @@
     </style>
   </head>
   <body>
+    <!-- Top Navigation -->
+    <nav style="background-color: #222; padding: 10px; display: flex; flex-wrap: wrap; gap: 4px;">
+      <a href="index.html" style="color: white; text-decoration: none; font-size: 11px; padding: 4px 8px; border-radius: 5px; white-space: nowrap;">🏠 Start</a>
+      <a href="games.html" style="color: white; text-decoration: none; font-size: 11px; padding: 4px 8px; border-radius: 5px; white-space: nowrap;">🎮 Games</a>
+      <a href="leaderboard.html" style="color: white; text-decoration: none; font-size: 11px; padding: 4px 8px; border-radius: 5px; white-space: nowrap;">🏆 Leaderboard</a>
+      <a href="friends.html" style="color: white; text-decoration: none; font-size: 11px; padding: 4px 8px; border-radius: 5px; white-space: nowrap;">👥 Friends</a>
+      <a href="users.html" style="color: #00ffcc; text-decoration: none; font-weight: bold; font-size: 11px; padding: 4px 8px; border-radius: 5px; white-space: nowrap;">🛡️ Admin – View Users</a>
+      <a href="#" id="logoutLink" style="color: white; text-decoration: none; font-size: 11px; padding: 4px 8px; border-radius: 5px; white-space: nowrap;">🚪 Logout</a>
+    </nav>
+
     <div class="header">
       <a href="index.html" class="back-link" style="margin-right: 8px">🏠</a>
       <a href="javascript:history.back()" class="back-link">← Back</a>
@@ -254,6 +264,14 @@
       }
 
       renderQuizTable();
+
+      // Add logout functionality for navigation bar
+      document.getElementById('logoutLink')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        localStorage.removeItem('mimirIsLoggedIn');
+        localStorage.removeItem('mimirUsername');
+        window.location.href = 'index.html';
+      });
     </script>
   </body>
 </html>
