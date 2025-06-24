@@ -644,6 +644,41 @@
       }
       
       scoreMessage.textContent = message;
+
+      // Save quiz results to database
+      saveQuizStats();
+    }
+
+    async function saveQuizStats() {
+      const username = localStorage.getItem('mimirUsername');
+      if (!username) {
+        console.log('No username found, skipping stats save');
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/stats/quiz', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            username: username,
+            totalQuestions: selectedQuestions.length,
+            correctAnswers: score,
+            isFullScore: score === selectedQuestions.length
+          })
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          console.log('Quiz stats saved successfully:', result);
+        } else {
+          console.error('Failed to save quiz stats:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error saving quiz stats:', error);
+      }
     }
 
     function logout() {

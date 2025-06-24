@@ -524,6 +524,15 @@
         renderQuizTable();
       }
 
+      // Refresh stats when page becomes visible (user returns from quiz)
+      document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+          // Page became visible, refresh stats
+          renderUserStats();
+          renderQuizTable();
+        }
+      });
+
       // Initialize page
       initializePage();
 
