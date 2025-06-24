@@ -14,27 +14,27 @@
 
       body {
         font-family: "Courier New", Monaco, "Lucida Console", monospace;
-        font-size: 10px;
+        font-size: 9px;
         line-height: 1;
         background: #ffffff;
         color: #000000;
-        padding: 4px;
+        padding: 3px;
       }
 
       .header {
-        margin-bottom: 5px;
+        margin-bottom: 4px;
         border-bottom: 1px solid #ccc;
-        padding-bottom: 2px;
+        padding-bottom: 3px;
       }
 
       .header h1 {
-        font-size: 12px;
+        font-size: 11px;
         font-weight: bold;
-        margin-bottom: 2px;
+        margin-bottom: 1px;
       }
 
       .header .subtitle {
-        font-size: 9px;
+        font-size: 8px;
         color: #666;
       }
 
@@ -54,35 +54,35 @@
         overflow-x: auto;
         overflow-y: auto;
         border: 1px solid #ccc;
-        max-height: 90vh;
-        margin-top: 20px;
+        max-height: 85vh;
+        margin-top: 4px;
       }
 
       h2 {
-        font-size: 11px;
+        font-size: 10px;
         font-weight: bold;
-        margin: 15px 0 5px 0;
+        margin: 6px 0 4px 0;
         color: #333;
       }
 
       table {
         width: 100%;
         border-collapse: collapse;
-        font-size: 10px;
+        font-size: 9px;
         font-family: "Courier New", Monaco, monospace;
       }
 
       th {
         background: #f5f5f5;
         border: 1px solid #ccc;
-        padding: 2px 4px;
+        padding: 1px 3px;
         text-align: left;
         font-weight: bold;
         position: sticky;
         top: 0;
         z-index: 10;
-        max-width: 100px;
-        min-width: 25px;
+        max-width: 80px;
+        min-width: 20px;
         line-height: 1;
       }
 
@@ -90,10 +90,10 @@
         border: 1px solid #ddd;
         border-top: 1px solid #e0e0e0;
         border-bottom: 1px solid #e0e0e0;
-        padding: 2px 4px;
+        padding: 1px 3px;
         text-align: left;
-        max-width: 100px;
-        min-width: 25px;
+        max-width: 80px;
+        min-width: 20px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -151,18 +151,49 @@
 
       @media (max-width: 768px) {
         body {
-          padding: 4px;
-          font-size: 9px;
+          padding: 2px;
+          font-size: 8px;
         }
 
         table {
-          font-size: 9px;
+          font-size: 8px;
         }
 
         th,
         td {
           padding: 1px 2px;
           text-align: left;
+          max-width: 60px;
+          min-width: 15px;
+        }
+
+        #friendTools {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 4px;
+        }
+
+        #friendTools input {
+          width: 100px;
+          font-size: 8px;
+        }
+
+        #friendTools button {
+          font-size: 8px;
+          padding: 1px 6px;
+        }
+
+        .header h1 {
+          font-size: 10px;
+        }
+
+        .header .subtitle {
+          font-size: 7px;
+        }
+
+        h2 {
+          font-size: 9px;
+          margin: 4px 0 2px 0;
         }
       }
     </style>
@@ -181,16 +212,16 @@
     <div class="header">
       <a href="index.html" class="back-link" style="margin-right: 8px">🏠</a>
       <a href="javascript:history.back()" class="back-link">← Back</a>
-      <h1>Friends Dashboard</h1>
-      <div class="subtitle">Quiz statistics for your friends</div>
-      <div id="currentUserDisplay" style="margin-top: 8px; padding: 4px 0; font-size: 10px; color: #333; border-top: 1px solid #eee; padding-top: 8px;">
+      <h1 style="font-size: 11px; margin-bottom: 2px;">Friends Dashboard</h1>
+      <div class="subtitle" style="font-size: 8px; margin-bottom: 4px;">Quiz statistics for your friends</div>
+      <div id="currentUserDisplay" style="font-size: 9px; color: #333; margin-bottom: 8px;">
         Logged in as: <strong id="currentUsername">-</strong>
       </div>
     </div>
 
-    <h2>Your Stats</h2>
+    <h2 style="font-size: 10px; margin: 6px 0 4px 0;">Your Stats</h2>
 
-    <div class="table-container">
+    <div class="table-container" style="margin-top: 4px;">
       <table>
         <thead>
           <tr>
@@ -211,16 +242,16 @@
       </table>
     </div>
 
-    <h2>Your Friends</h2>
-    <div style="margin-bottom: 12px;">
-      <input type="text" id="friendInput" placeholder="Enter username to add" style="padding: 4px 8px; font-size: 10px; border: 1px solid #ccc; margin-right: 8px;" />
-      <button onclick="addFriend()" style="padding: 4px 8px; font-size: 10px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">➕ Add</button>
-      <span id="addFriendMessage" style="font-size: 9px; color: gray; margin-left: 10px;"></span>
+    <div id="friendTools" style="margin: 8px 0 6px 0; display: flex; align-items: center; flex-wrap: wrap; gap: 6px;">
+      <span style="font-size: 9px; color: #333;">Add friend:</span>
+      <input type="text" id="friendInput" placeholder="Username" style="width: 120px; font-size: 9px; padding: 2px 6px; border: 1px solid #ccc;" />
+      <button onclick="addFriend()" style="font-size: 9px; padding: 2px 8px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">+ Add</button>
+      <span id="addFriendMessage" style="font-size: 8px; color: gray;"></span>
     </div>
 
-    <h2 style="margin-top: 15px;">Your Friends – Quiz Stats</h2>
+    <h2 style="font-size: 10px; margin: 6px 0 4px 0;">Your Friends – Quiz Stats</h2>
 
-    <div class="table-container">
+    <div class="table-container" style="margin-top: 4px;">
       <table>
         <thead>
           <tr>
@@ -242,9 +273,9 @@
       </table>
     </div>
 
-    <h2 style="margin-top: 25px;">Your Friends – Pac-Man Stats</h2>
+    <h2 style="font-size: 10px; margin: 12px 0 4px 0;">Your Friends – Pac-Man Stats</h2>
 
-    <div class="table-container">
+    <div class="table-container" style="margin-top: 4px;">
       <table>
         <thead>
           <tr>
@@ -259,7 +290,7 @@
         </thead>
         <tbody id="pacmanFriendsTable">
           <tr>
-            <td colspan="7" style="text-align: center; padding: 20px; color: #666; font-style: italic;">
+            <td colspan="7" style="text-align: center; padding: 12px; color: #666; font-style: italic; font-size: 9px;">
               Coming Soon - Pac-Man stats will appear here when the game is released
             </td>
           </tr>
