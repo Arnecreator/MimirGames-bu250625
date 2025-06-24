@@ -1,0 +1,88 @@
+Part 3 – Enable Column Sorting on Click (Instructions for Replit)
+Goal:
+Allow users to click on any column header to sort the leaderboard by that column, ascending/descending.
+
+✅ What to Build:
+Modify in: public/scripts/leaderboard.js
+Update in: public/leaderboard.html (table headers)
+
+🧠 JavaScript Logic:
+Add Event Listeners to Headers
+
+In leaderboard.js, after creating the table:
+
+js
+Copy
+Edit
+document.querySelectorAll("#leaderboard-table th").forEach((header, colIndex) => {
+  header.addEventListener("click", () => {
+    const column = header.dataset.column;
+    const type = header.dataset.type;
+    const order = header.dataset.order === "asc" ? "desc" : "asc";
+    header.dataset.order = order;
+
+    users.sort((a, b) => {
+      let valA = a[column];
+      let valB = b[column];
+      if (type === "string") {
+        return order === "asc" ? valA.localeCompare(valB) : valB.localeCompare(valA);
+      } else {
+        return order === "asc" ? valA - valB : valB - valA;
+      }
+    });
+
+    // Clear table body and redraw
+    document.querySelector("#leaderboard-table-body").innerHTML = "";
+    renderTable(users); // Reuse function from Part 2
+  });
+});
+Add data-* Attributes to Headers
+
+In leaderboard.html, update each <th> like this:
+
+html
+Copy
+Edit
+<th data-column="user" data-type="string" data-order="asc">User</th>
+<th data-column="qpd" data-type="number" data-order="asc">Qpd</th>
+<th data-column="nansw" data-type="number" data-order="asc">#answ</th>
+<th data-column="ncansw" data-type="number" data-order="asc">#cansw</th>
+<th data-column="pcansw" data-type="number" data-order="asc">%cansw</th>
+<!-- Repeat for other columns... -->
+Refactor Table Drawing into a Function
+
+In leaderboard.js, wrap your table drawing from Part 2 in a reusable function:
+
+js
+Copy
+Edit
+function renderTable(sortedUsers) {
+  const tbody = document.querySelector("#leaderboard-table-body");
+  tbody.innerHTML = "";
+  sortedUsers.forEach((user, index) => {
+    const row = document.createElement("tr");
+    if (user.user === currentUser) {
+      row.style.backgroundColor = "#004400";
+      document.getElementById("your-rank").textContent = `Your Rank: #${index + 1}`;
+    }
+    row.innerHTML = `
+      <td>${index + 1}</td>
+      <td>${user.user}</td>
+      <td>${user.qpd}</td>
+      <td>${user.nansw}</td>
+      <td>${user.ncansw}</td>
+      <td>${user.pcansw}%</td>
+      <td>${user.nallc}</td>
+      <td>${user.pallc}%</td>
+      <td>${user.flame}</td>
+      <td>${user.reg}</td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+Call it after fetch like this:
+
+js
+Copy
+Edit
+renderTable(users);
