@@ -123,6 +123,14 @@
       width: 80px;
     }
     
+    .top-10-row {
+      background-color: #111144 !important;
+    }
+    
+    .top-10-row:hover {
+      background-color: #1a1a55 !important;
+    }
+    
     @media (max-width: 768px) {
       body {
         padding: 10px;
@@ -167,6 +175,10 @@
   <div class="leaderboard-container">
     <div class="title">🏆 Leaderboard</div>
     <div class="your-rank" id="yourRank">Your Rank: (coming soon)</div>
+
+    <div style="margin: 10px auto; text-align: center;">
+      <input type="text" id="search-box" placeholder="Search by username..." style="padding: 5px; width: 200px; font-size: 14px; border: 1px solid #333; background: #1a1d3a; color: white; border-radius: 4px;" />
+    </div>
 
     <table class="leaderboard-table">
       <thead>

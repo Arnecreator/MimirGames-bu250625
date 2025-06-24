@@ -80,9 +80,13 @@ async function loadLeaderboardData() {
       yourRankElement.textContent = `Your Rank: Not ranked (play a quiz to get ranked!)`;
     }
     
+    // Store original users data for search functionality
+    window.originalUsers = transformedUsers;
+    
     // Render the table and add sorting functionality
     renderTable(transformedUsers);
     addSortingEventListeners(transformedUsers);
+    addSearchFunctionality();
     
     console.log(`✅ Loaded ${transformedUsers.length} users in leaderboard`);
     
@@ -167,10 +171,15 @@ function renderTable(sortedUsers) {
   sortedUsers.forEach((user, index) => {
     const row = document.createElement('tr');
     
+    // Highlight top 10
+    if (index < 10) {
+      row.classList.add('top-10-row');
+    }
+    
     // Highlight current user's row
     if (user.username === currentUser) {
       row.classList.add('user-highlight');
-      row.style.backgroundColor = '#003300';
+      row.style.backgroundColor = '#004400';
     }
     
     row.innerHTML = `
@@ -216,8 +225,15 @@ function addSortingEventListeners(users) {
       header.style.position = 'relative';
       header.appendChild(indicator);
 
+      // Get current filtered users from search
+      const searchBox = document.getElementById('search-box');
+      const searchTerm = searchBox ? searchBox.value.toLowerCase() : '';
+      const currentUsers = searchTerm ? 
+        window.originalUsers.filter(user => user.username.toLowerCase().includes(searchTerm)) : 
+        window.originalUsers;
+
       // Sort the users array
-      const sortedUsers = [...users].sort((a, b) => {
+      const sortedUsers = [...currentUsers].sort((a, b) => {
         let valA = a[column];
         let valB = b[column];
         
@@ -232,6 +248,20 @@ function addSortingEventListeners(users) {
       renderTable(sortedUsers);
     });
   });
+}
+
+// Function to add search functionality
+function addSearchFunctionality() {
+  const searchBox = document.getElementById('search-box');
+  if (searchBox) {
+    searchBox.addEventListener('input', (e) => {
+      const searchTerm = e.target.value.toLowerCase();
+      const filteredUsers = window.originalUsers.filter(user => 
+        user.username.toLowerCase().includes(searchTerm)
+      );
+      renderTable(filteredUsers);
+    });
+  }
 }
 
 // Refresh data when page becomes visible (user returns from other pages)
