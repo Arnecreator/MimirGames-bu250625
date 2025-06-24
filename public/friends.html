@@ -188,6 +188,29 @@
       </div>
     </div>
 
+    <h2>Your Stats</h2>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th class="col-user">User</th>
+            <th class="col-num">Qpd</th>
+            <th class="col-num">#answ</th>
+            <th class="col-num">#cansw</th>
+            <th class="col-perc">%cansw</th>
+            <th class="col-num">#allc</th>
+            <th class="col-perc">%allc</th>
+            <th class="col-num">🔥</th>
+            <th class="col-date">Reg</th>
+          </tr>
+        </thead>
+        <tbody id="userStatsTable">
+          <!-- Filled dynamically via JavaScript -->
+        </tbody>
+      </table>
+    </div>
+
     <h2>Your Friends</h2>
     <div style="margin-bottom: 12px;">
       <input type="text" id="friendInput" placeholder="Enter username to add" style="padding: 4px 8px; font-size: 10px; border: 1px solid #ccc; margin-right: 8px;" />
@@ -195,7 +218,7 @@
       <span id="addFriendMessage" style="font-size: 9px; color: gray; margin-left: 10px;"></span>
     </div>
 
-    <h2 style="margin-top: 15px;">Quiz Stats</h2>
+    <h2 style="margin-top: 15px;">Your Friends – Quiz Stats</h2>
 
     <div class="table-container">
       <table>
@@ -303,6 +326,44 @@
           <td class="col-actions"><button class="remove-btn" onclick="removeFriend('${user.username}')">🗑️</button></td>
         `;
         tableBody.appendChild(row);
+      }
+
+      // Append a user row to the user stats table (without remove button)
+      function appendUserStatsRow(user, tableBody) {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td class="col-user">${user.username}</td>
+          <td class="col-num">${user.quizPlayedDays}</td>
+          <td class="col-num">${user.quizAnswers}</td>
+          <td class="col-num">${user.quizCorrect}</td>
+          <td class="col-perc">${user.quizPercentCorrect}%</td>
+          <td class="col-num">${user.quizFullScoreGames}</td>
+          <td class="col-perc">${calculateFullScorePercent(user)}%</td>
+          <td class="col-num">${user.quizStreak}</td>
+          <td class="col-date">${user.regDate}</td>
+        `;
+        tableBody.appendChild(row);
+      }
+
+      // Render user's own stats
+      async function renderUserStats() {
+        const tableBody = document.getElementById("userStatsTable");
+        tableBody.innerHTML = "";
+
+        const currentUser = localStorage.getItem('mimirUsername');
+        if (!currentUser) {
+          tableBody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 20px; color: #666;">Please log in to view your stats</td></tr>';
+          return;
+        }
+
+        console.log("Fetching stats for current user:", currentUser);
+        const user = await fetchUserStats(currentUser);
+        if (user) {
+          console.log(`Adding current user stats: ${currentUser}`, user);
+          appendUserStatsRow(user, tableBody);
+        } else {
+          tableBody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 20px; color: #666;">Unable to load your stats</td></tr>';
+        }
       }
 
       // Render table with only the current user's real friends
@@ -416,6 +477,8 @@
         // Display current logged-in user
         document.getElementById('currentUsername').textContent = currentUser;
         
+        // Render user's own stats first, then friends
+        renderUserStats();
         renderQuizTable();
       }
 
