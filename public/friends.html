@@ -88,6 +88,8 @@
 
       td {
         border: 1px solid #ddd;
+        border-top: 1px solid #e0e0e0;
+        border-bottom: 1px solid #e0e0e0;
         padding: 2px 4px;
         text-align: left;
         max-width: 100px;
@@ -99,11 +101,11 @@
       }
 
       tr:nth-child(even) {
-        background: #fafafa;
+        background: #f9f9f9;
       }
 
       tr:hover {
-        background: #f0f0f0;
+        background: #f1f1f1;
       }
 
       .col-user {
@@ -207,6 +209,31 @@
       </table>
     </div>
 
+    <h2 style="margin-top: 25px;">Your Friends – Pac-Man Stats</h2>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th class="col-user">Friend</th>
+            <th class="col-num">High Score</th>
+            <th class="col-num">Levels</th>
+            <th class="col-num">Ghosts</th>
+            <th class="col-num">🔥</th>
+            <th class="col-date">Reg</th>
+            <th class="col-actions">❌</th>
+          </tr>
+        </thead>
+        <tbody id="pacmanFriendsTable">
+          <tr>
+            <td colspan="7" style="text-align: center; padding: 20px; color: #666; font-style: italic;">
+              Coming Soon - Pac-Man stats will appear here when the game is released
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
     <script>
       // Placeholder data – replace with fetch call to get real friends
       const friends = [
@@ -229,6 +256,46 @@
           quizFullScoreGames: 15,
           quizStreak: 7,
           regDate: "240128"
+        },
+        {
+          username: "charlie",
+          quizPlayedDays: 18,
+          quizAnswers: 144,
+          quizCorrect: 127,
+          quizPercentCorrect: 88,
+          quizFullScoreGames: 6,
+          quizStreak: 12,
+          regDate: "240315"
+        },
+        {
+          username: "diana_quiz",
+          quizPlayedDays: 35,
+          quizAnswers: 280,
+          quizCorrect: 238,
+          quizPercentCorrect: 85,
+          quizFullScoreGames: 22,
+          quizStreak: 5,
+          regDate: "240110"
+        },
+        {
+          username: "erik_master",
+          quizPlayedDays: 42,
+          quizAnswers: 336,
+          quizCorrect: 294,
+          quizPercentCorrect: 87,
+          quizFullScoreGames: 28,
+          quizStreak: 15,
+          regDate: "231225"
+        },
+        {
+          username: "fiona_brain",
+          quizPlayedDays: 29,
+          quizAnswers: 232,
+          quizCorrect: 203,
+          quizPercentCorrect: 88,
+          quizFullScoreGames: 18,
+          quizStreak: 9,
+          regDate: "240201"
         }
       ];
 
