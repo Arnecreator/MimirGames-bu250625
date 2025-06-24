@@ -1334,7 +1334,7 @@ async function seedQuestions() {
 
     console.log(`\n🎯 Total: ${initialQuestions.length} questions across ${stats.length} categories`);
     
-    // Verify we have exactly 10 questions per category
+    // Verify we have exactly 10 questions per category  
     const targetCategories = 12;
     const questionsPerCategory = 10;
     const expectedTotal = targetCategories * questionsPerCategory;

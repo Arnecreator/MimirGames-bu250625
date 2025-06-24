@@ -319,4 +319,42 @@ router.get("/distribution", async (req, res) => {
   }
 });
 
+// Simple verification endpoint for production readiness
+router.get("/verify", async (req, res) => {
+  try {
+    const stats = await Question.aggregate([
+      { $group: { _id: "$category", count: { $sum: 1 } } },
+      { $sort: { _id: 1 } }
+    ]);
+    
+    const totalQuestions = await Question.countDocuments({ isActive: true });
+    const expectedTotal = 120; // 12 categories × 10 questions
+    const perfectBalance = stats.every(cat => cat.count === 10);
+    
+    const status = {
+      ready: totalQuestions === expectedTotal && perfectBalance,
+      totalQuestions,
+      expectedTotal,
+      categoriesCount: stats.length,
+      perfectBalance,
+      issues: []
+    };
+    
+    if (totalQuestions !== expectedTotal) {
+      status.issues.push(`Total questions: ${totalQuestions}, expected: ${expectedTotal}`);
+    }
+    
+    if (!perfectBalance) {
+      const unbalanced = stats.filter(cat => cat.count !== 10);
+      status.issues.push(`Unbalanced categories: ${unbalanced.map(c => `${c._id}(${c.count})`).join(', ')}`);
+    }
+    
+    res.json(status);
+    
+  } catch (error) {
+    console.error("Error verifying system:", error);
+    res.status(500).json({ error: "Failed to verify system" });
+  }
+});
+
 module.exports = router;

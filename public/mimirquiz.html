@@ -696,13 +696,18 @@
           questionManager = new QuestionManager();
         }
 
-        const result = await questionManager.getRandomQuestions(8);
+        const result = await questionManager.getRandomQuestions(10); // Changed to 10 questions for full game
 
         // Store questions globally for game logic
         window.currentQuestions = result.questions;
 
         console.log('📊 Session Info:', result.sessionInfo);
         console.log('📋 Category Distribution:', result.categoryDistribution);
+
+        // Log session deduplication info
+        if (result.sessionInfo.excludedThisRequest > 0) {
+          console.log(`🔄 Excluded ${result.sessionInfo.excludedThisRequest} previously seen questions`);
+        }
 
         return result.questions;
       } catch (error) {
