@@ -1,0 +1,259 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Friends – Mimir Games</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Courier New", Monaco, "Lucida Console", monospace;
+        font-size: 10px;
+        line-height: 1;
+        background: #ffffff;
+        color: #000000;
+        padding: 4px;
+      }
+
+      .header {
+        margin-bottom: 5px;
+        border-bottom: 1px solid #ccc;
+        padding-bottom: 2px;
+      }
+
+      .header h1 {
+        font-size: 12px;
+        font-weight: bold;
+        margin-bottom: 2px;
+      }
+
+      .header .subtitle {
+        font-size: 9px;
+        color: #666;
+      }
+
+      .back-link {
+        color: #0066cc;
+        text-decoration: none;
+        font-size: 9px;
+        margin-bottom: 5px;
+        display: inline-block;
+      }
+
+      .back-link:hover {
+        text-decoration: underline;
+      }
+
+      .table-container {
+        overflow-x: auto;
+        overflow-y: auto;
+        border: 1px solid #ccc;
+        max-height: 90vh;
+        margin-top: 20px;
+      }
+
+      h2 {
+        font-size: 11px;
+        font-weight: bold;
+        margin: 15px 0 5px 0;
+        color: #333;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 10px;
+        font-family: "Courier New", Monaco, monospace;
+      }
+
+      th {
+        background: #f5f5f5;
+        border: 1px solid #ccc;
+        padding: 2px 4px;
+        text-align: left;
+        font-weight: bold;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        max-width: 100px;
+        min-width: 25px;
+        line-height: 1;
+      }
+
+      td {
+        border: 1px solid #ddd;
+        padding: 2px 4px;
+        text-align: left;
+        max-width: 100px;
+        min-width: 25px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1;
+      }
+
+      tr:nth-child(even) {
+        background: #fafafa;
+      }
+
+      tr:hover {
+        background: #f0f0f0;
+      }
+
+      .col-user {
+        max-width: 80px;
+        font-weight: bold;
+      }
+
+      .col-num {
+        max-width: 50px;
+        text-align: left;
+      }
+
+      .col-perc {
+        max-width: 50px;
+        text-align: left;
+      }
+
+      .col-date {
+        max-width: 80px;
+        font-size: 9px;
+      }
+
+      .col-actions {
+        max-width: 60px;
+        min-width: 50px;
+        text-align: left;
+      }
+
+      .remove-btn {
+        background: none;
+        border: none;
+        font-size: 11px;
+        cursor: pointer;
+        padding: 1px 2px;
+        margin: 0 1px;
+        border-radius: 2px;
+        transition: background-color 0.2s;
+      }
+
+      .remove-btn:hover {
+        background: rgba(220, 53, 69, 0.1);
+      }
+
+      @media (max-width: 768px) {
+        body {
+          padding: 4px;
+          font-size: 9px;
+        }
+
+        table {
+          font-size: 9px;
+        }
+
+        th,
+        td {
+          padding: 1px 2px;
+          text-align: left;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <a href="index.html" class="back-link" style="margin-right: 8px">🏠</a>
+      <a href="javascript:history.back()" class="back-link">← Back</a>
+      <h1>Friends Dashboard</h1>
+      <div class="subtitle">Quiz statistics for your friends</div>
+    </div>
+
+    <h2>Your Friends – Quiz Stats</h2>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th class="col-user">Friend</th>
+            <th class="col-num">Qpd</th>
+            <th class="col-num">#answ</th>
+            <th class="col-num">#cansw</th>
+            <th class="col-perc">%cansw</th>
+            <th class="col-num">#allc</th>
+            <th class="col-perc">%allc</th>
+            <th class="col-num">🔥</th>
+            <th class="col-date">Reg</th>
+            <th class="col-actions">❌</th>
+          </tr>
+        </thead>
+        <tbody id="quizFriendsTable">
+          <!-- Filled dynamically via JavaScript -->
+        </tbody>
+      </table>
+    </div>
+
+    <script>
+      // Placeholder data – replace with fetch call to get real friends
+      const friends = [
+        {
+          username: "alice2024",
+          quizPlayedDays: 23,
+          quizAnswers: 184,
+          quizCorrect: 156,
+          quizPercentCorrect: 85,
+          quizFullScoreGames: 8,
+          quizStreak: 8,
+          regDate: "240203"
+        },
+        {
+          username: "bob456",
+          quizPlayedDays: 26,
+          quizAnswers: 248,
+          quizCorrect: 189,
+          quizPercentCorrect: 76,
+          quizFullScoreGames: 15,
+          quizStreak: 7,
+          regDate: "240128"
+        }
+      ];
+
+      function calculateFullScorePercent(user) {
+        if (!user.quizPlayedDays || user.quizPlayedDays === 0) return 0;
+        return ((user.quizFullScoreGames / user.quizPlayedDays) * 100).toFixed(0);
+      }
+
+      function renderQuizTable() {
+        const tableBody = document.getElementById("quizFriendsTable");
+        tableBody.innerHTML = "";
+        friends.forEach(user => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td class="col-user">${user.username}</td>
+            <td class="col-num">${user.quizPlayedDays}</td>
+            <td class="col-num">${user.quizAnswers}</td>
+            <td class="col-num">${user.quizCorrect}</td>
+            <td class="col-perc">${user.quizPercentCorrect}%</td>
+            <td class="col-num">${user.quizFullScoreGames}</td>
+            <td class="col-perc">${calculateFullScorePercent(user)}%</td>
+            <td class="col-num">${user.quizStreak}</td>
+            <td class="col-date">${user.regDate}</td>
+            <td class="col-actions"><button class="remove-btn" onclick="removeFriend('${user.username}')">🗑️</button></td>
+          `;
+          tableBody.appendChild(row);
+        });
+      }
+
+      function removeFriend(username) {
+        alert("Removing: " + username);
+        // Later: Replace with fetch to remove friend in backend
+      }
+
+      renderQuizTable();
+    </script>
+  </body>
+</html>
