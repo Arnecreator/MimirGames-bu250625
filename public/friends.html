@@ -185,7 +185,14 @@
       <div class="subtitle">Quiz statistics for your friends</div>
     </div>
 
-    <h2>Your Friends – Quiz Stats</h2>
+    <h2>Your Friends</h2>
+    <div style="margin-bottom: 12px;">
+      <input type="text" id="friendInput" placeholder="Enter username to add" style="padding: 4px 8px; font-size: 10px; border: 1px solid #ccc; margin-right: 8px;" />
+      <button onclick="addFriend()" style="padding: 4px 8px; font-size: 10px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">➕ Add</button>
+      <span id="addFriendMessage" style="font-size: 9px; color: gray; margin-left: 10px;"></span>
+    </div>
+
+    <h2 style="margin-top: 15px;">Quiz Stats</h2>
 
     <div class="table-container">
       <table>
@@ -376,6 +383,39 @@
               appendUserRow(user, tableBody);
             }
           }
+        }
+      }
+
+      async function addFriend() {
+        const username = document.getElementById("friendInput").value.trim();
+        const message = document.getElementById("addFriendMessage");
+
+        if (!username) {
+          message.textContent = "Please enter a username.";
+          return;
+        }
+
+        try {
+          const res = await fetch("/api/friends", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ username })
+          });
+
+          const data = await res.json();
+
+          if (res.ok) {
+            message.textContent = `✅ ${username} added as a friend.`;
+            document.getElementById("friendInput").value = "";
+            renderQuizTable(); // refresh the friend list
+          } else {
+            message.textContent = `⚠️ ${data.error || "Could not add friend."}`;
+          }
+        } catch (err) {
+          console.error(err);
+          message.textContent = "Error connecting to server.";
         }
       }
 
