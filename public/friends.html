@@ -183,6 +183,9 @@
       <a href="javascript:history.back()" class="back-link">← Back</a>
       <h1>Friends Dashboard</h1>
       <div class="subtitle">Quiz statistics for your friends</div>
+      <div id="currentUserDisplay" style="margin-top: 8px; padding: 4px 0; font-size: 10px; color: #333; border-top: 1px solid #eee; padding-top: 8px;">
+        Logged in as: <strong id="currentUsername">-</strong>
+      </div>
     </div>
 
     <h2>Your Friends</h2>
@@ -409,6 +412,10 @@
           window.location.href = 'index.html';
           return;
         }
+        
+        // Display current logged-in user
+        document.getElementById('currentUsername').textContent = currentUser;
+        
         renderQuizTable();
       }
 
