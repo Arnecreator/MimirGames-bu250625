@@ -139,6 +139,56 @@ document.addEventListener('DOMContentLoaded', () => {
   loadLeaderboardData();
 });
 
+// Function to sort table data
+function sortTable(users, column, type, order) {
+  return [...users].sort((a, b) => {
+    let valA = a[column];
+    let valB = b[column];
+    
+    if (type === "string") {
+      return order === "asc" ? valA.localeCompare(valB) : valB.localeCompare(valA);
+    } else {
+      return order === "asc" ? valA - valB : valB - valA;
+    }
+  });
+}
+
+// Function to restore sorting from localStorage
+function restoreSorting(users) {
+  const lastSortColumn = localStorage.getItem("lastSortColumn");
+  const lastSortOrder = localStorage.getItem("lastSortOrder");
+  
+  if (lastSortColumn && lastSortOrder) {
+    // Find the header and its type
+    const header = document.querySelector(`[data-column="${lastSortColumn}"]`);
+    if (header) {
+      const type = header.dataset.type;
+      header.dataset.order = lastSortOrder;
+      
+      // Update visual indicator
+      document.querySelectorAll(".leaderboard-table th[data-column]").forEach(th => {
+        th.style.position = 'relative';
+        const existing = th.querySelector('.sort-indicator');
+        if (existing) existing.remove();
+      });
+      
+      const indicator = document.createElement('span');
+      indicator.className = 'sort-indicator';
+      indicator.style.position = 'absolute';
+      indicator.style.right = '5px';
+      indicator.style.fontSize = '12px';
+      indicator.textContent = lastSortOrder === 'asc' ? '▲' : '▼';
+      header.style.position = 'relative';
+      header.appendChild(indicator);
+      
+      // Sort and return the data
+      return sortTable(users, lastSortColumn, type, lastSortOrder);
+    }
+  }
+  
+  return users;
+}
+
 // Function to render the leaderboard table
 function renderTable(sortedUsers) {
   const currentUser = localStorage.getItem('mimirUsername') || '';
@@ -147,6 +197,11 @@ function renderTable(sortedUsers) {
   if (!tableBody) {
     console.error('Leaderboard table body not found');
     return;
+  }
+  
+  // Restore sorting on first load if no sorted data provided
+  if (!sortedUsers || sortedUsers === window.originalUsers) {
+    sortedUsers = restoreSorting(window.originalUsers || sortedUsers);
   }
   
   tableBody.innerHTML = '';
@@ -201,13 +256,17 @@ function renderTable(sortedUsers) {
 
 // Function to add sorting event listeners to table headers
 function addSortingEventListeners(users) {
-  document.querySelectorAll(".leaderboard-table th[data-column]").forEach((header) => {
+  document.querySelectorAll(".leaderboard-table th[data-column]").forEach((header, index) => {
     header.style.cursor = 'pointer';
     header.addEventListener("click", () => {
       const column = header.dataset.column;
       const type = header.dataset.type;
       const order = header.dataset.order === "asc" ? "desc" : "asc";
       header.dataset.order = order;
+      
+      // Store sorting info in localStorage
+      localStorage.setItem("lastSortColumn", column);
+      localStorage.setItem("lastSortOrder", order);
       
       // Update visual indicator for sort direction
       document.querySelectorAll(".leaderboard-table th[data-column]").forEach(th => {
@@ -233,16 +292,7 @@ function addSortingEventListeners(users) {
         window.originalUsers;
 
       // Sort the users array
-      const sortedUsers = [...currentUsers].sort((a, b) => {
-        let valA = a[column];
-        let valB = b[column];
-        
-        if (type === "string") {
-          return order === "asc" ? valA.localeCompare(valB) : valB.localeCompare(valA);
-        } else {
-          return order === "asc" ? valA - valB : valB - valA;
-        }
-      });
+      const sortedUsers = sortTable(currentUsers, column, type, order);
 
       // Re-render the table with sorted data
       renderTable(sortedUsers);
@@ -259,6 +309,21 @@ function addSearchFunctionality() {
       const filteredUsers = window.originalUsers.filter(user => 
         user.username.toLowerCase().includes(searchTerm)
       );
+      
+      // Apply current sorting to filtered results
+      const lastSortColumn = localStorage.getItem("lastSortColumn");
+      const lastSortOrder = localStorage.getItem("lastSortOrder");
+      
+      if (lastSortColumn && lastSortOrder) {
+        const header = document.querySelector(`[data-column="${lastSortColumn}"]`);
+        if (header) {
+          const type = header.dataset.type;
+          const sortedFilteredUsers = sortTable(filteredUsers, lastSortColumn, type, lastSortOrder);
+          renderTable(sortedFilteredUsers);
+          return;
+        }
+      }
+      
       renderTable(filteredUsers);
     });
   }
