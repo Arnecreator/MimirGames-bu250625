@@ -167,19 +167,14 @@ function restoreSorting(users) {
       
       // Update visual indicator
       document.querySelectorAll(".leaderboard-table th[data-column]").forEach(th => {
-        th.style.position = 'relative';
-        const existing = th.querySelector('.sort-indicator');
-        if (existing) existing.remove();
+        // Reset all headers to show neutral sort indicator
+        const originalText = th.textContent.replace(/\s*[↕️▲▼]\s*$/, '');
+        th.textContent = originalText + ' ↕️';
       });
       
-      const indicator = document.createElement('span');
-      indicator.className = 'sort-indicator';
-      indicator.style.position = 'absolute';
-      indicator.style.right = '5px';
-      indicator.style.fontSize = '12px';
-      indicator.textContent = lastSortOrder === 'asc' ? '▲' : '▼';
-      header.style.position = 'relative';
-      header.appendChild(indicator);
+      // Set the active column's sort indicator
+      const originalText = header.textContent.replace(/\s*[↕️▲▼]\s*$/, '');
+      header.textContent = originalText + (lastSortOrder === 'asc' ? ' ▲' : ' ▼');
       
       // Sort and return the data
       return sortTable(users, lastSortColumn, type, lastSortOrder);
@@ -270,19 +265,14 @@ function addSortingEventListeners(users) {
       
       // Update visual indicator for sort direction
       document.querySelectorAll(".leaderboard-table th[data-column]").forEach(th => {
-        th.style.position = 'relative';
-        const existing = th.querySelector('.sort-indicator');
-        if (existing) existing.remove();
+        // Reset all headers to show neutral sort indicator
+        const originalText = th.textContent.replace(/\s*[↕️▲▼]\s*$/, '');
+        th.textContent = originalText + ' ↕️';
       });
       
-      const indicator = document.createElement('span');
-      indicator.className = 'sort-indicator';
-      indicator.style.position = 'absolute';
-      indicator.style.right = '5px';
-      indicator.style.fontSize = '12px';
-      indicator.textContent = order === 'asc' ? '▲' : '▼';
-      header.style.position = 'relative';
-      header.appendChild(indicator);
+      // Set the active column's sort indicator
+      const originalText = header.textContent.replace(/\s*[↕️▲▼]\s*$/, '');
+      header.textContent = originalText + (order === 'asc' ? ' ▲' : ' ▼');
 
       // Get current filtered users from search
       const searchBox = document.getElementById('search-box');

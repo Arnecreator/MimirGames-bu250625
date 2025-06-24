@@ -75,6 +75,16 @@
       background: #1a1a3a;
     }
     
+    .leaderboard-table th[data-column] {
+      user-select: none;
+      transition: all 0.2s ease;
+    }
+    
+    .leaderboard-table th[data-column]:hover {
+      background: #1a1a3a;
+      transform: translateY(-1px);
+    }
+    
     .leaderboard-table tr:nth-child(even) {
       background-color: #1e2147;
     }
@@ -184,15 +194,15 @@
       <thead>
         <tr>
           <th class="rank-cell">Rank</th>
-          <th class="username-cell" data-column="username" data-type="string" data-order="asc">User</th>
-          <th class="stat-cell" data-column="qpd" data-type="number" data-order="asc">Qpd</th>
-          <th class="stat-cell" data-column="nansw" data-type="number" data-order="asc">#answ</th>
-          <th class="stat-cell" data-column="ncansw" data-type="number" data-order="asc">#cansw</th>
-          <th class="percent-cell" data-column="pcansw" data-type="number" data-order="asc">%cansw</th>
-          <th class="stat-cell" data-column="nallc" data-type="number" data-order="asc">#allc</th>
-          <th class="percent-cell" data-column="pallc" data-type="number" data-order="asc">%allc</th>
-          <th class="stat-cell" data-column="flame" data-type="number" data-order="asc">🔥</th>
-          <th class="date-cell" data-column="reg" data-type="string" data-order="asc">Reg</th>
+          <th class="username-cell" data-column="username" data-type="string" data-order="asc">User ↕️</th>
+          <th class="stat-cell" data-column="qpd" data-type="number" data-order="asc">Qpd ↕️</th>
+          <th class="stat-cell" data-column="nansw" data-type="number" data-order="asc">#answ ↕️</th>
+          <th class="stat-cell" data-column="ncansw" data-type="number" data-order="asc">#cansw ↕️</th>
+          <th class="percent-cell" data-column="pcansw" data-type="number" data-order="asc">%cansw ↕️</th>
+          <th class="stat-cell" data-column="nallc" data-type="number" data-order="asc">#allc ↕️</th>
+          <th class="percent-cell" data-column="pallc" data-type="number" data-order="asc">%allc ↕️</th>
+          <th class="stat-cell" data-column="flame" data-type="number" data-order="asc">🔥 ↕️</th>
+          <th class="date-cell" data-column="reg" data-type="string" data-order="asc">Reg ↕️</th>
         </tr>
       </thead>
       <tbody id="leaderboard-body">
