@@ -921,7 +921,6 @@ const initialQuestions = [
     category: "Movies",
     question: "Which film won the first Academy Award for Best Animated Feature?",
     answers: ["Monsters, Inc.", "Shrek", "Ice Age", "Finding Nemo"],
-    Adding the remaining categories (Misc, Movies, Literature, Art, Music and Food) and the count-per-category route for debugging.answers: ["Monsters, Inc.", "Shrek", "Ice Age", "Finding Nemo"],
     correct: 1,
     difficulty: "hard"
   },
@@ -1371,17 +1370,4 @@ async function seedQuestions() {
 // Run the seeding function
 seedQuestions();
 
-const express = require('express');
-const app = express();
-const port = 3000;
-
-app.get('/api/questions/count-per-category', async (req, res) => {
-    const result = await Question.aggregate([
-      { $group: { _id: "$category", count: { $sum: 1 } } }
-    ]);
-    res.json(result);
-  });
-
-app.listen(port, () => {
-    console.log(`Server listening on port ${port}`);
-});
+// Note: The count-per-category route is implemented in routes/questions.js
