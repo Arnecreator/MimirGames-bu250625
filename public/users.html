@@ -236,24 +236,14 @@
             <th class="col-user">User</th>
             <th class="col-psw">psw</th>
             <th class="col-mail">mail</th>
-            <th class="col-friends">👥</th>
-            <th class="col-num">Gpd</th>
+            <th class="col-num">Qpd</th>
             <th class="col-num">#answ</th>
-            <th class="col-num">#cor</th>
-            <th class="col-perc">%cor</th>
-            <th class="col-num">#full</th>
-            <th class="col-perc">%full</th>
+            <th class="col-num">#cansw</th>
+            <th class="col-perc">%cansw</th>
+            <th class="col-num">#allc</th>
+            <th class="col-perc">%allc</th>
             <th class="col-num">🔥</th>
             <th class="col-date">Reg</th>
-            <th class="col-info">info1</th>
-            <th class="col-info">info2</th>
-            <th class="col-info">info3</th>
-            <th class="col-info">info4</th>
-            <th class="col-info">info5</th>
-            <th class="col-info">info6</th>
-            <th class="col-info">info7</th>
-            <th class="col-info">info8</th>
-            <th class="col-info">info9</th>
             <th class="col-actions">Actions</th>
           </tr>
         </thead>
@@ -335,24 +325,14 @@
                   <td class="col-user" ondblclick="makeInlineEditable(this, '${user._id}', 'username', '${escapeHtml(user.username || "")}')">${escapeHtml(user.username || "-")}</td>
                   <td class="col-psw" onclick="makeCellEditable(this, 'plainPassword', '${user._id}')">${escapeHtml(plainPassword)}</td>
                   <td class="col-mail" ondblclick="makeInlineEditable(this, '${user._id}', 'email', '${escapeHtml(user.email || "")}')">${user.email ? escapeHtml(user.email) : "-"}</td>
-                  <td class="col-friends">${user.friends ? user.friends.length : 0}</td>
-                  <td class="col-num">${gamesPlayed}</td>
-                  <td class="col-num">${totalAnswers}</td>
-                  <td class="col-num">${correctAnswers}</td>
-                  <td class="col-perc">${correctPercentage}%</td>
-                  <td class="col-num">${fullScores}</td>
-                  <td class="col-perc">${fullPercentage}%</td>
-                  <td class="col-num">${user.bestStreak || 0}</td>
+                  <td class="col-num">${user.quizPlayedDays || user.gamesPlayed || 0}</td>
+                  <td class="col-num">${user.quizAnswers || totalAnswers}</td>
+                  <td class="col-num">${user.quizCorrect || correctAnswers}</td>
+                  <td class="col-perc">${user.quizPercentCorrect || correctPercentage}%</td>
+                  <td class="col-num">${user.quizFullScoreGames || fullScores}</td>
+                  <td class="col-perc">${calculateFullScorePercent(user)}%</td>
+                  <td class="col-num">${user.quizStreak || user.bestStreak || 0}</td>
                   <td class="col-date">${regDate}</td>
-                  <td class="col-info">-</td>
-                  <td class="col-info">-</td>
-                  <td class="col-info">-</td>
-                  <td class="col-info">-</td>
-                  <td class="col-info">-</td>
-                  <td class="col-info">-</td>
-                  <td class="col-info">-</td>
-                  <td class="col-info">-</td>
-                  <td class="col-info">-</td>
                   <td class="col-actions">
                     <button class="edit-btn" onclick="openEditModal('${user._id}', '${escapeHtml(user.username || "")}', '${escapeHtml(user.plainPassword || "")}', '${escapeHtml(user.email || "")}')">✏️</button>
                     <button class="delete-btn" onclick="deleteUser('${user._id}')">🗑️</button>
@@ -375,6 +355,14 @@
         const div = document.createElement("div");
         div.textContent = text;
         return div.innerHTML;
+      }
+
+      // Calculate full score percentage
+      function calculateFullScorePercent(user) {
+        const playedDays = user.quizPlayedDays || user.gamesPlayed || 0;
+        const fullScoreGames = user.quizFullScoreGames || user.fullScores || 0;
+        if (!playedDays || playedDays === 0) return 0;
+        return Math.round((fullScoreGames / playedDays) * 100);
       }
 
       // Make cell editable for inline editing (double-click for username/email)
