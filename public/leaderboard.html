@@ -4,62 +4,144 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Leaderboard - Mimir Games</title>
+  <title>Leaderboard – Mimir Games</title>
   <link href="styles/main.css" rel="stylesheet" type="text/css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
-    .leaderboard-container {
-      max-width: 600px;
-      margin: 0 auto;
+    body {
+      font-family: Inter, sans-serif;
+      background: #0a0b1e;
+      color: white;
+      margin: 0;
       padding: 20px;
     }
-    .leaderboard-title {
+    
+    .leaderboard-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .title {
+      font-size: 2rem;
+      margin-bottom: 10px;
       text-align: center;
       color: #00ffcc;
-      font-size: 2rem;
-      margin-bottom: 30px;
+      font-weight: 700;
     }
-    .leaderboard-list {
+    
+    .your-rank {
+      margin-bottom: 20px;
+      font-weight: bold;
+      color: #00ffcc;
+      text-align: center;
+      font-size: 1.1rem;
+      padding: 10px;
+      background: rgba(0, 255, 204, 0.1);
+      border-radius: 8px;
+      border: 1px solid rgba(0, 255, 204, 0.3);
+    }
+    
+    .leaderboard-table {
+      width: 100%;
+      border-collapse: collapse;
       background: #1a1d3a;
       border-radius: 10px;
-      padding: 20px;
-      min-height: 300px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     }
-    .leaderboard-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 0;
+    
+    .leaderboard-table th,
+    .leaderboard-table td {
+      padding: 12px 8px;
+      text-align: left;
       border-bottom: 1px solid #333;
-      color: #fff;
+      font-size: 14px;
     }
-    .leaderboard-item:last-child {
-      border-bottom: none;
+    
+    .leaderboard-table th {
+      background: #111335;
+      cursor: pointer;
+      font-weight: 600;
+      color: #00ffcc;
+      transition: background-color 0.2s ease;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
-    .rank {
+    
+    .leaderboard-table th:hover {
+      background: #1a1a3a;
+    }
+    
+    .leaderboard-table tr:nth-child(even) {
+      background-color: #1e2147;
+    }
+    
+    .leaderboard-table tr:hover {
+      background-color: #252951;
+    }
+    
+    .highlight {
+      background-color: rgba(0, 255, 204, 0.2) !important;
+      border: 1px solid rgba(0, 255, 204, 0.5);
+    }
+    
+    .rank-cell {
       font-weight: bold;
       color: #00ffcc;
-      width: 40px;
-    }
-    .username {
-      flex-grow: 1;
-      margin-left: 15px;
-    }
-    .score {
-      font-weight: bold;
-      color: #00ffcc;
-    }
-    .loading {
       text-align: center;
-      color: #ccc;
-      font-style: italic;
+      width: 60px;
     }
-    .error {
+    
+    .username-cell {
+      font-weight: 600;
+      color: #ffffff;
+      min-width: 120px;
+    }
+    
+    .stat-cell {
       text-align: center;
-      color: #ff6b6b;
-      font-style: italic;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      width: 70px;
+    }
+    
+    .percent-cell {
+      text-align: center;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      font-weight: 600;
+      width: 70px;
+    }
+    
+    .date-cell {
+      text-align: center;
+      font-size: 12px;
+      color: #aaa;
+      width: 80px;
+    }
+    
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+      
+      .leaderboard-table th,
+      .leaderboard-table td {
+        padding: 8px 4px;
+        font-size: 12px;
+      }
+      
+      .title {
+        font-size: 1.5rem;
+      }
+      
+      .your-rank {
+        font-size: 1rem;
+        padding: 8px;
+      }
     }
   </style>
 </head>
@@ -70,7 +152,7 @@
   </div>
   
   <!-- Top Navigation -->
-  <nav style="background-color: #222; padding: 10px; display: flex; flex-wrap: wrap; gap: 4px; justify-content: space-between; align-items: center;">
+  <nav style="background-color: #222; padding: 10px; display: flex; flex-wrap: wrap; gap: 4px; justify-content: space-between; align-items: center; margin: -20px -20px 20px -20px;">
     <div style="display: flex; gap: 4px;">
       <a href="index.html" style="color: white; text-decoration: none; font-size: 11px; padding: 4px 8px; border-radius: 5px; white-space: nowrap;">🏠 Home</a>
       <a href="leaderboard.html" style="color: white; text-decoration: none; font-size: 11px; padding: 4px 8px; border-radius: 5px; white-space: nowrap;">🏆 Leaderboard</a>
@@ -83,10 +165,28 @@
   </nav>
 
   <div class="leaderboard-container">
-    <h1 class="leaderboard-title">🏆 Leaderboard</h1>
-    <div class="leaderboard-list">
-      <div id="leaderboardContent" class="loading">Loading leaderboard...</div>
-    </div>
+    <div class="title">🏆 Leaderboard</div>
+    <div class="your-rank" id="yourRank">Your Rank: (coming soon)</div>
+
+    <table class="leaderboard-table">
+      <thead>
+        <tr>
+          <th class="rank-cell">Rank</th>
+          <th class="username-cell">User</th>
+          <th class="stat-cell">Qpd</th>
+          <th class="stat-cell">#answ</th>
+          <th class="stat-cell">#cansw</th>
+          <th class="percent-cell">%cansw</th>
+          <th class="stat-cell">#allc</th>
+          <th class="percent-cell">%allc</th>
+          <th class="stat-cell">🔥</th>
+          <th class="date-cell">Reg</th>
+        </tr>
+      </thead>
+      <tbody id="leaderboard-body">
+        <!-- Data rows will be inserted here -->
+      </tbody>
+    </table>
   </div>
 
   <script>
@@ -105,38 +205,6 @@
       window.location.href = 'index.html';
     }
 
-    // Load leaderboard data
-    async function loadLeaderboard() {
-      try {
-        const response = await fetch("http://localhost:5000/api/leaderboard");
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        const content = document.getElementById('leaderboardContent');
-        
-        if (data.length === 0) {
-          content.innerHTML = '<div class="loading">No scores yet!</div>';
-          return;
-        }
-
-        content.innerHTML = data.map((entry, index) => `
-          <div class="leaderboard-item">
-            <span class="rank">#${index + 1}</span>
-            <span class="username">${entry.username}</span>
-            <span class="score">${entry.score} points</span>
-          </div>
-        `).join('');
-
-      } catch (error) {
-        console.error("Could not load leaderboard:", error);
-        document.getElementById('leaderboardContent').innerHTML = 
-          '<div class="error">Unable to load leaderboard. Please try again later.</div>';
-      }
-    }
-
     // Add logout functionality
     document.getElementById('logoutLink')?.addEventListener('click', (e) => {
       e.preventDefault();
@@ -145,8 +213,8 @@
       window.location.href = 'index.html';
     });
 
-    // Load leaderboard on page load
-    loadLeaderboard();
+    // Placeholder for future data loading
+    console.log('Leaderboard base structure loaded');
   </script>
 </body>
 </html>
