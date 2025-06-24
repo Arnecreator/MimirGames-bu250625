@@ -21,3 +21,145 @@ async function loadLeaderboard(game) {
       "<li>Fel vid hämtning av data.</li>";
   }
 }
+// public/scripts/leaderboard.js
+
+async function loadLeaderboardData() {
+  try {
+    // Fetch all users from the backend
+    const res = await fetch("/api/users");
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+    }
+    const users = await res.json();
+    
+    // Transform user data to match leaderboard format
+    const transformedUsers = users.map(user => ({
+      username: user.username,
+      qpd: user.quizPlayedDays || user.gamesPlayed || 0,
+      nansw: user.quizAnswers || (user.gamesPlayed * 8) || 0,
+      ncansw: user.quizCorrect || user.correctAnswers || 0,
+      pcansw: user.quizPercentCorrect || (user.correctAnswers && user.gamesPlayed ? Math.round((user.correctAnswers / (user.gamesPlayed * 8)) * 100) : 0),
+      nallc: user.quizFullScoreGames || user.fullScores || 0,
+      pallc: user.quizPlayedDays ? Math.round((user.quizFullScoreGames || 0) / user.quizPlayedDays * 100) : 0,
+      flame: user.quizStreak || user.bestStreak || 0,
+      reg: formatRegDate(user.createdAt)
+    }));
+    
+    // Sort users by %cansw descending, then by #cansw descending as tiebreaker
+    transformedUsers.sort((a, b) => {
+      if (b.pcansw !== a.pcansw) {
+        return b.pcansw - a.pcansw;
+      }
+      return b.ncansw - a.ncansw;
+    });
+    
+    // Get current username
+    const currentUser = localStorage.getItem('mimirUsername') || '';
+    
+    // Clear existing table data
+    const tableBody = document.getElementById('leaderboard-body');
+    if (!tableBody) {
+      console.error('Leaderboard table body not found');
+      return;
+    }
+    tableBody.innerHTML = '';
+    
+    // Find current user's rank
+    let currentUserRank = -1;
+    transformedUsers.forEach((user, index) => {
+      if (user.username === currentUser) {
+        currentUserRank = index + 1;
+      }
+    });
+    
+    // Update "Your Rank" display
+    const yourRankElement = document.getElementById('yourRank');
+    if (yourRankElement && currentUserRank > 0) {
+      yourRankElement.textContent = `Your Rank: #${currentUserRank} out of ${transformedUsers.length}`;
+    } else if (yourRankElement) {
+      yourRankElement.textContent = `Your Rank: Not ranked (play a quiz to get ranked!)`;
+    }
+    
+    // Generate table rows
+    transformedUsers.forEach((user, index) => {
+      const row = document.createElement('tr');
+      
+      // Highlight current user's row
+      if (user.username === currentUser) {
+        row.classList.add('user-highlight');
+        row.style.backgroundColor = '#003300';
+      }
+      
+      row.innerHTML = `
+        <td>${index + 1}</td>
+        <td class="username-cell">${user.username}</td>
+        <td class="stat-cell">${user.qpd}</td>
+        <td class="stat-cell">${user.nansw}</td>
+        <td class="stat-cell">${user.ncansw}</td>
+        <td class="percent-cell">${user.pcansw}%</td>
+        <td class="stat-cell">${user.nallc}</td>
+        <td class="percent-cell">${user.pallc}%</td>
+        <td class="stat-cell">${user.flame}</td>
+        <td class="date-cell">${user.reg}</td>
+      `;
+      
+      tableBody.appendChild(row);
+    });
+    
+    console.log(`✅ Loaded ${transformedUsers.length} users in leaderboard`);
+    
+  } catch (error) {
+    console.error('Error loading leaderboard data:', error);
+    
+    // Show error message in table
+    const tableBody = document.getElementById('leaderboard-body');
+    if (tableBody) {
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="10" style="text-align: center; padding: 20px; color: #ff6b6b;">
+            Failed to load leaderboard data. Please try again later.
+          </td>
+        </tr>
+      `;
+    }
+    
+    // Update rank display
+    const yourRankElement = document.getElementById('yourRank');
+    if (yourRankElement) {
+      yourRankElement.textContent = 'Your Rank: Unable to load data';
+    }
+  }
+}
+
+// Helper function to format registration date
+function formatRegDate(createdAt) {
+  try {
+    if (!createdAt) return '------';
+    const date = new Date(createdAt);
+    const year = date.getFullYear().toString().slice(-2);
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return year + month + day;
+  } catch (e) {
+    return '------';
+  }
+}
+
+// Load data when page loads
+document.addEventListener('DOMContentLoaded', () => {
+  // Check if user is logged in
+  const currentUser = localStorage.getItem('mimirUsername');
+  if (!currentUser) {
+    window.location.href = 'index.html';
+    return;
+  }
+  
+  loadLeaderboardData();
+});
+
+// Refresh data when page becomes visible (user returns from other pages)
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) {
+    loadLeaderboardData();
+  }
+});
