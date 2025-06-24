@@ -1,0 +1,146 @@
+
+// Test Questions JavaScript
+async function checkCoverage() {
+    try {
+        const response = await fetch('/api/questions/distribution');
+        const data = await response.json();
+        
+        let html = `<h3>📊 Question Coverage Analysis</h3>`;
+        html += `<p><strong>Total Questions:</strong> ${data.totalQuestions} | <strong>Target:</strong> ${data.targetTotal}</p>`;
+        html += `<p><strong>Status:</strong> ${data.recommendations}</p>`;
+        html += `<div class="category-stats">`;
+        
+        data.distribution.forEach(cat => {
+            const className = cat.count < 10 ? 'category-item low-count' : 'category-item';
+            const statusIcon = cat.count >= 10 ? '✅' : '⚠️';
+            html += `<div class="${className}">
+                ${statusIcon} <strong>${cat._id}:</strong> ${cat.count} questions
+            </div>`;
+        });
+        
+        html += `</div>`;
+        
+        if (data.underPopulatedCategories.length > 0) {
+            html += `<h4>⚠️ Categories needing more questions:</h4><ul>`;
+            data.underPopulatedCategories.forEach(cat => {
+                html += `<li>${cat._id}: ${cat.count}/10 questions</li>`;
+            });
+            html += `</ul>`;
+        }
+        
+        document.getElementById('coverageResult').innerHTML = html;
+    } catch (error) {
+        document.getElementById('coverageResult').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+    }
+}
+
+async function testRandomSelection(count) {
+    try {
+        // Simulate session storage for deduplication
+        let usedIds = JSON.parse(sessionStorage.getItem('usedQuestionIds') || '[]');
+        const sessionId = 'test-session-' + Date.now();
+        
+        const excludeParam = usedIds.length > 0 ? `&exclude=${usedIds.join(',')}` : '';
+        const response = await fetch(`/api/questions/random/${count}?sessionId=${sessionId}${excludeParam}`);
+        const data = await response.json();
+        
+        // Store used IDs for next request
+        const newUsedIds = data.questions.map(q => q._id);
+        usedIds.push(...newUsedIds);
+        sessionStorage.setItem('usedQuestionIds', JSON.stringify(usedIds));
+        
+        let html = `<h3>🎯 Random Selection Test (${count} questions)</h3>`;
+        html += `<p><strong>Session ID:</strong> ${data.sessionId}</p>`;
+        html += `<p><strong>Excluded:</strong> ${data.excludedCount} previously asked questions</p>`;
+        html += `<p><strong>Total Available:</strong> ${data.totalAvailable} questions</p>`;
+        html += `<p><strong>Session Used:</strong> ${usedIds.length} questions total</p>`;
+        
+        // Check for duplicates
+        const questionIds = data.questions.map(q => q._id);
+        const duplicateIds = questionIds.filter((id, index) => questionIds.indexOf(id) !== index);
+        if (duplicateIds.length > 0) {
+            html += `<p style="color: #ff6b6b;"><strong>⚠️ Duplicates Found:</strong> ${duplicateIds.length}</p>`;
+        } else {
+            html += `<p style="color: #7fffd4;"><strong>✅ No Duplicates:</strong> All questions unique</p>`;
+        }
+        
+        html += `<h4>Category Distribution:</h4><div class="distribution-grid">`;
+        Object.entries(data.categoryDistribution).forEach(([category, count]) => {
+            html += `<span class="category-badge">${category}: ${count}</span>`;
+        });
+        html += `</div>`;
+        
+        html += `<h4>Selected Questions:</h4><div class="questions-list">`;
+        data.questions.forEach((q, index) => {
+            html += `<div class="question-item">
+                <strong>${index + 1}. [${q.category}]</strong> ${q.question}<br>
+                <small>ID: ${q._id} | Correct: ${q.answers[q.correct]} | Difficulty: ${q.difficulty}</small>
+            </div>`;
+        });
+        html += `</div>`;
+        
+        html += `<div style="margin-top: 15px;">
+            <button onclick="sessionStorage.removeItem('usedQuestionIds'); location.reload();" style="margin-right: 10px;">🔄 Reset Session</button>
+            <button onclick="testRandomSelection(${count})">🎲 Get More Questions</button>
+        </div>`;
+        
+        document.getElementById('selectionResult').innerHTML = html;
+    } catch (error) {
+        document.getElementById('selectionResult').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+    }
+}
+
+// Test session deduplication
+async function testSessionDeduplication() {
+    try {
+        const results = [];
+        
+        // Clear session first
+        sessionStorage.removeItem('usedQuestionIds');
+        
+        // Make 3 requests for 5 questions each
+        for (let i = 1; i <= 3; i++) {
+            const response = await fetch(`/api/questions/random/5`);
+            const data = await response.json();
+            results.push({
+                round: i,
+                questions: data.questions,
+                categoryDistribution: data.categoryDistribution
+            });
+            
+            // Update session storage
+            let usedIds = JSON.parse(sessionStorage.getItem('usedQuestionIds') || '[]');
+            usedIds.push(...data.questions.map(q => q._id));
+            sessionStorage.setItem('usedQuestionIds', JSON.stringify(usedIds));
+        }
+        
+        // Check for duplicates across all rounds
+        const allQuestionIds = results.flatMap(r => r.questions.map(q => q._id));
+        const uniqueIds = [...new Set(allQuestionIds)];
+        const hasDuplicates = allQuestionIds.length !== uniqueIds.length;
+        
+        let html = `<h3>🧪 Session Deduplication Test</h3>`;
+        html += `<p><strong>Total Questions:</strong> ${allQuestionIds.length}</p>`;
+        html += `<p><strong>Unique Questions:</strong> ${uniqueIds.length}</p>`;
+        
+        if (hasDuplicates) {
+            html += `<p style="color: #ff6b6b;"><strong>❌ FAILED:</strong> Found ${allQuestionIds.length - uniqueIds.length} duplicates</p>`;
+        } else {
+            html += `<p style="color: #7fffd4;"><strong>✅ PASSED:</strong> No duplicates found across sessions</p>`;
+        }
+        
+        results.forEach((result, index) => {
+            html += `<h4>Round ${result.round} Results:</h4>`;
+            html += `<div class="distribution-grid">`;
+            Object.entries(result.categoryDistribution).forEach(([category, count]) => {
+                html += `<span class="category-badge">${category}: ${count}</span>`;
+            });
+            html += `</div>`;
+        });
+        
+        document.getElementById('selectionResult').innerHTML = html;
+        
+    } catch (error) {
+        document.getElementById('selectionResult').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+    }
+}
