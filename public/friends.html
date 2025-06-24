@@ -419,9 +419,25 @@
         }
       }
 
-      function removeFriend(username) {
-        alert("Removing: " + username);
-        // Later: Replace with fetch to remove friend in backend
+      async function removeFriend(username) {
+        try {
+          const res = await fetch(`/api/friends/${username}`, {
+            method: "DELETE"
+          });
+
+          const data = await res.json();
+
+          if (res.ok) {
+            console.log(`✅ ${username} removed from friends.`);
+            renderQuizTable(); // refresh the friend list
+          } else {
+            console.error(`⚠️ ${data.error || "Could not remove friend."}`);
+            alert(`Error: ${data.error || "Could not remove friend."}`);
+          }
+        } catch (err) {
+          console.error("Error removing friend:", err);
+          alert("Error connecting to server.");
+        }
       }
 
       // Initialize table when page loads

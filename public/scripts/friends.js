@@ -1,38 +1,40 @@
-const API_URL =
-  "https://5b64a943-af57-4396-befe-b9b5d36d484f-00-2akqxpp85lu04.spock.replit.dev";
 
-async function addFriend(username, friend) {
+const API_URL = "";  // Use relative URLs since we're on the same server
+
+async function addFriend(username) {
   try {
     const res = await fetch(`${API_URL}/api/friends`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, friend }),
+      body: JSON.stringify({ username }),
     });
     return await res.json();
   } catch (err) {
-    console.error("Fel vid tillägg av vän:", err);
+    console.error("Error adding friend:", err);
+    throw err;
   }
 }
 
-async function getFriends(username) {
+async function getFriends() {
   try {
-    const res = await fetch(`${API_URL}/api/friends/${username}`);
-    if (!res.ok) throw new Error("Kunde inte hämta vänlista");
+    const res = await fetch(`${API_URL}/api/friends`);
+    if (!res.ok) throw new Error("Could not fetch friends list");
     return await res.json();
   } catch (err) {
-    console.error(err);
-    return [];
+    console.error("Error fetching friends:", err);
+    return { friends: [] };
   }
 }
 
-async function removeFriend(username, friend) {
+async function removeFriend(friendUsername) {
   try {
-    await fetch(`${API_URL}/api/friends`, {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, friend }),
+    const res = await fetch(`${API_URL}/api/friends/${friendUsername}`, {
+      method: "DELETE"
     });
+    if (!res.ok) throw new Error("Could not remove friend");
+    return await res.json();
   } catch (err) {
-    console.error("Fel vid borttagning av vän:", err);
+    console.error("Error removing friend:", err);
+    throw err;
   }
 }
