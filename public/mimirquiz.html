@@ -303,18 +303,15 @@
     🧪 Dev Mode Active: Logged in as Putte68!
   </div>
   
-  <!-- Top Navigation -->
-  <nav>
-    <div style="display: flex; gap: 4px;">
-      <a href="index.html">🏠 Home</a>
-      <a href="leaderboard.html">🏆 Leaderboard</a>
-      <a href="friends.html">👥 Friends</a>
-    </div>
-    <div style="display: flex; gap: 4px;">
-      <a href="users.html" id="adminUsersLink" style="font-size: 10px; padding: 3px 6px;">🛡️ Admin</a>
-      <a href="#" id="logoutLink">🚪 Logout</a>
-    </div>
-  </nav>
+  <!-- Shared Topbar -->
+  <div id="topbar-placeholder"></div>
+  <script>
+    fetch("/components/topbar.html")
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById("topbar-placeholder").innerHTML = html;
+      });
+  </script>
 
   <div class="quiz-container">
     <!-- Welcome Screen -->
