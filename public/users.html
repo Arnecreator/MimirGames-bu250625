@@ -219,9 +219,9 @@
     <div class="header">
       <a href="index.html" class="back-link" style="margin-right: 8px">🏠</a>
       <a href="javascript:history.back()" class="back-link">← Back</a>
-      <p style="font-size: 10px; color: gray; margin: 2px 0 0 0; display: inline-block; margin-left: 10px;">
-        Version: 2025-01-25 at 14:30
-      </p>
+      <span id="version-label" style="font-size: 10px; color: gray; margin: 2px 0 0 0; display: inline-block; margin-left: 10px;">
+        Version: ...
+      </span>
       <h1>User Admin Dashboard</h1>
       <div class="subtitle">Compact admin table - Maximum data density</div>
     </div>
@@ -632,6 +632,22 @@
 
       // Auto-refresh every 30 seconds to show new registrations
       setInterval(loadUsers, 30000);
+
+      // Update timestamp dynamically
+      function updateTimestamp() {
+        const now = new Date();
+        const timestamp = now.toLocaleString('sv-SE', {
+          dateStyle: 'short',
+          timeStyle: 'short',
+          hour12: false,
+          timeZone: 'Europe/Stockholm'
+        }).replace(',', ' kl');
+        document.getElementById("version-label").textContent = "Version: " + timestamp;
+      }
+
+      // Update timestamp on page load and every minute
+      updateTimestamp();
+      setInterval(updateTimestamp, 60000);
     </script>
   </body>
 </html>
