@@ -1,0 +1,129 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question Distribution Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #0a0b1e;
+            color: white;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #1a1d3a;
+            border-radius: 8px;
+        }
+        .category-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .category-item {
+            padding: 8px;
+            background: #111335;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .low-count {
+            background: #cc4444;
+        }
+        button {
+            background: #7fffd4;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #5fb3a3;
+        }
+        pre {
+            background: #111;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Question Distribution Test</h1>
+    
+    <div class="section">
+        <h2>Database Coverage</h2>
+        <button onclick="checkCoverage()">Check Question Coverage</button>
+        <div id="coverageResult"></div>
+    </div>
+
+    <div class="section">
+        <h2>Random Question Selection Test</h2>
+        <button onclick="testRandomSelection(8)">Get 8 Random Questions</button>
+        <button onclick="testRandomSelection(12)">Get 12 Random Questions</button>
+        <div id="selectionResult"></div>
+    </div>
+
+    <script>
+        async function checkCoverage() {
+            try {
+                const response = await fetch('/api/questions/count-per-category');
+                const data = await response.json();
+                
+                let html = `<h3>Total Questions: ${data.totalQuestions}</h3>`;
+                html += `<div class="category-stats">`;
+                
+                data.categoryBreakdown.forEach(cat => {
+                    const className = cat.count < 10 ? 'category-item low-count' : 'category-item';
+                    html += `<div class="${className}">${cat._id}: ${cat.count}</div>`;
+                });
+                
+                html += `</div>`;
+                
+                if (data.categoriesWithLowCount.length > 0) {
+                    html += `<h4>⚠️ Categories with less than 10 questions:</h4>`;
+                    html += `<ul>`;
+                    data.categoriesWithLowCount.forEach(cat => {
+                        html += `<li>${cat._id}: ${cat.count} questions</li>`;
+                    });
+                    html += `</ul>`;
+                }
+                
+                document.getElementById('coverageResult').innerHTML = html;
+            } catch (error) {
+                document.getElementById('coverageResult').innerHTML = `<p>Error: ${error.message}</p>`;
+            }
+        }
+
+        async function testRandomSelection(count) {
+            try {
+                const response = await fetch(`/api/questions/random/${count}`);
+                const data = await response.json();
+                
+                let html = `<h3>Selected ${data.questions.length} questions:</h3>`;
+                html += `<h4>Category Distribution:</h4>`;
+                html += `<pre>${JSON.stringify(data.categoryDistribution, null, 2)}</pre>`;
+                html += `<h4>Questions:</h4>`;
+                html += `<ol>`;
+                
+                data.questions.forEach(q => {
+                    html += `<li><strong>[${q.category}]</strong> ${q.question}</li>`;
+                });
+                
+                html += `</ol>`;
+                
+                document.getElementById('selectionResult').innerHTML = html;
+            } catch (error) {
+                document.getElementById('selectionResult').innerHTML = `<p>Error: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

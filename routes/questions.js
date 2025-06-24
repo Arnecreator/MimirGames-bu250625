@@ -3,29 +3,74 @@ const express = require("express");
 const Question = require("../models/Question");
 const router = express.Router();
 
-// Get random questions for quiz
+// Get random questions for quiz with balanced category distribution
 router.get("/random/:count?", async (req, res) => {
   try {
     const count = parseInt(req.params.count) || 10;
+    const excludeIds = req.query.exclude ? req.query.exclude.split(',') : [];
     
-    // Get all active questions
-    const allQuestions = await Question.find({ isActive: true });
+    // Get all available categories
+    const categories = await Question.distinct("category", { isActive: true });
     
-    if (allQuestions.length < count) {
-      return res.status(400).json({ 
-        error: `Not enough questions available. Requested: ${count}, Available: ${allQuestions.length}` 
-      });
+    if (categories.length === 0) {
+      return res.status(400).json({ error: "No question categories available" });
     }
 
-    // Proper Fisher-Yates shuffle
-    const shuffled = [...allQuestions];
-    for (let i = shuffled.length - 1; i > 0; i--) {
+    let selectedQuestions = [];
+    const questionsPerCategory = Math.floor(count / categories.length);
+    const remainingQuestions = count % categories.length;
+
+    // First, try to get equal questions from each category
+    for (const category of categories) {
+      const questionsToGet = questionsPerCategory + (selectedQuestions.length < remainingQuestions ? 1 : 0);
+      
+      if (questionsToGet > 0) {
+        const categoryQuestions = await Question.aggregate([
+          { 
+            $match: { 
+              category: category, 
+              isActive: true,
+              _id: { $nin: excludeIds.map(id => require('mongoose').Types.ObjectId(id)) }
+            } 
+          },
+          { $sample: { size: questionsToGet } }
+        ]);
+        
+        selectedQuestions.push(...categoryQuestions);
+      }
+    }
+
+    // If we don't have enough questions from balanced selection, fill the rest randomly
+    if (selectedQuestions.length < count) {
+      const usedIds = selectedQuestions.map(q => q._id);
+      const additionalCount = count - selectedQuestions.length;
+      
+      const additionalQuestions = await Question.aggregate([
+        { 
+          $match: { 
+            isActive: true,
+            _id: { 
+              $nin: [
+                ...excludeIds.map(id => require('mongoose').Types.ObjectId(id)),
+                ...usedIds
+              ]
+            }
+          } 
+        },
+        { $sample: { size: additionalCount } }
+      ]);
+      
+      selectedQuestions.push(...additionalQuestions);
+    }
+
+    // Final shuffle to randomize order
+    for (let i = selectedQuestions.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      [selectedQuestions[i], selectedQuestions[j]] = [selectedQuestions[j], selectedQuestions[i]];
     }
 
-    // Select first 'count' questions after shuffle
-    const selectedQuestions = shuffled.slice(0, count).map(q => ({
+    // Format response
+    const formattedQuestions = selectedQuestions.slice(0, count).map(q => ({
       _id: q._id,
       category: q.category,
       question: q.question,
@@ -34,7 +79,13 @@ router.get("/random/:count?", async (req, res) => {
       difficulty: q.difficulty
     }));
 
-    res.json({ questions: selectedQuestions });
+    res.json({ 
+      questions: formattedQuestions,
+      categoryDistribution: formattedQuestions.reduce((acc, q) => {
+        acc[q.category] = (acc[q.category] || 0) + 1;
+        return acc;
+      }, {})
+    });
 
   } catch (error) {
     console.error("Error fetching random questions:", error);
@@ -98,6 +149,27 @@ router.post("/", async (req, res) => {
   } catch (error) {
     console.error("Error adding question:", error);
     res.status(500).json({ error: "Failed to add question" });
+  }
+});
+
+// Debug: Count questions per category
+router.get("/count-per-category", async (req, res) => {
+  try {
+    const result = await Question.aggregate([
+      { $group: { _id: "$category", count: { $sum: 1 } } },
+      { $sort: { _id: 1 } }
+    ]);
+    
+    const totalQuestions = await Question.countDocuments();
+    
+    res.json({ 
+      categoryBreakdown: result,
+      totalQuestions,
+      categoriesWithLowCount: result.filter(cat => cat.count < 10)
+    });
+  } catch (error) {
+    console.error("Error counting questions per category:", error);
+    res.status(500).json({ error: "Failed to count questions" });
   }
 });
 

@@ -1,4 +1,3 @@
-
 const mongoose = require("mongoose");
 const Question = require("../models/Question");
 require("dotenv").config();
@@ -724,6 +723,150 @@ const initialQuestions = [
     difficulty: "easy"
   },
 
+  // Politics Questions
+  {
+    category: "Politics",
+    question: "How many years does a U.S. President serve in one term?",
+    answers: ["2 years", "4 years", "6 years", "8 years"],
+    correct: 1,
+    difficulty: "easy"
+  },
+  {
+    category: "Politics",
+    question: "Which document begins with 'We the People'?",
+    answers: ["Declaration of Independence", "U.S. Constitution", "Bill of Rights", "Articles of Confederation"],
+    correct: 1,
+    difficulty: "medium"
+  },
+  {
+    category: "Politics",
+    question: "What is the minimum age to serve as U.S. President?",
+    answers: ["30", "35", "40", "45"],
+    correct: 1,
+    difficulty: "easy"
+  },
+  {
+    category: "Politics",
+    question: "How many members are in the U.S. House of Representatives?",
+    answers: ["100", "435", "50", "535"],
+    correct: 1,
+    difficulty: "medium"
+  },
+  {
+    category: "Politics",
+    question: "Which amendment gave women the right to vote?",
+    answers: ["15th", "17th", "19th", "21st"],
+    correct: 2,
+    difficulty: "medium"
+  },
+  {
+    category: "Politics",
+    question: "Who was the first President of the United States?",
+    answers: ["Thomas Jefferson", "John Adams", "Benjamin Franklin", "George Washington"],
+    correct: 3,
+    difficulty: "easy"
+  },
+  {
+    category: "Politics",
+    question: "What is the electoral college?",
+    answers: ["A university", "A voting system", "A political party", "A government building"],
+    correct: 1,
+    difficulty: "medium"
+  },
+  {
+    category: "Politics",
+    question: "How many justices serve on the U.S. Supreme Court?",
+    answers: ["7", "9", "11", "12"],
+    correct: 1,
+    difficulty: "easy"
+  },
+  {
+    category: "Politics",
+    question: "Which branch of government interprets laws?",
+    answers: ["Executive", "Legislative", "Judicial", "Administrative"],
+    correct: 2,
+    difficulty: "easy"
+  },
+  {
+    category: "Politics",
+    question: "What is the length of a U.S. Senator's term?",
+    answers: ["2 years", "4 years", "6 years", "8 years"],
+    correct: 2,
+    difficulty: "medium"
+  },
+
+  // Nature Questions
+  {
+    category: "Nature",
+    question: "What is the largest mammal in the world?",
+    answers: ["African Elephant", "Blue Whale", "Giraffe", "Polar Bear"],
+    correct: 1,
+    difficulty: "easy"
+  },
+  {
+    category: "Nature",
+    question: "Which gas do plants absorb from the atmosphere?",
+    answers: ["Oxygen", "Nitrogen", "Carbon Dioxide", "Hydrogen"],
+    correct: 2,
+    difficulty: "easy"
+  },
+  {
+    category: "Nature",
+    question: "What is the fastest land animal?",
+    answers: ["Lion", "Cheetah", "Leopard", "Tiger"],
+    correct: 1,
+    difficulty: "easy"
+  },
+  {
+    category: "Nature",
+    question: "How many chambers does a human heart have?",
+    answers: ["2", "3", "4", "5"],
+    correct: 2,
+    difficulty: "medium"
+  },
+  {
+    category: "Nature",
+    question: "Which tree produces acorns?",
+    answers: ["Pine", "Maple", "Oak", "Birch"],
+    correct: 2,
+    difficulty: "easy"
+  },
+  {
+    category: "Nature",
+    question: "What is the study of birds called?",
+    answers: ["Entomology", "Ornithology", "Ichthyology", "Herpetology"],
+    correct: 1,
+    difficulty: "hard"
+  },
+  {
+    category: "Nature",
+    question: "Which planet is known as the 'Morning Star'?",
+    answers: ["Mars", "Venus", "Mercury", "Jupiter"],
+    correct: 1,
+    difficulty: "medium"
+  },
+  {
+    category: "Nature",
+    question: "What type of animal is a Komodo dragon?",
+    answers: ["Snake", "Lizard", "Crocodile", "Turtle"],
+    correct: 1,
+    difficulty: "medium"
+  },
+  {
+    category: "Nature",
+    question: "How many legs does a spider have?",
+    answers: ["6", "8", "10", "12"],
+    correct: 1,
+    difficulty: "easy"
+  },
+  {
+    category: "Nature",
+    question: "What is the process by which plants make food?",
+    answers: ["Respiration", "Digestion", "Photosynthesis", "Metabolism"],
+    correct: 2,
+    difficulty: "medium"
+  },
+
   // Movies Questions
   {
     category: "Movies",
@@ -778,6 +921,7 @@ const initialQuestions = [
     category: "Movies",
     question: "Which film won the first Academy Award for Best Animated Feature?",
     answers: ["Monsters, Inc.", "Shrek", "Ice Age", "Finding Nemo"],
+    Adding the remaining categories (Misc, Movies, Literature, Art, Music and Food) and the count-per-category route for debugging.answers: ["Monsters, Inc.", "Shrek", "Ice Age", "Finding Nemo"],
     correct: 1,
     difficulty: "hard"
   },
@@ -794,7 +938,367 @@ const initialQuestions = [
     answers: ["Quentin Tarantino", "Martin Scorsese", "Christopher Nolan", "David Fincher"],
     correct: 0,
     difficulty: "medium"
-  }
+  },
+
+  // Literature Questions
+  {
+    category: "Literature",
+    question: "Who wrote 'Pride and Prejudice'?",
+    answers: ["Charlotte Brontë", "Emily Dickinson", "Virginia Woolf", "Jane Austen"],
+    correct: 3,
+    difficulty: "easy"
+  },
+  {
+    category: "Literature",
+    question: "Who said 'I think, therefore I am'?",
+    answers: ["Socrates", "Plato", "René Descartes", "Aristotle"],
+    correct: 2,
+    difficulty: "medium"
+  },
+  {
+    category: "Literature",
+    question: "Which Shakespeare play features the characters Romeo and Juliet?",
+    answers: ["Hamlet", "Macbeth", "Romeo and Juliet", "Othello"],
+    correct: 2,
+    difficulty: "easy"
+  },
+  {
+    category: "Literature",
+    question: "Who wrote '1984'?",
+    answers: ["Aldous Huxley", "George Orwell", "Ray Bradbury", "H.G. Wells"],
+    correct: 1,
+    difficulty: "easy"
+  },
+  {
+    category: "Literature",
+    question: "What is the first book in the Harry Potter series?",
+    answers: ["Chamber of Secrets", "Philosopher's Stone", "Prisoner of Azkaban", "Goblet of Fire"],
+    correct: 1,
+    difficulty: "easy"
+  },
+  {
+    category: "Literature",
+    question: "Who wrote 'To Kill a Mockingbird'?",
+    answers: ["Harper Lee", "Toni Morrison", "Maya Angelou", "Zora Neale Hurston"],
+    correct: 0,
+    difficulty: "medium"
+  },
+  {
+    category: "Literature",
+    question: "In which language was 'Don Quixote' originally written?",
+    answers: ["Portuguese", "Italian", "Spanish", "French"],
+    correct: 2,
+    difficulty: "medium"
+  },
+  {
+    category: "Literature",
+    question: "Who wrote 'The Great Gatsby'?",
+    answers: ["Ernest Hemingway", "F. Scott Fitzgerald", "John Steinbeck", "William Faulkner"],
+    correct: 1,
+    difficulty: "medium"
+  },
+  {
+    category: "Literature",
+    question: "Which epic poem tells the story of Odysseus?",
+    answers: ["The Iliad", "The Odyssey", "The Aeneid", "Beowulf"],
+    correct: 1,
+    difficulty: "medium"
+  },
+  {
+    category: "Literature",
+    question: "Who wrote 'One Hundred Years of Solitude'?",
+    answers: ["Isabel Allende", "Gabriel García Márquez", "Mario Vargas Llosa", "Pablo Neruda"],
+    correct: 1,
+    difficulty: "hard"
+  },
+
+   // Art Questions
+   {
+    category: "Art",
+    question: "Who painted 'The Starry Night'?",
+    answers: ["Pablo Picasso", "Leonardo da Vinci", "Vincent van Gogh", "Claude Monet"],
+    correct: 2,
+    difficulty: "easy"
+  },
+  {
+    category: "Art",
+    question: "Which artist cut off his own ear?",
+    answers: ["Pablo Picasso", "Vincent van Gogh", "Salvador Dalí", "Henri Matisse"],
+    correct: 1,
+    difficulty: "easy"
+  },
+  {
+    category: "Art",
+    question: "What type of art is Auguste Rodin famous for?",
+    answers: ["Painting", "Sculpture", "Photography", "Architecture"],
+    correct: 1,
+    difficulty: "medium"
+  },
+  {
+    category: "Art",
+    question: "Which museum houses the Mona Lisa?",
+    answers: ["British Museum", "Metropolitan Museum", "Louvre", "Uffizi"],
+    correct: 2,
+    difficulty: "easy"
+  },
+  {
+    category: "Art",
+    question: "What art movement was Pablo Picasso associated with?",
+    answers: ["Impressionism", "Cubism", "Surrealism", "Expressionism"],
+    correct: 1,
+    difficulty: "medium"
+  },
+  {
+    category: "Art",
+    question: "Who painted 'The Persistence of Memory' (melting clocks)?",
+    answers: ["René Magritte", "Salvador Dalí", "Max Ernst", "Joan Miró"],
+    correct: 1,
+    difficulty: "medium"
+  },
+  {
+    category: "Art",
+    question: "What is the art technique of creating images using small dots of color?",
+    answers: ["Impressionism", "Pointillism", "Cubism", "Fauvism"],
+    correct: 1,
+    difficulty: "hard"
+  },
+  {
+    category: "Art",
+    question: "Which Italian city is famous for its Renaissance art?",
+    answers: ["Rome", "Venice", "Florence", "Milan"],
+    correct: 2,
+    difficulty: "medium"
+  },
+  {
+    category: "Art",
+    question: "Who painted 'Guernica'?",
+    answers: ["Pablo Picasso", "Joan Miró", "Salvador Dalí", "Francisco Goya"],
+    correct: 0,
+    difficulty: "medium"
+  },
+  {
+    category: "Art",
+    question: "What does 'chiaroscuro' refer to in art?",
+    answers: ["Color mixing", "Light and shadow", "Perspective", "Texture"],
+    correct: 1,
+    difficulty: "hard"
+  },
+
+   // Music Questions
+   {
+    category: "Music",
+    question: "How many strings does a standard guitar have?",
+    answers: ["4", "5", "6", "7"],
+    correct: 2,
+    difficulty: "easy"
+  },
+  {
+    category: "Music",
+    question: "Which composer wrote 'The Four Seasons'?",
+    answers: ["Bach", "Mozart", "Vivaldi", "Beethoven"],
+    correct: 2,
+    difficulty: "medium"
+  },
+  {
+    category: "Music",
+    question: "What is the highest female singing voice called?",
+    answers: ["Alto", "Soprano", "Mezzo-soprano", "Contralto"],
+    correct: 1,
+    difficulty: "medium"
+  },
+  {
+    category: "Music",
+    question: "How many keys are on a standard piano?",
+    answers: ["76", "82", "88", "92"],
+    correct: 2,
+    difficulty: "medium"
+  },
+  {
+    category: "Music",
+    question: "Which instrument did Yo-Yo Ma famously play?",
+    answers: ["Violin", "Piano", "Cello", "Viola"],
+    correct: 2,
+    difficulty: "medium"
+  },
+  {
+    category: "Music",
+    question: "What does 'forte' mean in music?",
+    answers: ["Soft", "Loud", "Fast", "Slow"],
+    correct: 1,
+    difficulty: "easy"
+  },
+  {
+    category: "Music",
+    question: "Which band released the album 'Abbey Road'?",
+    answers: ["The Rolling Stones", "The Beatles", "Led Zeppelin", "Pink Floyd"],
+    correct: 1,
+    difficulty: "easy"
+  },
+  {
+    category: "Music",
+    question: "How many movements are typically in a classical symphony?",
+    answers: ["2", "3", "4", "5"],
+    correct: 2,
+    difficulty: "hard"
+  },
+  {
+    category: "Music",
+    question: "What is the lowest male singing voice called?",
+    answers: ["Tenor", "Baritone", "Bass", "Counter-tenor"],
+    correct: 2,
+    difficulty: "medium"
+  },
+  {
+    category: "Music",
+    question: "Which note is the 'open' string for the highest pitch string on a guitar?",
+    answers: ["E", "B", "G", "D"],
+    correct: 0,
+    difficulty: "hard"
+  },
+
+   // Food Questions
+   {
+    category: "Food",
+    question: "What spice is derived from the Crocus flower?",
+    answers: ["Cinnamon", "Saffron", "Turmeric", "Paprika"],
+    correct: 1,
+    difficulty: "medium"
+  },
+  {
+    category: "Food",
+    question: "Which country is famous for inventing pizza?",
+    answers: ["France", "Spain", "Italy", "Greece"],
+    correct: 2,
+    difficulty: "easy"
+  },
+  {
+    category: "Food",
+    question: "What is the main ingredient in guacamole?",
+    answers: ["Tomato", "Avocado", "Onion", "Lime"],
+    correct: 1,
+    difficulty: "easy"
+  },
+  {
+    category: "Food",
+    question: "Which type of pastry is used to make profiteroles?",
+    answers: ["Puff pastry", "Choux pastry", "Shortcrust pastry", "Filo pastry"],
+    correct: 1,
+    difficulty: "hard"
+  },
+  {
+    category: "Food",
+    question: "What is the most expensive spice in the world by weight?",
+    answers: ["Vanilla", "Cardamom", "Saffron", "Black truffle"],
+    correct: 2,
+    difficulty: "hard"
+  },
+  {
+    category: "Food",
+    question: "Which fruit is known as the 'king of fruits' in Southeast Asia?",
+    answers: ["Mango", "Durian", "Jackfruit", "Rambutan"],
+    correct: 1,
+    difficulty: "medium"
+  },
+  {
+    category: "Food",
+    question: "What type of alcohol is used in a Mojito?",
+    answers: ["Vodka", "Gin", "Rum", "Tequila"],
+    correct: 2,
+    difficulty: "medium"
+  },
+  {
+    category: "Food",
+    question: "Which country did French fries actually originate from?",
+    answers: ["France", "Belgium", "Germany", "Netherlands"],
+    correct: 1,
+    difficulty: "medium"
+  },
+  {
+    category: "Food",
+    question: "What is the main protein in eggs?",
+    answers: ["Casein", "Albumin", "Gluten", "Keratin"],
+    correct: 1,
+    difficulty: "hard"
+  },
+  {
+    category: "Food",
+    question: "Which herb is traditionally used in pesto?",
+    answers: ["Parsley", "Cilantro", "Basil", "Oregano"],
+    correct: 2,
+    difficulty: "easy"
+  },
+
+   // Misc Questions
+   {
+    category: "Misc",
+    question: "What is the capital of Canada?",
+    answers: ["Toronto", "Vancouver", "Ottawa", "Montreal"],
+    correct: 2,
+    difficulty: "easy"
+  },
+  {
+    category: "Misc",
+    question: "What is the symbol for the element Iron?",
+    answers: ["Ir", "Fe", "Io", "In"],
+    correct: 1,
+    difficulty: "easy"
+  },
+  {
+    category: "Misc",
+    question: "What is the largest ocean on Earth?",
+    answers: ["Atlantic", "Indian", "Arctic", "Pacific"],
+    correct: 3,
+    difficulty: "easy"
+  },
+  {
+    category: "Misc",
+    question: "What is the smallest planet in our solar system?",
+    answers: ["Mars", "Mercury", "Venus", "Earth"],
+    correct: 1,
+    difficulty: "easy"
+  },
+  {
+    category: "Misc",
+    question: "What is the chemical symbol for silver?",
+    answers: ["Ag", "Si", "Au", "Ar"],
+    correct: 0,
+    difficulty: "easy"
+  },
+  {
+    category: "Misc",
+    question: "How many continents are there on Earth?",
+    answers: ["5", "6", "7", "8"],
+    correct: 2,
+    difficulty: "easy"
+  },
+  {
+    category: "Misc",
+    question: "What is the capital of Japan?",
+    answers: ["Seoul", "Beijing", "Tokyo", "Shanghai"],
+    correct: 2,
+    difficulty: "easy"
+  },
+  {
+    category: "Misc",
+    question: "What is the currency of the United Kingdom?",
+    answers: ["Euro", "Dollar", "Pound", "Yen"],
+    correct: 2,
+    difficulty: "easy"
+  },
+  {
+    category: "Misc",
+    question: "What is the population of India?",
+    answers: ["1.1 billion", "1.2 billion", "1.3 billion", "1.4 billion"],
+    correct: 3,
+    difficulty: "easy"
+  },
+  {
+    category: "Misc",
+    question: "What is the highest mountain in the world?",
+    answers: ["K2", "Kilimanjaro", "Mount Everest", "Kangchenjunga"],
+    correct: 2,
+    difficulty: "easy"
+  },
 ];
 
 async function seedQuestions() {
@@ -828,7 +1332,7 @@ async function seedQuestions() {
     stats.forEach(stat => {
       console.log(`${stat._id}: ${stat.count} questions`);
     });
-    
+
     console.log(`\n🎯 Total: ${initialQuestions.length} questions across ${stats.length} categories`);
 
   } catch (error) {
@@ -841,3 +1345,18 @@ async function seedQuestions() {
 
 // Run the seeding function
 seedQuestions();
+
+const express = require('express');
+const app = express();
+const port = 3000;
+
+app.get('/api/questions/count-per-category', async (req, res) => {
+    const result = await Question.aggregate([
+      { $group: { _id: "$category", count: { $sum: 1 } } }
+    ]);
+    res.json(result);
+  });
+
+app.listen(port, () => {
+    console.log(`Server listening on port ${port}`);
+});
