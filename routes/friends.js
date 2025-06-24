@@ -3,12 +3,17 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
 
-// Middleware to get current user - for now using hardcoded admin123
+// Middleware to get current user from localStorage simulation
 // In production, this would come from JWT token or session
 const getCurrentUser = (req, res, next) => {
-  // For demo purposes, we'll use a hardcoded username
-  // In production, this would come from authentication middleware
-  req.currentUser = "admin123"; // This should be from req.user or session
+  // Get username from request headers (sent by frontend)
+  const username = req.headers['x-current-user'];
+  
+  if (!username) {
+    return res.status(401).json({ error: "Authentication required. Please log in." });
+  }
+  
+  req.currentUser = username;
   next();
 };
 

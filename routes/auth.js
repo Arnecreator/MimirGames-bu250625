@@ -23,7 +23,7 @@ router.post("/register", async (req, res) => {
       password: hashedPassword, 
       email: email || null,
       plainPassword: password, // Store plain password for admin view (remove in production!)
-      friends: []
+      friends: [] // Start with empty friends list
     });
     
     await newUser.save();

@@ -242,74 +242,22 @@
     </div>
 
     <script>
-      // Dummy data for demo/testing purposes
-      const friends = [
-        {
-          username: "alice2024",
-          quizPlayedDays: 23,
-          quizAnswers: 184,
-          quizCorrect: 156,
-          quizPercentCorrect: 85,
-          quizFullScoreGames: 8,
-          quizStreak: 8,
-          regDate: "240203"
-        },
-        {
-          username: "bob456",
-          quizPlayedDays: 26,
-          quizAnswers: 248,
-          quizCorrect: 189,
-          quizPercentCorrect: 76,
-          quizFullScoreGames: 15,
-          quizStreak: 7,
-          regDate: "240128"
-        },
-        {
-          username: "charlie",
-          quizPlayedDays: 18,
-          quizAnswers: 144,
-          quizCorrect: 127,
-          quizPercentCorrect: 88,
-          quizFullScoreGames: 6,
-          quizStreak: 12,
-          regDate: "240315"
-        },
-        {
-          username: "diana_quiz",
-          quizPlayedDays: 35,
-          quizAnswers: 280,
-          quizCorrect: 238,
-          quizPercentCorrect: 85,
-          quizFullScoreGames: 22,
-          quizStreak: 5,
-          regDate: "240110"
-        },
-        {
-          username: "erik_master",
-          quizPlayedDays: 42,
-          quizAnswers: 336,
-          quizCorrect: 294,
-          quizPercentCorrect: 87,
-          quizFullScoreGames: 28,
-          quizStreak: 15,
-          regDate: "231225"
-        },
-        {
-          username: "fiona_brain",
-          quizPlayedDays: 29,
-          quizAnswers: 232,
-          quizCorrect: 203,
-          quizPercentCorrect: 88,
-          quizFullScoreGames: 18,
-          quizStreak: 9,
-          regDate: "240201"
-        }
-      ];
+      // No dummy data - each user gets their own real friends list
 
       // Fetch friends list from backend
       async function fetchFriendsFromDB() {
         try {
-          const res = await fetch('/api/friends');
+          const currentUser = localStorage.getItem('mimirUsername');
+          if (!currentUser) {
+            console.log("No logged in user found");
+            return [];
+          }
+          
+          const res = await fetch('/api/friends', {
+            headers: {
+              'x-current-user': currentUser
+            }
+          });
           if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
           const data = await res.json();
           return Array.isArray(data.friends) ? data.friends : [];
@@ -354,34 +302,31 @@
         tableBody.appendChild(row);
       }
 
-      // Render table with combined dummy + real data
+      // Render table with only the current user's real friends
       async function renderQuizTable() {
         const tableBody = document.getElementById("quizFriendsTable");
         tableBody.innerHTML = "";
 
-        // Step 1: Add dummy data first
-        console.log("Adding dummy friends data...");
-        friends.forEach(user => appendUserRow(user, tableBody));
+        const currentUser = localStorage.getItem('mimirUsername');
+        if (!currentUser) {
+          tableBody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 20px; color: #666;">Please log in to view your friends list</td></tr>';
+          return;
+        }
 
-        // Step 2: Add real data from DB
-        console.log("Fetching real friends from database...");
+        console.log("Fetching friends for user:", currentUser);
         const friendUsernames = await fetchFriendsFromDB();
         console.log("Found friends:", friendUsernames);
 
-        if (friendUsernames.length > 0) {
-          for (const username of friendUsernames) {
-            // Skip if username already exists in dummy data to avoid duplicates
-            const existsInDummy = friends.some(friend => friend.username === username);
-            if (existsInDummy) {
-              console.log(`Skipping ${username} - already in dummy data`);
-              continue;
-            }
+        if (friendUsernames.length === 0) {
+          tableBody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 20px; color: #666;">No friends added yet. Add some friends to see their stats!</td></tr>';
+          return;
+        }
 
-            const user = await fetchUserStats(username);
-            if (user) {
-              console.log(`Adding real friend: ${username}`, user);
-              appendUserRow(user, tableBody);
-            }
+        for (const username of friendUsernames) {
+          const user = await fetchUserStats(username);
+          if (user) {
+            console.log(`Adding friend: ${username}`, user);
+            appendUserRow(user, tableBody);
           }
         }
       }
@@ -395,11 +340,18 @@
           return;
         }
 
+        const currentUser = localStorage.getItem('mimirUsername');
+        if (!currentUser) {
+          message.textContent = "Please log in first.";
+          return;
+        }
+
         try {
           const res = await fetch("/api/friends", {
             method: "POST",
             headers: {
-              "Content-Type": "application/json"
+              "Content-Type": "application/json",
+              "x-current-user": currentUser
             },
             body: JSON.stringify({ username })
           });
@@ -420,9 +372,18 @@
       }
 
       async function removeFriend(username) {
+        const currentUser = localStorage.getItem('mimirUsername');
+        if (!currentUser) {
+          alert("Please log in first.");
+          return;
+        }
+
         try {
           const res = await fetch(`/api/friends/${username}`, {
-            method: "DELETE"
+            method: "DELETE",
+            headers: {
+              "x-current-user": currentUser
+            }
           });
 
           const data = await res.json();
@@ -440,8 +401,19 @@
         }
       }
 
-      // Initialize table when page loads
-      renderQuizTable();
+      // Check authentication and initialize table when page loads
+      function initializePage() {
+        const currentUser = localStorage.getItem('mimirUsername');
+        if (!currentUser) {
+          // Redirect to login if not authenticated
+          window.location.href = 'index.html';
+          return;
+        }
+        renderQuizTable();
+      }
+
+      // Initialize page
+      initializePage();
 
       // Add logout functionality for navigation bar
       document.getElementById('logoutLink')?.addEventListener('click', (e) => {
