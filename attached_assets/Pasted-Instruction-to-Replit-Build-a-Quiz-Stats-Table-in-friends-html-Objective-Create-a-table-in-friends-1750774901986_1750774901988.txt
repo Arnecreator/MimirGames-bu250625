@@ -1,0 +1,101 @@
+Instruction to Replit: Build a Quiz Stats Table in friends.html
+Objective:
+Create a table in friends.html that displays Quiz statistics for all friends of the logged-in user. This table should mirror the structure of users.html, using the same column headers, layout, and styling – including a working "Remove Friend" button.
+
+✅ 1. Insert the following HTML structure into friends.html:
+Place it where you want the Quiz Statistics section to appear:
+
+html
+Copy
+Edit
+<h2>Your Friends – Quiz Stats</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Friend</th>
+      <th>Qpd</th>
+      <th>#answ</th>
+      <th>#cansw</th>
+      <th>%cansw</th>
+      <th>#allc</th>
+      <th>%allc</th>
+      <th>🔥</th>
+      <th>Reg</th>
+      <th>❌</th>
+    </tr>
+  </thead>
+  <tbody id="quizFriendsTable">
+    <!-- Filled dynamically via JavaScript -->
+  </tbody>
+</table>
+✅ 2. Add this JavaScript to the bottom of the file (before </body>)
+This code dynamically populates the table using data from the friends array (to be replaced later by API calls):
+
+html
+Copy
+Edit
+<script>
+  // Placeholder data – replace with fetch call to get real friends
+  const friends = [
+    {
+      username: "alice2024",
+      quizPlayedDays: 23,
+      quizAnswers: 184,
+      quizCorrect: 156,
+      quizPercentCorrect: 85,
+      quizFullScoreGames: 8,
+      quizStreak: 8,
+      regDate: "240203"
+    },
+    {
+      username: "bob456",
+      quizPlayedDays: 26,
+      quizAnswers: 248,
+      quizCorrect: 189,
+      quizPercentCorrect: 76,
+      quizFullScoreGames: 15,
+      quizStreak: 7,
+      regDate: "240128"
+    }
+  ];
+
+  function calculateFullScorePercent(user) {
+    if (!user.quizPlayedDays || user.quizPlayedDays === 0) return 0;
+    return ((user.quizFullScoreGames / user.quizPlayedDays) * 100).toFixed(0);
+  }
+
+  function renderQuizTable() {
+    const tableBody = document.getElementById("quizFriendsTable");
+    tableBody.innerHTML = "";
+    friends.forEach(user => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${user.username}</td>
+        <td>${user.quizPlayedDays}</td>
+        <td>${user.quizAnswers}</td>
+        <td>${user.quizCorrect}</td>
+        <td>${user.quizPercentCorrect}%</td>
+        <td>${user.quizFullScoreGames}</td>
+        <td>${calculateFullScorePercent(user)}%</td>
+        <td>${user.quizStreak}</td>
+        <td>${user.regDate}</td>
+        <td><button onclick="removeFriend('${user.username}')">🗑️</button></td>
+      `;
+      tableBody.appendChild(row);
+    });
+  }
+
+  function removeFriend(username) {
+    alert("Removing: " + username);
+    // Later: Replace with fetch to remove friend in backend
+  }
+
+  renderQuizTable();
+</script>
+🧩 Notes:
+friends is placeholder data. Replace it later with a fetch() call to your API that returns the list of friend usernames and their quiz stats.
+
+removeFriend(username) should eventually call a PATCH/DELETE endpoint to update the user's friend list in MongoDB.
+
+Column headers (Qpd, #answ, etc.) are intentionally aligned with the admin panel.
