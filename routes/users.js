@@ -25,4 +25,17 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+// PATCH user by ID (update specific fields)
+router.patch('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updates = req.body;
+    await User.updateOne({ _id: id }, { $set: updates });
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Error updating user:", err);
+    res.status(500).json({ error: 'Update failed' });
+  }
+});
+
 module.exports = router;

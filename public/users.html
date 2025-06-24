@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="en">
   <head>
@@ -89,6 +88,7 @@
         overflow: hidden;
         text-overflow: ellipsis;
         line-height: 1;
+        cursor: pointer; /* Add this line */
       }
 
       tr:nth-child(even) {
@@ -318,9 +318,9 @@
                 return `
                 <tr>
                   <td class="col-id">${user._id ? user._id.slice(-6) : "-"}</td>
-                  <td class="col-user">${escapeHtml(user.username || "-")}</td>
-                  <td class="col-psw">${escapeHtml(plainPassword)}</td>
-                  <td class="col-mail">${user.email ? escapeHtml(user.email) : "-"}</td>
+                  <td class="col-user" onclick="makeCellEditable(this, 'username', '${user._id}')">${escapeHtml(user.username || "-")}</td>
+                  <td class="col-psw" onclick="makeCellEditable(this, 'plainPassword', '${user._id}')">${escapeHtml(plainPassword)}</td>
+                  <td class="col-mail" onclick="makeCellEditable(this, 'email', '${user._id}')">${user.email ? escapeHtml(user.email) : "-"}</td>
                   <td class="col-friends">${user.friends ? user.friends.length : 0}</td>
                   <td class="col-num">${gamesPlayed}</td>
                   <td class="col-num">${totalAnswers}</td>
@@ -340,7 +340,6 @@
                   <td class="col-info">-</td>
                   <td class="col-info">-</td>
                   <td class="col-actions">
-                    <button class="edit-btn" onclick="editUser('${user._id}')">📝</button>
                     <button class="delete-btn" onclick="deleteUser('${user._id}')">🗑️</button>
                   </td>
                 </tr>
@@ -356,61 +355,85 @@
         }
       }
 
+      // Escape HTML to prevent XSS
       function escapeHtml(text) {
-        if (!text) return text;
         const div = document.createElement("div");
         div.textContent = text;
         return div.innerHTML;
       }
 
-      // Load users when page loads
-      document.addEventListener("DOMContentLoaded", loadUsers);
+      // Make cell editable for inline editing
+      function makeCellEditable(td, field, userId) {
+        const originalText = td.textContent;
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = originalText;
+        input.style.width = "100%";
+        input.style.fontSize = "inherit";
+        input.style.border = "1px solid #ccc";
+        input.style.padding = "2px";
+        input.style.fontFamily = "inherit";
 
-      // Auto-refresh every 30 seconds to show new registrations
-      setInterval(loadUsers, 30000);
-
-      // Edit user function
-      async function editUser(userId) {
-        const { value: newData } = await Swal.fire({
-          title: 'Edit User Data',
-          text: 'Enter new data for this user (JSON format):',
-          input: 'textarea',
-          inputPlaceholder: '{"username": "newname", "email": "new@email.com"}',
-          showCancelButton: true,
-          confirmButtonText: 'Update',
-          cancelButtonText: 'Cancel',
-          inputValidator: (value) => {
-            if (!value) {
-              return 'Please enter some data!'
-            }
-            try {
-              JSON.parse(value);
-            } catch (e) {
-              return 'Invalid JSON format!'
-            }
+        input.addEventListener("keydown", (event) => {
+          if (event.key === "Enter") {
+            input.blur();
+          }
+          if (event.key === "Escape") {
+            td.textContent = originalText;
+            td.style.cursor = 'pointer';
           }
         });
 
-        if (newData) {
-          try {
-            const parsedData = JSON.parse(newData);
-            console.log("Edit user:", userId, "with data:", parsedData);
-            // TODO: Implement API call to update user
-            Swal.fire({
-              title: 'Coming Soon!',
-              text: 'Edit functionality will be implemented soon.',
-              icon: 'info',
-              confirmButtonText: 'OK'
+        input.addEventListener("blur", () => {
+          const newValue = input.value.trim();
+          td.textContent = newValue;
+          td.style.cursor = 'pointer';
+
+          if (newValue !== originalText && newValue !== "") {
+            fetch(`/api/users/${userId}`, {
+              method: "PATCH",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ [field]: newValue }),
+            })
+            .then((res) => {
+              if (!res.ok) {
+                Swal.fire({
+                  title: 'Error!',
+                  text: 'Failed to update user.',
+                  icon: 'error',
+                  confirmButtonText: 'OK'
+                });
+                td.textContent = originalText;
+              } else {
+                Swal.fire({
+                  title: 'Updated!',
+                  text: 'User updated successfully.',
+                  icon: 'success',
+                  timer: 1000,
+                  showConfirmButton: false
+                });
+              }
+            })
+            .catch(() => {
+              Swal.fire({
+                title: 'Error!',
+                text: 'Network error occurred.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+              });
+              td.textContent = originalText;
             });
-          } catch (e) {
-            Swal.fire({
-              title: 'Error!',
-              text: 'Invalid JSON format.',
-              icon: 'error',
-              confirmButtonText: 'OK'
-            });
+          } else if (newValue === "") {
+            td.textContent = originalText;
           }
-        }
+        });
+
+        td.textContent = "";
+        td.appendChild(input);
+        input.focus();
+        input.select();
       }
 
       // Delete user function
@@ -459,6 +482,11 @@
           }
         }
       }
+      // Load users when page loads
+      document.addEventListener("DOMContentLoaded", loadUsers);
+
+      // Auto-refresh every 30 seconds to show new registrations
+      setInterval(loadUsers, 30000);
     </script>
   </body>
 </html>
