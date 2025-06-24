@@ -10,6 +10,7 @@ const friendRoutes = require("./routes/friends");
 const statsRoutes = require("./routes/stats");
 const leaderboardRoutes = require("./routes/leaderboard");
 const usersRoutes = require("./routes/users"); // ⬅️ NY RAD
+const adminRoutes = require("./routes/admin");
 
 const app = express();
 app.use(cors());
@@ -29,6 +30,7 @@ app.use("/api/friends", friendRoutes);
 app.use("/api/stats", statsRoutes);
 app.use("/api/leaderboard", leaderboardRoutes);
 app.use("/api/users", usersRoutes); // ⬅️ NY ROUTE
+app.use("/api/admin", adminRoutes);
 
 // 🛑 Fallback för ogiltiga endpoints
 app.use((req, res) => {

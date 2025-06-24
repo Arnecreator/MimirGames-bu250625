@@ -14,14 +14,69 @@ router.get("/", async (req, res) => {
   }
 });
 
-// DELETE user by ID
+// DELETE user by ID with cascading cleanup
 router.delete('/:id', async (req, res) => {
   try {
-    await User.findByIdAndDelete(req.params.id);
-    res.status(200).json({ message: 'User deleted' });
+    const { id } = req.params;
+    
+    // First, get the user to find their username
+    const userToDelete = await User.findById(id);
+    if (!userToDelete) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    const usernameToDelete = userToDelete.username;
+    console.log(`🗑️ Starting cascading delete for user: ${usernameToDelete}`);
+    
+    // 1. Remove this user from all other users' friends lists
+    const friendRemovalResult = await User.updateMany(
+      { friends: usernameToDelete },
+      { $pull: { friends: usernameToDelete } }
+    );
+    console.log(`✅ Removed ${usernameToDelete} from ${friendRemovalResult.modifiedCount} friend lists`);
+    
+    // 2. Delete the user document itself
+    await User.findByIdAndDelete(id);
+    console.log(`✅ Deleted user document for: ${usernameToDelete}`);
+    
+    // 3. Clean up any quiz-related stats in Stat collection (if it exists)
+    const Stat = require("../models/Stat");
+    const statDeletionResult = await Stat.deleteMany({ username: usernameToDelete });
+    console.log(`✅ Deleted ${statDeletionResult.deletedCount} stat records for: ${usernameToDelete}`);
+    
+    // 4. Clean up any leaderboard entries (if it exists)
+    const Leaderboard = require("../models/Leaderboard");
+    const leaderboards = await Leaderboard.find({});
+    let leaderboardUpdates = 0;
+    
+    for (const leaderboard of leaderboards) {
+      if (leaderboard.rankings && Array.isArray(leaderboard.rankings)) {
+        const originalLength = leaderboard.rankings.length;
+        leaderboard.rankings = leaderboard.rankings.filter(
+          entry => entry.username !== usernameToDelete
+        );
+        
+        if (leaderboard.rankings.length !== originalLength) {
+          await leaderboard.save();
+          leaderboardUpdates++;
+        }
+      }
+    }
+    console.log(`✅ Updated ${leaderboardUpdates} leaderboard(s), removed entries for: ${usernameToDelete}`);
+    
+    res.status(200).json({ 
+      message: 'User and all associated data deleted successfully',
+      details: {
+        username: usernameToDelete,
+        friendListsUpdated: friendRemovalResult.modifiedCount,
+        statsDeleted: statDeletionResult.deletedCount,
+        leaderboardsUpdated: leaderboardUpdates
+      }
+    });
+    
   } catch (err) {
-    console.error("Error deleting user:", err);
-    res.status(500).json({ error: 'Delete failed' });
+    console.error("Error during cascading delete:", err);
+    res.status(500).json({ error: 'Delete failed', details: err.message });
   }
 });
 
