@@ -545,10 +545,10 @@ The code implements the auto-remove duplicates functionality for the "Check Dupl
             return ((maxLength - distance) / maxLength) * 100;
         }
 
-        // Fast automatic duplicate detection and deletion
+        // Check duplicates with confirmation dialog before deletion
         async function checkDuplicates() {
-            console.log('🔍 Starting fast auto-cleanup of duplicates...');
-            showToast('Auto-cleaning duplicates...', 'warning');
+            console.log('🔍 Starting duplicate check...');
+            showToast('Scanning for duplicates...', 'warning');
 
             try {
                 // Fetch all questions from the database
@@ -561,10 +561,10 @@ The code implements the auto-remove duplicates functionality for the "Check Dupl
                 const questions = data.questions || [];
                 const initialCount = questions.length;
 
-                console.log(`📊 Auto-scanning ${initialCount} questions for duplicates`);
+                console.log(`📊 Scanning ${initialCount} questions for duplicates`);
 
-                const duplicatesToDelete = [];
-                const deletedInfo = [];
+                const exactDuplicates = [];
+                const similarDuplicates = [];
                 const processed = new Set();
 
                 // Phase 1: Detect exact duplicates (case-insensitive)
@@ -577,12 +577,11 @@ The code implements the auto-remove duplicates functionality for the "Check Dupl
                     const normalizedText = question.question.toLowerCase().trim();
                     
                     if (exactSeen.has(normalizedText)) {
-                        duplicatesToDelete.push(question._id);
-                        deletedInfo.push({
+                        exactDuplicates.push({
                             id: question._id,
-                            type: 'exact',
-                            text: question.question.substring(0, 40),
-                            category: question.category
+                            text: question.question,
+                            category: question.category,
+                            originalId: exactSeen.get(normalizedText)._id
                         });
                     } else {
                         exactSeen.set(normalizedText, question);
@@ -591,7 +590,7 @@ The code implements the auto-remove duplicates functionality for the "Check Dupl
 
                 // Phase 2: Detect similar duplicates using fuzzy matching (90%+ threshold)
                 for (let i = 0; i < questions.length; i++) {
-                    if (processed.has(i) || duplicatesToDelete.includes(questions[i]._id)) continue;
+                    if (processed.has(i)) continue;
                     
                     const question1 = questions[i];
                     
@@ -599,7 +598,7 @@ The code implements the auto-remove duplicates functionality for the "Check Dupl
                     if (question1.question.trim().length < 10) continue;
                     
                     for (let j = i + 1; j < questions.length; j++) {
-                        if (processed.has(j) || duplicatesToDelete.includes(questions[j]._id)) continue;
+                        if (processed.has(j)) continue;
                         
                         const question2 = questions[j];
                         
@@ -608,60 +607,184 @@ The code implements the auto-remove duplicates functionality for the "Check Dupl
                         
                         const similarity = calculateSimilarity(question1.question, question2.question);
                         
-                        if (similarity >= 90) {
-                            duplicatesToDelete.push(question2._id);
-                            deletedInfo.push({
-                                id: question2._id,
-                                type: 'similar',
-                                text: question2.question.substring(0, 40),
-                                category: question2.category,
-                                similarity: Math.round(similarity)
-                            });
-                            processed.add(j);
+                        if (similarity >= 90 && similarity < 100) {
+                            // Only add if not already marked as exact duplicate
+                            const isExactDuplicate = exactDuplicates.some(dup => dup.id === question2._id);
+                            if (!isExactDuplicate) {
+                                similarDuplicates.push({
+                                    id: question2._id,
+                                    text: question2.question,
+                                    category: question2.category,
+                                    similarity: Math.round(similarity),
+                                    originalText: question1.question,
+                                    originalCategory: question1.category
+                                });
+                                processed.add(j);
+                            }
                         }
                     }
                 }
 
-                // Phase 3: Silent auto-deletion of all detected duplicates
-                if (duplicatesToDelete.length > 0) {
-                    
-                    const deleteResponse = await fetch('/api/questions/admin/bulk-delete', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ questionIds: duplicatesToDelete })
-                    });
-
-                    if (!deleteResponse.ok) {
-                        throw new Error(`Failed to delete duplicates: ${deleteResponse.status}`);
-                    }
-
-                    const deleteResult = await deleteResponse.json();
-                    const remainingQuestions = initialCount - duplicatesToDelete.length;
-
-                    // Console logging for transparency
-                    console.log(`✅ Auto-deleted ${deleteResult.deletedCount} duplicates:`);
-                    deletedInfo.forEach(item => {
-                        console.log(`  • [${item.type.toUpperCase()}] ${item.id}: "${item.text}..." (${item.category})${item.similarity ? ` - ${item.similarity}%` : ''}`);
-                    });
-
-                    // Simple toast feedback
-                    showToast(`✅ ${initialCount} scanned • ${duplicatesToDelete.length} removed • ${remainingQuestions} remaining`, 'success');
-
-                    // Refresh category counts
-                    loadCategoryCounts();
-
-                } else {
-                    // No duplicates found
-                    console.log('✅ No duplicates detected');
-                    showToast(`✅ ${initialCount} scanned • 0 removed • ${initialCount} remaining`, 'success');
-                }
+                // Show results and get user confirmation
+                await showDuplicateResults(initialCount, exactDuplicates, similarDuplicates);
 
             } catch (error) {
-                console.error('❌ Auto-cleanup error:', error);
-                showToast('❌ Auto-cleanup failed', 'error');
+                console.error('❌ Duplicate check error:', error);
+                showToast('❌ Duplicate check failed', 'error');
             }
+        }
+
+        // Show duplicate results with confirmation options
+        async function showDuplicateResults(totalQuestions, exactDuplicates, similarDuplicates) {
+            const totalDuplicates = exactDuplicates.length + similarDuplicates.length;
+            
+            if (totalDuplicates === 0) {
+                await Swal.fire({
+                    title: 'No Duplicates Found',
+                    text: `Scanned ${totalQuestions} questions. No duplicates detected.`,
+                    icon: 'success',
+                    background: '#1e1e2f',
+                    color: '#ffffff',
+                    confirmButtonColor: '#28a745',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+
+            const result = await Swal.fire({
+                title: 'Duplicates Found',
+                html: `
+                    <div style="text-align: left; margin: 10px 0;">
+                        <p><strong>Total questions scanned:</strong> ${totalQuestions}</p>
+                        <p><strong>Exact duplicates found:</strong> ${exactDuplicates.length}</p>
+                        <p><strong>Similar duplicates found:</strong> ${similarDuplicates.length} (≥90% match)</p>
+                        <p><strong>Total duplicates:</strong> ${totalDuplicates}</p>
+                    </div>
+                `,
+                icon: 'warning',
+                background: '#1e1e2f',
+                color: '#ffffff',
+                showCancelButton: true,
+                showDenyButton: true,
+                confirmButtonColor: '#28a745',
+                denyButtonColor: '#3085d6',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Delete Exact (Safe)',
+                denyButtonText: 'Review Duplicates',
+                cancelButtonText: 'Cancel',
+                width: '500px'
+            });
+
+            if (result.isConfirmed) {
+                // Delete only exact duplicates
+                await deleteExactDuplicates(exactDuplicates, totalQuestions);
+            } else if (result.isDenied) {
+                // Show review dialog
+                await showDuplicateReview(exactDuplicates, similarDuplicates);
+            }
+            // If cancelled, do nothing
+        }
+
+        // Delete exact duplicates only
+        async function deleteExactDuplicates(exactDuplicates, totalQuestions) {
+            if (exactDuplicates.length === 0) {
+                showToast('No exact duplicates to delete', 'warning');
+                return;
+            }
+
+            try {
+                showToast('Deleting exact duplicates...', 'warning');
+
+                const idsToDelete = exactDuplicates.map(dup => dup.id);
+                
+                const deleteResponse = await fetch('/api/questions/admin/bulk-delete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ questionIds: idsToDelete })
+                });
+
+                if (!deleteResponse.ok) {
+                    throw new Error(`Failed to delete duplicates: ${deleteResponse.status}`);
+                }
+
+                const deleteResult = await deleteResponse.json();
+                const remainingQuestions = totalQuestions - deleteResult.deletedCount;
+
+                // Console logging for transparency
+                console.log(`✅ Deleted ${deleteResult.deletedCount} exact duplicates:`);
+                exactDuplicates.forEach(item => {
+                    console.log(`  • [EXACT] ${item.id}: "${item.text.substring(0, 40)}..." (${item.category})`);
+                });
+
+                // Show success modal
+                await Swal.fire({
+                    title: 'Cleanup Complete',
+                    html: `
+                        <div style="text-align: left; margin: 10px 0;">
+                            <p><strong>✅ Exact duplicates removed:</strong> ${deleteResult.deletedCount}</p>
+                            <p><strong>📊 Questions remaining:</strong> ${remainingQuestions}</p>
+                            <p><strong>🔍 Categories cleaned:</strong> ${[...new Set(exactDuplicates.map(d => d.category))].join(', ')}</p>
+                        </div>
+                    `,
+                    icon: 'success',
+                    background: '#1e1e2f',
+                    color: '#ffffff',
+                    confirmButtonColor: '#28a745',
+                    confirmButtonText: 'OK'
+                });
+
+                // Refresh category counts
+                loadCategoryCounts();
+
+            } catch (error) {
+                console.error('❌ Error deleting exact duplicates:', error);
+                showToast('❌ Failed to delete duplicates', 'error');
+            }
+        }
+
+        // Show detailed review of duplicates
+        async function showDuplicateReview(exactDuplicates, similarDuplicates) {
+            let reviewContent = '<div style="text-align: left; max-height: 400px; overflow-y: auto; margin: 10px 0;">';
+            
+            if (exactDuplicates.length > 0) {
+                reviewContent += '<h4 style="color: #ff6b6b; margin: 10px 0;">🔴 Exact Duplicates:</h4>';
+                exactDuplicates.forEach(dup => {
+                    reviewContent += `
+                        <div style="margin: 8px 0; padding: 8px; background: rgba(255, 107, 107, 0.1); border-radius: 4px; font-size: 12px;">
+                            <strong>[${dup.category}]</strong><br>
+                            "${dup.text.substring(0, 60)}${dup.text.length > 60 ? '...' : ''}"
+                        </div>
+                    `;
+                });
+            }
+            
+            if (similarDuplicates.length > 0) {
+                reviewContent += '<h4 style="color: #f39c12; margin: 15px 0 10px 0;">🟡 Similar Duplicates:</h4>';
+                similarDuplicates.forEach(dup => {
+                    reviewContent += `
+                        <div style="margin: 8px 0; padding: 8px; background: rgba(243, 156, 18, 0.1); border-radius: 4px; font-size: 12px;">
+                            <strong>[${dup.category}] ${dup.similarity}% match</strong><br>
+                            "${dup.text.substring(0, 60)}${dup.text.length > 60 ? '...' : ''}"<br>
+                            <em style="color: #aaa;">≈ "${dup.originalText.substring(0, 60)}${dup.originalText.length > 60 ? '...' : ''}"</em>
+                        </div>
+                    `;
+                });
+            }
+            
+            reviewContent += '</div>';
+
+            await Swal.fire({
+                title: 'Duplicate Review',
+                html: reviewContent,
+                icon: 'info',
+                background: '#1e1e2f',
+                color: '#ffffff',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'Close',
+                width: '600px'
+            });
         }
 
         
