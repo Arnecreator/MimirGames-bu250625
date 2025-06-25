@@ -48,8 +48,8 @@
         }
 
         .button-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            display: flex;
+            flex-wrap: wrap;
             gap: 8px;
             margin-top: 6px;
         }
@@ -101,11 +101,11 @@
             background: #7fffd4;
             color: #000;
             border: none;
-            padding: 4px 10px;
-            border-radius: 3px;
+            padding: 6px 10px;
+            border-radius: 6px;
             cursor: pointer;
-            font-weight: 500;
-            font-size: 13px;
+            font-weight: normal;
+            font-size: 0.85rem;
             transition: all 0.2s ease;
             text-align: center;
             line-height: 1.2;
@@ -114,6 +114,8 @@
             align-items: center;
             justify-content: center;
             margin-bottom: 4px;
+            flex: 1;
+            min-width: 140px;
         }
 
         .admin-btn:hover, .btn-sm:hover {
@@ -316,8 +318,7 @@
         /* Desktop optimizations */
         @media (min-width: 1001px) {
             .button-grid {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 8px;
+                gap: 10px;
             }
 
             .category-buttons {
@@ -342,8 +343,13 @@
             }
 
             .button-grid {
-                grid-template-columns: 1fr;
+                flex-direction: column;
                 gap: 4px;
+            }
+
+            .admin-btn, .btn-sm {
+                min-width: auto;
+                width: 100%;
             }
 
             .category-buttons {
@@ -499,19 +505,17 @@
             transform: translateY(-1px);
         }
 
-        .main-action-btn {
+        .btn-add {
             background-color: #a0ffbf;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 6px;
-            cursor: pointer;
             color: #000;
-            transition: all 0.2s ease;
+            padding: 6px 12px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border-radius: 6px;
+            min-width: 180px;
         }
 
-        .main-action-btn:hover {
+        .btn-add:hover {
             background-color: #7fde9f;
             transform: translateY(-1px);
         }
@@ -533,6 +537,9 @@
             background-color: #3d6df1;
             color: white;
             border: 1px solid #2a55c9;
+            font-size: 0.85rem;
+            font-weight: normal;
+            padding: 6px 10px;
         }
 
         .insights-panel .btn-secondary:hover {
@@ -682,8 +689,8 @@
                     </button>
                 </div>
             </div>
-            <div style="text-align: center; margin-top: 10px;">
-                <button id="add-all-btn" class="main-action-btn">➕ Add 10 per Category</button>
+            <div class="button-grid">
+                <button id="add-all-btn" class="admin-btn btn-add">➕ Add 10 per Category</button>
             </div>
         </div>
 
