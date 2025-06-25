@@ -11,27 +11,32 @@
             background: #0a0b1e;
             color: white;
             margin: 0;
-            padding: 8px;
-            line-height: 1.3;
-            font-size: 12px;
+            padding: 6px;
+            line-height: 1.4;
+            font-size: 13px;
+        }
+
+        body.admin-view {
+            font-size: 13px;
+            line-height: 1.4;
         }
 
         .container {
-            max-width: 800px;
+            max-width: 1000px;
             margin: 0 auto;
         }
 
         .tool-section {
             background: #1a1d3a;
             border-radius: 6px;
-            padding: 8px 10px;
-            margin: 6px 0;
+            padding: 8px 12px;
+            margin: 4px 0;
             border: 1px solid #333;
         }
 
         .section-title {
             color: #7fffd4;
-            font-size: 12px;
+            font-size: 15px;
             font-weight: 600;
             margin: 0 0 6px 0;
             display: flex;
@@ -39,34 +44,40 @@
             gap: 4px;
         }
 
+        .section-title .emoji {
+            margin-right: 4px;
+        }
+
         .button-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 4px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 8px;
             margin-top: 6px;
         }
 
-        .btn-sm {
+        .admin-btn, .btn-sm {
             background: #7fffd4;
             color: #000;
             border: none;
-            padding: 4px 6px;
+            padding: 4px 10px;
             border-radius: 3px;
             cursor: pointer;
             font-weight: 500;
-            font-size: 10px;
+            font-size: 13px;
             transition: all 0.2s ease;
             text-align: center;
             line-height: 1.2;
-            min-height: 22px;
+            min-height: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
+            margin-bottom: 4px;
         }
 
-        .btn-sm:hover {
+        .admin-btn:hover, .btn-sm:hover {
             background: #5fb3a3;
             transform: translateY(-1px);
+            filter: brightness(0.9);
         }
 
         .btn-sm.btn-warning {
@@ -102,7 +113,7 @@
             transition: all 0.3s ease;
             font-weight: 500;
             max-width: 250px;
-            font-size: 11px;
+            font-size: 12px;
         }
 
         .toast.show {
@@ -123,7 +134,7 @@
             color: #7fffd4;
             font-style: italic;
             margin-top: 4px;
-            font-size: 10px;
+            font-size: 11px;
         }
 
         .results-section {
@@ -137,12 +148,12 @@
         .results-section h3 {
             color: #7fffd4;
             margin: 0 0 4px 0;
-            font-size: 11px;
+            font-size: 12px;
         }
 
         .results-content {
             color: #ccc;
-            font-size: 10px;
+            font-size: 11px;
             font-family: 'Courier New', monospace;
             max-height: 80px;
             overflow-y: auto;
@@ -150,8 +161,8 @@
 
         h1 {
             color: #7fffd4;
-            margin: 0 0 10px 0;
-            font-size: 14px;
+            margin: 0 0 8px 0;
+            font-size: 16px;
             font-weight: 600;
         }
 
@@ -200,12 +211,12 @@
         }
 
         .confirm-btn {
-            padding: 5px 12px;
+            padding: 4px 10px;
             border: none;
             border-radius: 3px;
             cursor: pointer;
             font-weight: 500;
-            font-size: 11px;
+            font-size: 12px;
             transition: all 0.2s ease;
         }
 
@@ -227,34 +238,60 @@
             background: #777;
         }
 
+        /* Top navbar styling */
+        #topbar-placeholder {
+            overflow-x: auto;
+        }
+
+        /* Desktop optimizations */
+        @media (min-width: 1001px) {
+            .button-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+            }
+            
+            .tool-section {
+                margin: 3px 0;
+            }
+        }
+
         /* Mobile Optimizations */
         @media (max-width: 768px) {
             body {
                 padding: 4px;
-                font-size: 11px;
+                font-size: 13px;
+            }
+
+            .container {
+                padding: 0 2px;
             }
 
             .button-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 3px;
+                grid-template-columns: 1fr;
+                gap: 4px;
             }
             
             .toast {
                 right: 4px;
                 left: 4px;
                 max-width: none;
-                font-size: 10px;
+                font-size: 11px;
             }
 
-            .btn-sm {
-                font-size: 9px;
-                padding: 3px 5px;
-                min-height: 20px;
+            .admin-btn, .btn-sm {
+                font-size: 13px;
+                padding: 4px 8px;
+                min-height: 22px;
+                margin-bottom: 3px;
             }
 
             .tool-section {
                 padding: 6px 8px;
-                margin: 4px 0;
+                margin: 3px 0;
+            }
+
+            .section-title {
+                font-size: 14px;
             }
 
             .confirm-content {
@@ -271,56 +308,71 @@
             }
 
             .confirm-btn {
-                padding: 4px 10px;
-                font-size: 10px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .button-grid {
-                grid-template-columns: 1fr;
-            }
-
-            body {
-                padding: 3px;
-                font-size: 10px;
-            }
-
-            .btn-sm {
-                font-size: 9px;
-                padding: 3px 4px;
-                min-height: 18px;
-            }
-
-            .section-title {
+                padding: 4px 8px;
                 font-size: 11px;
             }
 
             h1 {
+                font-size: 15px;
+                margin: 0 0 6px 0;
+            }
+
+            #topbar-placeholder {
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 3px;
+                font-size: 12px;
+            }
+
+            .admin-btn, .btn-sm {
+                font-size: 12px;
+                padding: 3px 6px;
+                min-height: 20px;
+            }
+
+            .section-title {
                 font-size: 13px;
+            }
+
+            h1 {
+                font-size: 14px;
+            }
+
+            .tool-section {
+                padding: 5px 6px;
             }
         }
 
         /* Ultra-compact for very small screens */
         @media (max-width: 360px) {
             .tool-section {
-                padding: 4px 6px;
+                padding: 4px 5px;
             }
 
-            .btn-sm {
-                font-size: 8px;
-                padding: 2px 4px;
-                min-height: 16px;
+            .admin-btn, .btn-sm {
+                font-size: 11px;
+                padding: 3px 5px;
+                min-height: 18px;
             }
 
             .section-title {
-                font-size: 10px;
+                font-size: 12px;
             }
+        }
+
+        /* Active state for button groups */
+        .tool-section:hover {
+            background: rgba(26, 29, 58, 0.8);
         }
     </style>
 </head>
 
-<body>
+<body class="admin-view">
     <!-- Toast notification -->
     <div id="toast" class="toast"></div>
 
@@ -351,21 +403,21 @@
 
         <!-- Add Questions Section -->
         <div class="tool-section">
-            <div class="section-title">➕ Add Questions</div>
+            <div class="section-title"><span class="emoji">➕</span>Add Questions</div>
             <div class="button-grid">
-                <button class="btn-sm" onclick="addQuestionsToCategory('Movies', 10)">Add 10 to Movies</button>
-                <button class="btn-sm" onclick="addQuestionsToAllCategories()">Add 10 to Each Category</button>
-                <button class="btn-sm btn-warning" onclick="confirmBulkAdd()">Bulk Add 120 Questions</button>
+                <button class="admin-btn" onclick="addQuestionsToCategory('Movies', 10)">Add 10 to Movies</button>
+                <button class="admin-btn" onclick="addQuestionsToAllCategories()">Add 10 to Each Category</button>
+                <button class="admin-btn btn-warning" onclick="confirmBulkAdd()">Bulk Add 120 Questions</button>
             </div>
         </div>
 
         <!-- Test Tools Section -->
         <div class="tool-section">
-            <div class="section-title">🧪 Test Tools</div>
+            <div class="section-title"><span class="emoji">🧪</span>Test Tools</div>
             <div class="button-grid">
-                <button class="btn-sm" onclick="getRandomQuestions(8)">Get 8 Random</button>
-                <button class="btn-sm" onclick="getRandomQuestions(12)">Get 12 Random</button>
-                <button class="btn-sm" onclick="testSessionDeduplication()">Check Deduplication</button>
+                <button class="admin-btn" onclick="getRandomQuestions(8)">Get 8 Random</button>
+                <button class="admin-btn" onclick="getRandomQuestions(12)">Get 12 Random</button>
+                <button class="admin-btn" onclick="testSessionDeduplication()">Check Deduplication</button>
             </div>
             <div class="loading-indicator" id="testLoading">Processing...</div>
             <div class="results-section" id="testResults" style="display: none;">
@@ -376,19 +428,19 @@
 
         <!-- Database Control Section -->
         <div class="tool-section">
-            <div class="section-title">📊 Database Control</div>
+            <div class="section-title"><span class="emoji">📊</span>Database Control</div>
             <div class="button-grid">
-                <button class="btn-sm btn-warning" onclick="checkCategoryBalance()">Check Balance</button>
-                <button class="btn-sm btn-danger" onclick="confirmDeleteCategory()">Delete Category</button>
+                <button class="admin-btn btn-warning" onclick="checkCategoryBalance()">Check Balance</button>
+                <button class="admin-btn btn-danger" onclick="confirmDeleteCategory()">Delete Category</button>
             </div>
         </div>
 
         <!-- View Questions Section -->
         <div class="tool-section">
-            <div class="section-title">👁️ View Questions</div>
+            <div class="section-title"><span class="emoji">👁️</span>View Questions</div>
             <div class="button-grid">
-                <button class="btn-sm" onclick="openQuestionViewer()">Open Admin View</button>
-                <button class="btn-sm" onclick="checkQuestionCoverage()">Verify Coverage</button>
+                <button class="admin-btn" onclick="openQuestionViewer()">Open Admin View</button>
+                <button class="admin-btn" onclick="checkQuestionCoverage()">Verify Coverage</button>
             </div>
         </div>
     </div>
