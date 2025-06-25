@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Question Distribution Test</title>
+    <title>Developer Tools – Question Management</title>
     <style>
         body {
             font-family: 'Inter', 'Segoe UI', sans-serif;
@@ -14,92 +15,154 @@
             line-height: 1.6;
         }
 
-        .section {
+        .tool-section {
             background: #1a1d3a;
             border-radius: 10px;
             padding: 20px;
-            margin: 20px 0;
+            margin: 15px 0;
             border: 1px solid #333;
         }
 
-        button {
+        .section-title {
+            color: #7fffd4;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0 0 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-sm {
             background: #7fffd4;
             color: #000;
             border: none;
-            padding: 10px 20px;
+            padding: 8px 16px;
             border-radius: 5px;
             cursor: pointer;
-            font-weight: bold;
-            margin: 5px;
+            font-weight: 500;
+            font-size: 13px;
             transition: all 0.2s ease;
+            text-align: center;
         }
 
-        button:hover {
+        .btn-sm:hover {
             background: #5fb3a3;
             transform: translateY(-1px);
         }
 
-        .category-item {
-            background: #252951;
-            padding: 8px 12px;
-            margin: 5px 0;
-            border-radius: 5px;
-            border-left: 4px solid #7fffd4;
+        .btn-sm.btn-warning {
+            background: #ff9800;
+            color: white;
         }
 
-        .category-item.low-count {
-            border-left-color: #ff6b6b;
-            background: #3d1f1f;
+        .btn-sm.btn-warning:hover {
+            background: #e68900;
         }
 
-        .distribution-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin: 10px 0;
+        .btn-sm.btn-danger {
+            background: #ff4757;
+            color: white;
         }
 
-        .category-badge {
+        .btn-sm.btn-danger:hover {
+            background: #ff3838;
+        }
+
+        .section-divider {
+            height: 1px;
+            background: #333;
+            margin: 20px 0;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4caf50;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+            font-weight: 500;
+            max-width: 350px;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .toast.error {
+            background: #ff4757;
+        }
+
+        .toast.warning {
+            background: #ff9800;
+        }
+
+        .loading-indicator {
+            display: none;
+            color: #7fffd4;
+            font-style: italic;
+            margin-top: 10px;
+        }
+
+        .results-section {
             background: #111335;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 12px;
-            border: 1px solid #7fffd4;
-        }
-
-        .questions-list {
-            max-height: 400px;
-            overflow-y: auto;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
             border: 1px solid #333;
-            border-radius: 5px;
-            background: #111335;
         }
 
-        .question-item {
-            padding: 10px;
-            border-bottom: 1px solid #333;
+        .results-section h3 {
+            color: #7fffd4;
+            margin: 0 0 10px 0;
             font-size: 14px;
         }
 
-        .question-item:last-child {
-            border-bottom: none;
+        .results-content {
+            color: #ccc;
+            font-size: 13px;
+            font-family: 'Courier New', monospace;
+            max-height: 200px;
+            overflow-y: auto;
         }
 
-        h1, h2, h3, h4 {
-            color: #7fffd4;
-        }
-
-        p, li {
-            margin: 8px 0;
-        }
-
-        small {
-            color: #aaa;
+        @media (max-width: 768px) {
+            .button-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            body {
+                padding: 10px;
+            }
+            
+            .toast {
+                right: 10px;
+                left: 10px;
+                max-width: none;
+            }
         }
     </style>
 </head>
 
 <body>
+    <!-- Toast notification -->
+    <div id="toast" class="toast"></div>
+
     <!-- Shared Topbar -->
     <div id="topbar-placeholder"></div>
     <script>
@@ -110,23 +173,274 @@
             });
     </script>
 
-    <h1>🔍 Question Distribution Test</h1>
+    <h1 style="color: #7fffd4; margin-bottom: 20px;">🔧 Developer Tools – Question Management</h1>
 
-    <div class="section">
-        <h2>Database Coverage</h2>
-        <button id="checkCoverageBtn">Check Question Coverage</button>
-        <div id="coverageResult"></div>
+    <!-- Add Questions Section -->
+    <div class="tool-section">
+        <div class="section-title">➕ Add Questions</div>
+        <div class="button-grid">
+            <button class="btn-sm" onclick="addQuestionsToCategory('Movies', 10)">Add 10 Questions to Movies</button>
+            <button class="btn-sm" onclick="addQuestionsToAllCategories()">Add 10 Questions to Each Category</button>
+            <button class="btn-sm" onclick="bulkAddTestQuestions()">Bulk Add 120 Test Questions</button>
+        </div>
     </div>
 
-    <div class="section">
-        <h2>Random Question Selection Test</h2>
-        <button id="get8QuestionsBtn">Get 8 Random Questions</button>
-        <button id="get12QuestionsBtn">Get 12 Random Questions</button>
-        <button id="testDeduplicationBtn">🧪 Test Session Deduplication</button>
-        <div id="selectionResult"></div>
+    <!-- Test Tools Section -->
+    <div class="tool-section">
+        <div class="section-title">🧪 Test Tools</div>
+        <div class="button-grid">
+            <button class="btn-sm" onclick="getRandomQuestions(8)">Get 8 Random Questions</button>
+            <button class="btn-sm" onclick="getRandomQuestions(12)">Get 12 Random Questions</button>
+            <button class="btn-sm" onclick="testSessionDeduplication()">Check Session Deduplication</button>
+        </div>
+        <div class="loading-indicator" id="testLoading">Processing...</div>
+        <div class="results-section" id="testResults" style="display: none;">
+            <h3>Test Results</h3>
+            <div class="results-content" id="testResultsContent"></div>
+        </div>
+    </div>
+
+    <!-- Database Control Section -->
+    <div class="tool-section">
+        <div class="section-title">📊 Database Control</div>
+        <div class="button-grid">
+            <button class="btn-sm btn-warning" onclick="checkCategoryBalance()">Check Category Balance</button>
+            <button class="btn-sm btn-danger" onclick="confirmDeleteCategory()">Delete All Questions in Category</button>
+        </div>
+    </div>
+
+    <!-- View Questions Section -->
+    <div class="tool-section">
+        <div class="section-title">👁️ View Questions</div>
+        <div class="button-grid">
+            <button class="btn-sm" onclick="openQuestionViewer()">Open Question Admin View</button>
+            <button class="btn-sm" onclick="checkQuestionCoverage()">Verify Question Coverage</button>
+        </div>
     </div>
 
     <script src="scripts/questionManager.js"></script>
-    <script src="scripts/test-questions.js"></script>
+    <script>
+        // Toast notification system
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function showLoading(show = true) {
+            const loading = document.getElementById('testLoading');
+            loading.style.display = show ? 'block' : 'none';
+        }
+
+        function showResults(content) {
+            const resultsSection = document.getElementById('testResults');
+            const resultsContent = document.getElementById('testResultsContent');
+            resultsContent.textContent = content;
+            resultsSection.style.display = 'block';
+        }
+
+        // Add Questions Functions
+        async function addQuestionsToCategory(category, count) {
+            try {
+                showLoading();
+                const response = await fetch(`/api/questions/add?category=${category}&count=${count}`, {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    showToast(`✅ ${count} questions successfully added to ${category}!`);
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                console.error('Error adding questions:', error);
+                showToast(`❌ Failed to add questions to ${category}`, 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function addQuestionsToAllCategories() {
+            try {
+                showLoading();
+                const categories = ['History', 'Science', 'Sports', 'Geography', 'Literature', 'Math', 'Movies', 'Music', 'Art', 'Technology', 'Food', 'Nature', 'Politics', 'Misc'];
+                let successCount = 0;
+                
+                for (const category of categories) {
+                    try {
+                        const response = await fetch(`/api/questions/add?category=${category}&count=10`, {
+                            method: 'POST'
+                        });
+                        if (response.ok) successCount++;
+                    } catch (error) {
+                        console.error(`Failed to add to ${category}:`, error);
+                    }
+                }
+                
+                showToast(`✅ Added 10 questions to ${successCount}/${categories.length} categories`);
+            } catch (error) {
+                console.error('Error in bulk add:', error);
+                showToast('❌ Failed to add questions to all categories', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function bulkAddTestQuestions() {
+            try {
+                showLoading();
+                const response = await fetch('/api/questions/bulk-add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ count: 120 })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    showToast(`✅ Successfully added ${data.added || 120} test questions!`);
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                console.error('Error in bulk add:', error);
+                showToast('❌ Failed to bulk add test questions', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Test Tools Functions
+        async function getRandomQuestions(count) {
+            try {
+                showLoading();
+                const response = await fetch(`/api/questions/random?count=${count}`);
+                const data = await response.json();
+                
+                console.log(`📋 ${count} Random Questions:`, data);
+                
+                const summary = `Fetched ${count} questions\nCategories: ${Object.keys(data.categoryDistribution || {}).length}\nTotal available: ${data.questions?.length || 0}`;
+                showResults(summary);
+                showToast(`✅ Fetched ${count} random questions - check console for details`);
+                
+            } catch (error) {
+                console.error('Error fetching random questions:', error);
+                showToast(`❌ Failed to fetch ${count} random questions`, 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function testSessionDeduplication() {
+            try {
+                showLoading();
+                
+                if (typeof QuestionManager === 'undefined') {
+                    throw new Error('QuestionManager not available');
+                }
+                
+                const qm = new QuestionManager();
+                const sessionStats = qm.getSessionStats();
+                const result = await qm.getRandomQuestions(5);
+                
+                const summary = `Session ID: ${result.sessionInfo.sessionId}\nTotal Used: ${result.sessionInfo.totalUsed}\nExcluded: ${result.sessionInfo.excludedThisRequest}\nReturned: ${result.questions.length}`;
+                
+                console.log('🧪 Session Deduplication Test:', result);
+                showResults(summary);
+                showToast('✅ Session deduplication test completed');
+                
+            } catch (error) {
+                console.error('Error testing deduplication:', error);
+                showToast('❌ Failed to test session deduplication', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Database Control Functions
+        async function checkCategoryBalance() {
+            try {
+                showLoading();
+                const response = await fetch('/api/questions/verify');
+                const data = await response.json();
+                
+                console.log('📊 Category Balance:', data);
+                
+                const summary = `Total Questions: ${data.totalQuestions}\nCategories: ${data.stats?.length || 0}\nCheck console for detailed breakdown`;
+                showResults(summary);
+                showToast('✅ Category balance check completed');
+                
+            } catch (error) {
+                console.error('Error checking balance:', error);
+                showToast('❌ Failed to check category balance', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function confirmDeleteCategory() {
+            const category = prompt('Enter category name to delete ALL questions from:');
+            if (category) {
+                const confirmed = confirm(`⚠️ This will DELETE ALL questions in "${category}". Are you sure?`);
+                if (confirmed) {
+                    deleteCategoryQuestions(category);
+                }
+            }
+        }
+
+        async function deleteCategoryQuestions(category) {
+            try {
+                showLoading();
+                const response = await fetch(`/api/questions/category/${category}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    showToast(`✅ Deleted ${data.deletedCount || 0} questions from ${category}`);
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                console.error('Error deleting category:', error);
+                showToast(`❌ Failed to delete questions from ${category}`, 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // View Functions
+        function openQuestionViewer() {
+            window.open('/test2-questions.html', '_blank');
+            showToast('✅ Opened Question Admin View in new tab');
+        }
+
+        async function checkQuestionCoverage() {
+            try {
+                showLoading();
+                const response = await fetch('/api/questions/verify');
+                const data = await response.json();
+                
+                console.log('🔍 Question Coverage:', data);
+                showToast(`✅ Coverage check: ${data.totalQuestions} total questions`);
+                
+                const summary = `Total: ${data.totalQuestions}\nActive: ${data.activeQuestions || data.totalQuestions}\nCategories: ${data.stats?.length || 0}`;
+                showResults(summary);
+                
+            } catch (error) {
+                console.error('Error checking coverage:', error);
+                showToast('❌ Failed to check question coverage', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        console.log('✅ Developer Tools loaded successfully');
+    </script>
 </body>
 </html>
