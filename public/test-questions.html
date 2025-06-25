@@ -11,46 +11,51 @@
             background: #0a0b1e;
             color: white;
             margin: 0;
-            padding: 20px;
-            line-height: 1.6;
+            padding: 15px;
+            line-height: 1.4;
         }
 
         .tool-section {
             background: #1a1d3a;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 15px 0;
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin: 8px 0;
             border: 1px solid #333;
         }
 
         .section-title {
             color: #7fffd4;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 600;
-            margin: 0 0 15px 0;
+            margin: 0 0 8px 0;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .button-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 10px;
-            margin-top: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 6px;
+            margin-top: 8px;
         }
 
         .btn-sm {
             background: #7fffd4;
             color: #000;
             border: none;
-            padding: 8px 16px;
-            border-radius: 5px;
+            padding: 4px 8px;
+            border-radius: 4px;
             cursor: pointer;
             font-weight: 500;
-            font-size: 13px;
+            font-size: 11px;
             transition: all 0.2s ease;
             text-align: center;
+            line-height: 1.3;
+            min-height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .btn-sm:hover {
@@ -76,27 +81,22 @@
             background: #ff3838;
         }
 
-        .section-divider {
-            height: 1px;
-            background: #333;
-            margin: 20px 0;
-        }
-
         .toast {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 15px;
+            right: 15px;
             background: #4caf50;
             color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
+            padding: 8px 12px;
+            border-radius: 6px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             z-index: 1000;
             opacity: 0;
             transform: translateX(100%);
             transition: all 0.3s ease;
             font-weight: 500;
-            max-width: 350px;
+            max-width: 300px;
+            font-size: 12px;
         }
 
         .toast.show {
@@ -116,44 +116,134 @@
             display: none;
             color: #7fffd4;
             font-style: italic;
-            margin-top: 10px;
+            margin-top: 6px;
+            font-size: 11px;
         }
 
         .results-section {
             background: #111335;
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 20px;
+            border-radius: 6px;
+            padding: 8px;
+            margin-top: 8px;
             border: 1px solid #333;
         }
 
         .results-section h3 {
             color: #7fffd4;
-            margin: 0 0 10px 0;
-            font-size: 14px;
+            margin: 0 0 6px 0;
+            font-size: 12px;
         }
 
         .results-content {
             color: #ccc;
-            font-size: 13px;
+            font-size: 11px;
             font-family: 'Courier New', monospace;
-            max-height: 200px;
+            max-height: 120px;
             overflow-y: auto;
+        }
+
+        h1 {
+            color: #7fffd4;
+            margin: 5px 0 15px 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        /* Confirmation dialog styles */
+        .confirm-dialog {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .confirm-content {
+            background: #1a1d3a;
+            border: 2px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .confirm-title {
+            color: #ff9800;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .confirm-message {
+            color: #ccc;
+            font-size: 13px;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .confirm-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .confirm-btn {
+            padding: 6px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .confirm-btn.confirm {
+            background: #ff4757;
+            color: white;
+        }
+
+        .confirm-btn.confirm:hover {
+            background: #ff3838;
+        }
+
+        .confirm-btn.cancel {
+            background: #666;
+            color: white;
+        }
+
+        .confirm-btn.cancel:hover {
+            background: #777;
         }
 
         @media (max-width: 768px) {
             .button-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr 1fr;
             }
             
             body {
-                padding: 10px;
+                padding: 8px;
             }
             
             .toast {
-                right: 10px;
-                left: 10px;
+                right: 8px;
+                left: 8px;
                 max-width: none;
+            }
+
+            .btn-sm {
+                font-size: 10px;
+                padding: 3px 6px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .button-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -162,6 +252,18 @@
 <body>
     <!-- Toast notification -->
     <div id="toast" class="toast"></div>
+
+    <!-- Confirmation dialog -->
+    <div id="confirmDialog" class="confirm-dialog">
+        <div class="confirm-content">
+            <div class="confirm-title" id="confirmTitle">⚠️ Confirm Action</div>
+            <div class="confirm-message" id="confirmMessage">Are you sure you want to proceed?</div>
+            <div class="confirm-buttons">
+                <button class="confirm-btn confirm" id="confirmYes">Yes, Proceed</button>
+                <button class="confirm-btn cancel" id="confirmNo">Cancel</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Shared Topbar -->
     <div id="topbar-placeholder"></div>
@@ -173,15 +275,15 @@
             });
     </script>
 
-    <h1 style="color: #7fffd4; margin-bottom: 20px;">🔧 Developer Tools – Question Management</h1>
+    <h1>🔧 Developer Tools – Question Management</h1>
 
     <!-- Add Questions Section -->
     <div class="tool-section">
         <div class="section-title">➕ Add Questions</div>
         <div class="button-grid">
-            <button class="btn-sm" onclick="addQuestionsToCategory('Movies', 10)">Add 10 Questions to Movies</button>
-            <button class="btn-sm" onclick="addQuestionsToAllCategories()">Add 10 Questions to Each Category</button>
-            <button class="btn-sm" onclick="bulkAddTestQuestions()">Bulk Add 120 Test Questions</button>
+            <button class="btn-sm" onclick="addQuestionsToCategory('Movies', 10)">Add 10 to Movies</button>
+            <button class="btn-sm" onclick="addQuestionsToAllCategories()">Add 10 to Each Category</button>
+            <button class="btn-sm btn-warning" onclick="confirmBulkAdd()">Bulk Add 120 Questions</button>
         </div>
     </div>
 
@@ -189,9 +291,9 @@
     <div class="tool-section">
         <div class="section-title">🧪 Test Tools</div>
         <div class="button-grid">
-            <button class="btn-sm" onclick="getRandomQuestions(8)">Get 8 Random Questions</button>
-            <button class="btn-sm" onclick="getRandomQuestions(12)">Get 12 Random Questions</button>
-            <button class="btn-sm" onclick="testSessionDeduplication()">Check Session Deduplication</button>
+            <button class="btn-sm" onclick="getRandomQuestions(8)">Get 8 Random</button>
+            <button class="btn-sm" onclick="getRandomQuestions(12)">Get 12 Random</button>
+            <button class="btn-sm" onclick="testSessionDeduplication()">Check Deduplication</button>
         </div>
         <div class="loading-indicator" id="testLoading">Processing...</div>
         <div class="results-section" id="testResults" style="display: none;">
@@ -204,8 +306,8 @@
     <div class="tool-section">
         <div class="section-title">📊 Database Control</div>
         <div class="button-grid">
-            <button class="btn-sm btn-warning" onclick="checkCategoryBalance()">Check Category Balance</button>
-            <button class="btn-sm btn-danger" onclick="confirmDeleteCategory()">Delete All Questions in Category</button>
+            <button class="btn-sm btn-warning" onclick="checkCategoryBalance()">Check Balance</button>
+            <button class="btn-sm btn-danger" onclick="confirmDeleteCategory()">Delete Category</button>
         </div>
     </div>
 
@@ -213,13 +315,44 @@
     <div class="tool-section">
         <div class="section-title">👁️ View Questions</div>
         <div class="button-grid">
-            <button class="btn-sm" onclick="openQuestionViewer()">Open Question Admin View</button>
-            <button class="btn-sm" onclick="checkQuestionCoverage()">Verify Question Coverage</button>
+            <button class="btn-sm" onclick="openQuestionViewer()">Open Admin View</button>
+            <button class="btn-sm" onclick="checkQuestionCoverage()">Verify Coverage</button>
         </div>
     </div>
 
     <script src="scripts/questionManager.js"></script>
     <script>
+        // Confirmation dialog system
+        let currentConfirmAction = null;
+
+        function showConfirmDialog(title, message, onConfirm) {
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmMessage').textContent = message;
+            document.getElementById('confirmDialog').style.display = 'flex';
+            currentConfirmAction = onConfirm;
+        }
+
+        function hideConfirmDialog() {
+            document.getElementById('confirmDialog').style.display = 'none';
+            currentConfirmAction = null;
+        }
+
+        document.getElementById('confirmYes').addEventListener('click', () => {
+            if (currentConfirmAction) {
+                currentConfirmAction();
+            }
+            hideConfirmDialog();
+        });
+
+        document.getElementById('confirmNo').addEventListener('click', hideConfirmDialog);
+
+        // Close dialog when clicking outside
+        document.getElementById('confirmDialog').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                hideConfirmDialog();
+            }
+        });
+
         // Toast notification system
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
@@ -254,7 +387,7 @@
                 
                 if (response.ok) {
                     const data = await response.json();
-                    showToast(`✅ ${count} questions successfully added to ${category}!`);
+                    showToast(`✅ ${count} questions added to ${category}!`);
                 } else {
                     throw new Error(`HTTP ${response.status}`);
                 }
@@ -292,6 +425,15 @@
             }
         }
 
+        // Confirmation wrappers for sensitive actions
+        function confirmBulkAdd() {
+            showConfirmDialog(
+                '⚠️ Bulk Add Questions',
+                'Are you sure you want to add 120 test questions? This will add many questions to the database and cannot be undone.',
+                bulkAddTestQuestions
+            );
+        }
+
         async function bulkAddTestQuestions() {
             try {
                 showLoading();
@@ -315,6 +457,17 @@
             }
         }
 
+        function confirmDeleteCategory() {
+            const category = prompt('Enter category name to delete ALL questions from:');
+            if (category) {
+                showConfirmDialog(
+                    '🚨 Delete All Questions',
+                    `This will permanently DELETE ALL questions in "${category}". This action cannot be undone. Are you absolutely sure?`,
+                    () => deleteCategoryQuestions(category)
+                );
+            }
+        }
+
         // Test Tools Functions
         async function getRandomQuestions(count) {
             try {
@@ -326,7 +479,7 @@
                 
                 const summary = `Fetched ${count} questions\nCategories: ${Object.keys(data.categoryDistribution || {}).length}\nTotal available: ${data.questions?.length || 0}`;
                 showResults(summary);
-                showToast(`✅ Fetched ${count} random questions - check console for details`);
+                showToast(`✅ Fetched ${count} random questions`);
                 
             } catch (error) {
                 console.error('Error fetching random questions:', error);
@@ -345,10 +498,9 @@
                 }
                 
                 const qm = new QuestionManager();
-                const sessionStats = qm.getSessionStats();
                 const result = await qm.getRandomQuestions(5);
                 
-                const summary = `Session ID: ${result.sessionInfo.sessionId}\nTotal Used: ${result.sessionInfo.totalUsed}\nExcluded: ${result.sessionInfo.excludedThisRequest}\nReturned: ${result.questions.length}`;
+                const summary = `Session: ${result.sessionInfo.sessionId}\nUsed: ${result.sessionInfo.totalUsed}\nExcluded: ${result.sessionInfo.excludedThisRequest}\nReturned: ${result.questions.length}`;
                 
                 console.log('🧪 Session Deduplication Test:', result);
                 showResults(summary);
@@ -371,7 +523,7 @@
                 
                 console.log('📊 Category Balance:', data);
                 
-                const summary = `Total Questions: ${data.totalQuestions}\nCategories: ${data.stats?.length || 0}\nCheck console for detailed breakdown`;
+                const summary = `Total: ${data.totalQuestions}\nCategories: ${data.stats?.length || 0}\nCheck console for details`;
                 showResults(summary);
                 showToast('✅ Category balance check completed');
                 
@@ -380,16 +532,6 @@
                 showToast('❌ Failed to check category balance', 'error');
             } finally {
                 showLoading(false);
-            }
-        }
-
-        function confirmDeleteCategory() {
-            const category = prompt('Enter category name to delete ALL questions from:');
-            if (category) {
-                const confirmed = confirm(`⚠️ This will DELETE ALL questions in "${category}". Are you sure?`);
-                if (confirmed) {
-                    deleteCategoryQuestions(category);
-                }
             }
         }
 
@@ -417,7 +559,7 @@
         // View Functions
         function openQuestionViewer() {
             window.open('/test2-questions.html', '_blank');
-            showToast('✅ Opened Question Admin View in new tab');
+            showToast('✅ Opened Question Admin View');
         }
 
         async function checkQuestionCoverage() {
@@ -427,7 +569,7 @@
                 const data = await response.json();
                 
                 console.log('🔍 Question Coverage:', data);
-                showToast(`✅ Coverage check: ${data.totalQuestions} total questions`);
+                showToast(`✅ Coverage: ${data.totalQuestions} total questions`);
                 
                 const summary = `Total: ${data.totalQuestions}\nActive: ${data.activeQuestions || data.totalQuestions}\nCategories: ${data.stats?.length || 0}`;
                 showResults(summary);
