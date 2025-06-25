@@ -450,11 +450,6 @@
                 padding: 5px 6px;
             }
 
-            .category-buttons {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 3px;
-            }
-
             .badge {
                 font-size: 8px;
                 padding: 2px 4px;
@@ -519,15 +514,15 @@
             background-color: #7fde9f;
             transform: translateY(-1px);
         }
-        
+
         .btn-delete {
             background: transparent;
             border: 2px solid #ff4d4d;
-            color: #ff4d4d;
-            padding: 6px 12px;
+            color: white;
             font-size: 0.85rem;
-            font-weight: 500;
+            padding: 6px 12px;
             border-radius: 6px;
+            font-weight: 500;
             transition: background 0.2s ease;
             cursor: pointer;
         }
@@ -586,7 +581,7 @@
             font-size: 11px;
         }
 
-        
+
     </style>
 </head>
 
@@ -705,8 +700,6 @@
                 <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Technology')">Delete Technology</button>
                 <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Food')">Delete Food</button>
                 <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Misc')">Delete Misc</button>
-            </div>
-            <div style="text-align: center; margin-top: 12px;">
                 <button class="admin-btn btn-danger" onclick="confirmDeleteAll()">❌ Delete All Categories</button>
             </div>
         </div>
@@ -733,7 +726,7 @@
             </div>
         </div>
 
-        
+
 
         <!-- Insights Panel -->
         <div class="tool-section insights-panel">
