@@ -507,7 +507,7 @@ The code implements the auto-remove duplicates functionality for the "Check Dupl
             loadCategoryCounts(); // Refresh counts
         }
 
-        // Levenshtein distance calculation for fuzzy matching
+        // Simplified Levenshtein distance calculation for fuzzy matching
         function levenshteinDistance(str1, str2) {
             const matrix = [];
             
@@ -545,10 +545,10 @@ The code implements the auto-remove duplicates functionality for the "Check Dupl
             return ((maxLength - distance) / maxLength) * 100;
         }
 
-        // Fast duplicate detection with auto-deletion
+        // Fast automatic duplicate detection and deletion
         async function checkDuplicates() {
-            console.log('🔍 Starting fast duplicate detection and cleanup...');
-            showToast('Scanning and cleaning duplicates...', 'warning');
+            console.log('🔍 Starting fast auto-cleanup of duplicates...');
+            showToast('Auto-cleaning duplicates...', 'warning');
 
             try {
                 // Fetch all questions from the database
@@ -561,37 +561,35 @@ The code implements the auto-remove duplicates functionality for the "Check Dupl
                 const questions = data.questions || [];
                 const initialCount = questions.length;
 
-                console.log(`📊 Scanning ${initialCount} total questions for duplicates`);
+                console.log(`📊 Auto-scanning ${initialCount} questions for duplicates`);
 
                 const duplicatesToDelete = [];
                 const deletedInfo = [];
                 const processed = new Set();
 
-                // Check for exact duplicates (case-insensitive)
+                // Phase 1: Detect exact duplicates (case-insensitive)
                 const exactSeen = new Map();
                 
                 questions.forEach(question => {
-                    // Skip very short questions
+                    // Skip very short questions to avoid false positives
                     if (question.question.trim().length < 10) return;
                     
                     const normalizedText = question.question.toLowerCase().trim();
                     
                     if (exactSeen.has(normalizedText)) {
-                        const original = exactSeen.get(normalizedText);
                         duplicatesToDelete.push(question._id);
                         deletedInfo.push({
                             id: question._id,
                             type: 'exact',
-                            text: question.question.substring(0, 50) + '...',
+                            text: question.question.substring(0, 40),
                             category: question.category
                         });
-                        console.log(`🔴 Exact duplicate found: "${question.question.substring(0, 30)}..." (${question.category})`);
                     } else {
                         exactSeen.set(normalizedText, question);
                     }
                 });
 
-                // Check for similar duplicates using Levenshtein distance (90%+ similarity)
+                // Phase 2: Detect similar duplicates using fuzzy matching (90%+ threshold)
                 for (let i = 0; i < questions.length; i++) {
                     if (processed.has(i) || duplicatesToDelete.includes(questions[i]._id)) continue;
                     
@@ -615,19 +613,17 @@ The code implements the auto-remove duplicates functionality for the "Check Dupl
                             deletedInfo.push({
                                 id: question2._id,
                                 type: 'similar',
-                                text: question2.question.substring(0, 50) + '...',
+                                text: question2.question.substring(0, 40),
                                 category: question2.category,
                                 similarity: Math.round(similarity)
                             });
                             processed.add(j);
-                            console.log(`🟡 Similar duplicate found (${Math.round(similarity)}%): "${question2.question.substring(0, 30)}..." (${question2.category})`);
                         }
                     }
                 }
 
-                // Auto-delete all duplicates if any found
+                // Phase 3: Silent auto-deletion of all detected duplicates
                 if (duplicatesToDelete.length > 0) {
-                    console.log(`🗑️ Auto-deleting ${duplicatesToDelete.length} duplicates:`, deletedInfo);
                     
                     const deleteResponse = await fetch('/api/questions/admin/bulk-delete', {
                         method: 'POST',
@@ -644,29 +640,27 @@ The code implements the auto-remove duplicates functionality for the "Check Dupl
                     const deleteResult = await deleteResponse.json();
                     const remainingQuestions = initialCount - duplicatesToDelete.length;
 
-                    // Log deleted items for transparency
-                    console.log(`✅ Successfully deleted ${deleteResult.deletedCount} duplicates:`);
+                    // Console logging for transparency
+                    console.log(`✅ Auto-deleted ${deleteResult.deletedCount} duplicates:`);
                     deletedInfo.forEach(item => {
-                        console.log(`  • [${item.type.toUpperCase()}] ${item.id}: "${item.text}" (${item.category})${item.similarity ? ` - ${item.similarity}%` : ''}`);
+                        console.log(`  • [${item.type.toUpperCase()}] ${item.id}: "${item.text}..." (${item.category})${item.similarity ? ` - ${item.similarity}%` : ''}`);
                     });
 
-                    // Show success toast
-                    const successMessage = `✅ ${initialCount} scanned\n❌ ${duplicatesToDelete.length} duplicates removed\n📊 ${remainingQuestions} questions remaining`;
-                    showToast(successMessage, 'success', 6000);
+                    // Simple toast feedback
+                    showToast(`✅ ${initialCount} scanned • ${duplicatesToDelete.length} removed • ${remainingQuestions} remaining`, 'success');
 
                     // Refresh category counts
                     loadCategoryCounts();
 
                 } else {
                     // No duplicates found
-                    console.log('✅ No duplicates found');
-                    const cleanMessage = `✅ ${initialCount} scanned\n❌ 0 duplicates removed\n📊 ${initialCount} questions remaining`;
-                    showToast(cleanMessage, 'success', 4000);
+                    console.log('✅ No duplicates detected');
+                    showToast(`✅ ${initialCount} scanned • 0 removed • ${initialCount} remaining`, 'success');
                 }
 
             } catch (error) {
-                console.error('❌ Error during duplicate cleanup:', error);
-                showToast('❌ Error during duplicate cleanup.', 'error');
+                console.error('❌ Auto-cleanup error:', error);
+                showToast('❌ Auto-cleanup failed', 'error');
             }
         }
 
