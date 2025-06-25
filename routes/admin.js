@@ -3,6 +3,8 @@ const router = express.Router();
 const User = require("../models/User");
 const Stat = require("../models/Stat");
 const Leaderboard = require("../models/Leaderboard");
+const Question = require("../models/Question");
+const stringSimilarity = require("string-similarity");
 
 // Cleanup orphaned data (for fixing data from users deleted without proper cleanup)
 router.post("/cleanup-orphaned-data", async (req, res) => {
@@ -271,6 +273,86 @@ router.post("/bulk-delete", async (req, res) => {
       message: "Bulk delete failed",
       error: error.message,
     });
+  }
+});
+
+// Check for duplicates
+router.get("/check-duplicates", async (req, res) => {
+  try {
+    const questions = await Question.find({});
+    const seen = new Set();
+    const exactDuplicates = [];
+    let exactCount = 0;
+    let similarCount = 0;
+
+    // Find and remove exact duplicates
+    for (let i = questions.length - 1; i >= 0; i--) {
+      const q = questions[i];
+      const key = `${q.question.trim().toLowerCase()}|${JSON.stringify(q.answers)}|${q.correct}`;
+
+      if (seen.has(key)) {
+        exactDuplicates.push(q._id);
+        exactCount++;
+      } else {
+        seen.add(key);
+      }
+    }
+
+    // Delete exact duplicates
+    if (exactDuplicates.length > 0) {
+      await Question.deleteMany({ _id: { $in: exactDuplicates } });
+    }
+
+    // Find similar duplicates (≥90% match)
+    const remainingQuestions = await Question.find({});
+    const similarPairs = new Set();
+
+    for (let i = 0; i < remainingQuestions.length; i++) {
+      for (let j = i + 1; j < remainingQuestions.length; j++) {
+        const sim = stringSimilarity.compareTwoStrings(
+          remainingQuestions[i].question.toLowerCase(),
+          remainingQuestions[j].question.toLowerCase()
+        );
+        if (sim >= 0.9) {
+          const pairKey = `${remainingQuestions[i]._id}_${remainingQuestions[j]._id}`;
+          if (!similarPairs.has(pairKey)) {
+            similarPairs.add(pairKey);
+            similarCount++;
+          }
+        }
+      }
+    }
+
+    res.json({ exact: exactCount, similar: similarCount });
+  } catch (error) {
+    console.error("Error checking duplicates:", error);
+    res.status(500).json({ error: "Failed to check duplicates" });
+  }
+});
+
+// Delete similar duplicates
+router.post("/delete-similar", async (req, res) => {
+  try {
+    const questions = await Question.find({});
+    const toDelete = new Set();
+
+    for (let i = 0; i < questions.length; i++) {
+      for (let j = i + 1; j < questions.length; j++) {
+        const sim = stringSimilarity.compareTwoStrings(
+          questions[i].question.toLowerCase(),
+          questions[j].question.toLowerCase()
+        );
+        if (sim >= 0.9 && !toDelete.has(questions[j]._id.toString())) {
+          toDelete.add(questions[j]._id.toString());
+        }
+      }
+    }
+
+    await Question.deleteMany({ _id: { $in: Array.from(toDelete) } });
+    res.json({ deleted: toDelete.size });
+  } catch (error) {
+    console.error("Error deleting similar duplicates:", error);
+    res.status(500).json({ error: "Failed to delete similar duplicates" });
   }
 });
 

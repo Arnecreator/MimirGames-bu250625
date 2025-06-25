@@ -125,31 +125,31 @@ document.addEventListener('DOMContentLoaded', function() {
     categoryButtons.forEach(button => {
         button.addEventListener('click', async function() {
             const category = this.getAttribute('data-category');
-            
+
             // Update active button
             categoryButtons.forEach(btn => btn.classList.remove('active'));
             this.classList.add('active');
-            
+
             await loadQuestionsByCategory(category);
         });
     });
 
     async function loadQuestionsByCategory(category) {
         const resultDiv = document.getElementById('categoryQuestionsResult');
-        
+
         try {
             console.log(`🔍 Loading questions for category: ${category}`);
-            
+
             let url;
             if (category === 'all') {
                 url = '/api/questions/admin/all';
             } else {
                 url = `/api/questions/category/${category}`;
             }
-            
+
             const response = await fetch(url);
             const data = await response.json();
-            
+
             let questions;
             if (category === 'all') {
                 questions = data.questions || [];
@@ -158,10 +158,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 questions = data.questions || [];
                 console.log(`📋 Loaded ${questions.length} questions for ${category}`);
             }
-            
+
             // Display questions
             displayQuestions(questions, category, resultDiv);
-            
+
         } catch (error) {
             console.error('❌ Error loading questions by category:', error);
             resultDiv.innerHTML = `<div style="color: #ff6b6b; padding: 20px; text-align: center;">Error loading questions for ${category}</div>`;
@@ -208,3 +208,90 @@ document.addEventListener('DOMContentLoaded', function() {
 
     console.log('✅ Test Questions script loaded and event listeners attached');
 });
+
+function checkQuestionCoverage() {
+  window.open('/public/test-n.html', '_blank');
+}
+
+async function checkDuplicates() {
+  try {
+    showLoading();
+
+    const response = await fetch('/api/check-duplicates');
+    if (!response.ok) {
+      throw new Error('Failed to check duplicates');
+    }
+
+    const data = await response.json();
+    hideLoading();
+
+    showDuplicateModal(data.exact, data.similar);
+  } catch (error) {
+    hideLoading();
+    console.error('Error checking duplicates:', error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Failed to check for duplicates'
+    });
+  }
+}
+
+function showDuplicateModal(exact, similar) {
+  Swal.fire({
+    icon: 'success',
+    title: 'Duplicates Check Complete',
+    html: `
+      ✅ <b>${exact}</b> exact duplicates were automatically deleted.<br>
+      ⚠️ <b>${similar}</b> similar duplicates detected (≥90% match).<br><br>
+      What would you like to do with similar duplicates?
+    `,
+    showCancelButton: true,
+    showDenyButton: true,
+    confirmButtonText: 'Delete All Similar',
+    denyButtonText: 'Keep Similar',
+    cancelButtonText: 'Cancel',
+    confirmButtonColor: '#d33',
+    denyButtonColor: '#3085d6'
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        const response = await fetch('/api/delete-similar', { method: 'POST' });
+        if (!response.ok) {
+          throw new Error('Failed to delete similar duplicates');
+        }
+
+        const data = await response.json();
+        Swal.fire({
+          icon: 'success',
+          title: 'Similar Duplicates Deleted!',
+          text: `${data.deleted} similar duplicates were removed.`
+        });
+      } catch (error) {
+        console.error('Error deleting similar duplicates:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Failed to delete similar duplicates'
+        });
+      }
+    } else if (result.isDenied) {
+      Swal.fire({
+        icon: 'info',
+        title: 'Similar Duplicates Kept',
+        text: 'Only exact duplicates were removed.'
+      });
+    }
+  });
+}
+
+// Add to global scope for HTML onclick handlers
+window.addSampleQuestions = addSampleQuestions;
+window.deleteAllQuestions = deleteAllQuestions;
+window.checkCategoryBalance = checkCategoryBalance;
+window.addTenPerCategory = addTenPerCategory;
+window.getRandomQuestions = getRandomQuestions;
+window.testSessionDeduplication = testSessionDeduplication;
+window.openQuestionViewer = openQuestionViewer;
+window.checkQuestionCoverage = checkQuestionCoverage;
+window.checkDuplicates = checkDuplicates;

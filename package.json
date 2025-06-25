@@ -10,6 +10,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
-    "mongoose": "^7.2.2"
+    "mongoose": "^7.2.2",
+    "string-similarity": "^4.0.4"
   }
 }

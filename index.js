@@ -29,27 +29,27 @@ app.get("/api", (req, res) => {
 app.get('/api/deleteCategory', async (req, res) => {
   const category = req.query.category;
   console.log("Received request to delete category:", category);
-  
+
   if (!category) {
     return res.status(400).json({ success: false, message: "Category parameter required" });
   }
-  
+
   // Import Question model
   const Question = require('./models/Question');
-  
+
   try {
     // Delete all questions in the specified category
     const deleteResult = await Question.deleteMany({ category: category });
-    
+
     console.log(`🗑️ Deleted ${deleteResult.deletedCount} questions from category: ${category}`);
-    
+
     res.json({ 
       success: true, 
       message: `Successfully deleted ${deleteResult.deletedCount} questions from ${category} category`,
       deletedCount: deleteResult.deletedCount,
       category: category
     });
-    
+
   } catch (error) {
     console.error("❌ Error deleting category:", error);
     res.status(500).json({ 
@@ -63,22 +63,22 @@ app.get('/api/deleteCategory', async (req, res) => {
 // Delete all categories route
 app.get('/api/deleteAllCategories', async (req, res) => {
   console.log("Received request to delete all categories");
-  
+
   // Import Question model
   const Question = require('./models/Question');
-  
+
   try {
     // Delete all questions
     const deleteResult = await Question.deleteMany({});
-    
+
     console.log(`🗑️ Deleted all ${deleteResult.deletedCount} questions from all categories`);
-    
+
     res.json({ 
       success: true, 
       message: `Successfully deleted all ${deleteResult.deletedCount} questions from all categories`,
       deletedCount: deleteResult.deletedCount
     });
-    
+
   } catch (error) {
     console.error("❌ Error deleting all categories:", error);
     res.status(500).json({ 
@@ -93,14 +93,14 @@ app.get('/api/deleteAllCategories', async (req, res) => {
 app.get('/api/addQuestions', async (req, res) => {
   const category = req.query.category;
   console.log("Received request to add questions to:", category);
-  
+
   if (!category) {
     return res.status(400).json({ success: false, message: "Category parameter required" });
   }
-  
+
   // Import Question model
   const Question = require('./models/Question');
-  
+
   // Create 10 sample questions for the category
   const questionsToAdd = Array.from({ length: 10 }, (_, i) => ({
     category: category,
@@ -115,11 +115,11 @@ app.get('/api/addQuestions', async (req, res) => {
     difficulty: ['easy', 'medium', 'hard'][i % 3], // Rotate difficulties
     isActive: true
   }));
-  
+
   try {
     const insertedQuestions = await Question.insertMany(questionsToAdd);
     console.log(`✅ Successfully added ${insertedQuestions.length} questions to ${category}`);
-    
+
     res.json({ 
       success: true, 
       message: `10 questions added to ${category}!`,
@@ -144,6 +144,7 @@ app.use("/api/leaderboard", leaderboardRoutes);
 app.use("/api/users", usersRoutes); // ⬅️ NY ROUTE
 app.use("/api/admin", adminRoutes);
 app.use("/api/questions", questionsRoutes);
+app.use("/api", require("./routes/admin"));
 
 // 🛑 Fallback för ogiltiga endpoints
 app.use((req, res) => {
