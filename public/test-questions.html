@@ -794,22 +794,12 @@
 
         // Add event listeners to all category buttons
         document.addEventListener('DOMContentLoaded', function() {
-            // Add click handlers to all category buttons
-            document.querySelectorAll('.add-btn[data-category]').forEach(button => {
-                button.addEventListener('click', async function() {
-                    const category = this.getAttribute('data-category');
-                    if (category) {
-                        await handleAddQuestions(category, 10);
-                    }
-                });
-            });
-
-            // Alternative event listener setup for add buttons (with SweetAlert2)
+            // Single clean event listener for add buttons
             document.querySelectorAll('.add-btn').forEach(button => {
                 button.addEventListener('click', async (e) => {
-                    // Prevent double-firing if both handlers are active
-                    if (e.target.classList.contains('processed')) return;
-                    e.target.classList.add('processed');
+                    // Prevent double-firing
+                    if (e.target.classList.contains('processing')) return;
+                    e.target.classList.add('processing');
                     
                     const category = button.getAttribute('data-category');
                     
@@ -819,26 +809,21 @@
                             title: 'Error',
                             text: 'Category not specified'
                         });
+                        e.target.classList.remove('processing');
                         return;
                     }
 
                     try {
-                        const res = await fetch(`/api/addQuestions?category=${category}`);
-                        const data = await res.json();
+                        const response = await fetch(`/api/addQuestions?category=${category}`);
+                        
+                        if (!response.ok) {
+                            throw new Error(`Server responded with status ${response.status}`);
+                        }
+                        
+                        const data = await response.json();
 
                         if (data.success) {
-                            // ✅ Success message
-                            Swal.fire({
-                                position: 'top-end',
-                                icon: 'success',
-                                title: `10 questions added to ${category}!`,
-                                showConfirmButton: false,
-                                timer: 1500,
-                                toast: true,
-                                background: '#a0ffbf'
-                            });
-                            
-                            // Update the button count immediately
+                            // ✅ SUCCESS – update count & show popup
                             let count = parseInt(button.getAttribute('data-count')) || 0;
                             count += 10;
                             button.setAttribute('data-count', count);
@@ -852,21 +837,31 @@
                             // Add badge for visual confirmation
                             addBadgeToCategory(category, 10);
                             
+                            // Success popup
+                            Swal.fire({
+                                position: 'top-end',
+                                icon: 'success',
+                                title: `10 questions added to ${category}!`,
+                                showConfirmButton: false,
+                                timer: 1500,
+                                toast: true,
+                                background: '#a0ffbf'
+                            });
+                            
                         } else {
-                            throw new Error(data.message || "Unknown error");
+                            throw new Error(data.message || "Unknown backend response");
                         }
+                        
                     } catch (err) {
-                        // ❌ Error popup
+                        // ❌ ONLY show this if fetch failed or backend returned error
                         Swal.fire({
                             icon: 'error',
                             title: 'Network error',
                             text: err.message || 'Failed to add questions'
                         });
                     } finally {
-                        // Remove processed class after a short delay
-                        setTimeout(() => {
-                            e.target.classList.remove('processed');
-                        }, 100);
+                        // Remove processing class
+                        e.target.classList.remove('processing');
                     }
                 });
             });
