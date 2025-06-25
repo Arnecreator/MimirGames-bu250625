@@ -196,9 +196,11 @@
             transform: translateX(100%);
             transition: all 0.3s ease;
             font-weight: 500;
-            max-width: 300px;
+            max-width: 350px;
             font-size: 13px;
-            line-height: 1.4;
+            line-height: 1.5;
+            white-space: pre-line;
+            text-align: left;
         }
 
         .toast.show {
@@ -332,15 +334,25 @@
 
     <script>
         // Toast notification system
-        function showToast(message, type = 'success') {
+        function showToast(message, type = 'success', duration = 4000) {
             const toast = document.getElementById('toast');
-            toast.textContent = message;
+            
+            // Handle multiline messages
+            if (message.includes('\n')) {
+                toast.innerHTML = message.replace(/\n/g, '<br>');
+            } else {
+                toast.textContent = message;
+            }
+            
             toast.className = `toast ${type}`;
             toast.classList.add('show');
             
+            // Use longer duration for detailed messages
+            const displayTime = message.length > 60 ? Math.max(duration, 6000) : duration;
+            
             setTimeout(() => {
                 toast.classList.remove('show');
-            }, 4000);
+            }, displayTime);
         }
 
         // Load question counts when page loads
@@ -489,10 +501,87 @@
         }
 
         // Other Tools functions
-        function checkDuplicates() {
+        async function checkDuplicates() {
             console.log('🔍 Checking for duplicate questions...');
-            showToast('Checking for duplicates...', 'warning');
-            // Placeholder - will implement duplicate checking logic
+            showToast('Checking duplicates...', 'warning');
+            
+            try {
+                // Fetch all questions from the database
+                const response = await fetch('/api/questions/admin/all');
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                const questions = data.questions || [];
+                
+                console.log(`📊 Starting duplicate check on ${questions.length} total questions`);
+                
+                // Check for duplicates (case-insensitive)
+                const duplicates = [];
+                const seen = new Map();
+                
+                questions.forEach(question => {
+                    const normalizedText = question.question.toLowerCase().trim();
+                    
+                    if (seen.has(normalizedText)) {
+                        // Found a duplicate
+                        const original = seen.get(normalizedText);
+                        duplicates.push({
+                            original: original,
+                            duplicate: question,
+                            text: normalizedText
+                        });
+                        
+                        // Log to console for debugging
+                        console.warn("Duplicate found:", {
+                            id: question._id,
+                            question: question.question,
+                            category: question.category,
+                            originalId: original._id,
+                            originalCategory: original.category
+                        });
+                    } else {
+                        seen.set(normalizedText, question);
+                    }
+                });
+                
+                // Calculate summary stats
+                const totalQuestions = questions.length;
+                const duplicatesFound = duplicates.length;
+                const uniqueQuestions = totalQuestions - duplicatesFound;
+                
+                // Show results
+                if (duplicatesFound === 0) {
+                    showToast(`🎉 No duplicates found among ${totalQuestions} questions.`, 'success');
+                    console.log(`✅ Duplicate check complete: ${totalQuestions} questions, no duplicates found`);
+                } else {
+                    const summaryMessage = `✅ Duplicate check complete:\n• ${totalQuestions} total questions checked\n• ${duplicatesFound} duplicates found\n• ${uniqueQuestions} unique questions`;
+                    showToast(summaryMessage, duplicatesFound > 5 ? 'error' : 'warning');
+                    
+                    console.log(`⚠️ Duplicate check complete:`, {
+                        totalQuestions,
+                        duplicatesFound,
+                        uniqueQuestions,
+                        duplicateDetails: duplicates
+                    });
+                    
+                    // Log each duplicate pair for detailed review
+                    duplicates.forEach((dup, index) => {
+                        console.warn(`Duplicate #${index + 1}:`, {
+                            question: dup.duplicate.question,
+                            duplicate_id: dup.duplicate._id,
+                            duplicate_category: dup.duplicate.category,
+                            original_id: dup.original._id,
+                            original_category: dup.original.category
+                        });
+                    });
+                }
+                
+            } catch (error) {
+                console.error('❌ Error during duplicate check:', error);
+                showToast('❌ Error during duplicate check.', 'error');
+            }
         }
 
         function runRandomizer() {
