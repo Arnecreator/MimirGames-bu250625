@@ -525,62 +525,62 @@
             <h3>➕ Add Questions by Category</h3>
             <div class="category-buttons">
                 <div class="category-btn-container">
-                    <button class="category-btn" data-category="History" onclick="addQuestionsToCategory('History', 10)">
+                    <button class="category-btn" data-category="History">
                         Add to History
                     </button>
                 </div>
                 <div class="category-btn-container">
-                    <button class="category-btn" data-category="Science" onclick="addQuestionsToCategory('Science', 10)">
+                    <button class="category-btn" data-category="Science">
                         Add to Science
                     </button>
                 </div>
                 <div class="category-btn-container">
-                    <button class="category-btn" data-category="Sports" onclick="addQuestionsToCategory('Sports', 10)">
+                    <button class="category-btn" data-category="Sports">
                         Add to Sports
                     </button>
                 </div>
                 <div class="category-btn-container">
-                    <button class="category-btn" data-category="Geography" onclick="addQuestionsToCategory('Geography', 10)">
+                    <button class="category-btn" data-category="Geography">
                         Add to Geography
                     </button>
                 </div>
                 <div class="category-btn-container">
-                    <button class="category-btn" data-category="Literature" onclick="addQuestionsToCategory('Literature', 10)">
+                    <button class="category-btn" data-category="Literature">
                         Add to Literature
                     </button>
                 </div>
                 <div class="category-btn-container">
-                    <button class="category-btn" data-category="Math" onclick="addQuestionsToCategory('Math', 10)">
+                    <button class="category-btn" data-category="Math">
                         Add to Math
                     </button>
                 </div>
                 <div class="category-btn-container">
-                    <button class="category-btn" data-category="Movies" onclick="addQuestionsToCategory('Movies', 10)">
+                    <button class="category-btn" data-category="Movies">
                         Add to Movies
                     </button>
                 </div>
                 <div class="category-btn-container">
-                    <button class="category-btn" data-category="Music" onclick="addQuestionsToCategory('Music', 10)">
+                    <button class="category-btn" data-category="Music">
                         Add to Music
                     </button>
                 </div>
                 <div class="category-btn-container">
-                    <button class="category-btn" data-category="Art" onclick="addQuestionsToCategory('Art', 10)">
+                    <button class="category-btn" data-category="Art">
                         Add to Art
                     </button>
                 </div>
                 <div class="category-btn-container">
-                    <button class="category-btn" data-category="Technology" onclick="addQuestionsToCategory('Technology', 10)">
+                    <button class="category-btn" data-category="Technology">
                         Add to Technology
                     </button>
                 </div>
                 <div class="category-btn-container">
-                    <button class="category-btn" data-category="Food" onclick="addQuestionsToCategory('Food', 10)">
+                    <button class="category-btn" data-category="Food">
                         Add to Food
                     </button>
                 </div>
                 <div class="category-btn-container">
-                    <button class="category-btn" data-category="Misc" onclick="addQuestionsToCategory('Misc', 10)">
+                    <button class="category-btn" data-category="Misc">
                         Add to Misc
                     </button>
                 </div>
@@ -770,6 +770,24 @@
                 showToast('❌ Network error. Please try again.', 'error');
             }
         }
+
+        // Alternative function for direct button event listeners
+        async function handleAddQuestions(category, count = 10) {
+            return addQuestionsToCategory(category, count);
+        }
+
+        // Add event listeners to all category buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click handlers to all category buttons
+            document.querySelectorAll('.category-btn[data-category]').forEach(button => {
+                button.addEventListener('click', async function() {
+                    const category = this.getAttribute('data-category');
+                    if (category) {
+                        await handleAddQuestions(category, 10);
+                    }
+                });
+            });
+        });
 
         // Add questions to all categories
         async function addQuestionsToAllCategories() {
