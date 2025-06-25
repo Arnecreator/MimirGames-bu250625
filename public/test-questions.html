@@ -488,6 +488,12 @@
         .tool-section:hover {
             background: rgba(26, 29, 58, 0.8);
         }
+
+        /* Glow effect for buttons when questions are added */
+        .glow {
+            box-shadow: 0 0 10px 2px #00ff99;
+            transition: box-shadow 0.3s ease;
+        }
     </style>
 </head>
 
@@ -692,6 +698,7 @@
                     categoryButtons.forEach(button => {
                         const category = button.getAttribute('data-category');
                         const count = categoryCounts[category] || 0;
+                        button.setAttribute('data-count', count);
                         button.textContent = `Add to ${category} (${count})`;
                     });
                     
@@ -712,12 +719,20 @@
         function updateCategoryCount(category, newCount, addedCount = 0) {
             const button = document.querySelector(`.category-btn[data-category="${category}"]`);
             if (button) {
+                // Update data-count attribute
+                button.setAttribute('data-count', newCount);
                 button.textContent = `Add to ${category} (${newCount})`;
                 categoryCounts[category] = newCount;
                 
                 // Add badge if questions were added
                 if (addedCount > 0) {
                     addBadgeToCategory(category, addedCount);
+                }
+                
+                // Add glow effect for visual feedback
+                if (addedCount > 0) {
+                    button.classList.add('glow');
+                    setTimeout(() => button.classList.remove('glow'), 1000);
                 }
             }
         }
@@ -823,9 +838,19 @@
                                 background: '#a0ffbf'
                             });
                             
-                            // Update the button count
-                            const newCount = (categoryCounts[category] || 0) + 10;
-                            updateCategoryCount(category, newCount, 10);
+                            // Update the button count immediately
+                            let count = parseInt(button.getAttribute('data-count')) || 0;
+                            count += 10;
+                            button.setAttribute('data-count', count);
+                            button.textContent = `Add to ${category} (${count})`;
+                            categoryCounts[category] = count;
+                            
+                            // Add visual feedback
+                            button.classList.add('glow');
+                            setTimeout(() => button.classList.remove('glow'), 1000);
+                            
+                            // Add badge for visual confirmation
+                            addBadgeToCategory(category, 10);
                             
                         } else {
                             throw new Error(data.message || "Unknown error");
