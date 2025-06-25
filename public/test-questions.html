@@ -11,48 +11,54 @@
             background: #0a0b1e;
             color: white;
             margin: 0;
-            padding: 15px;
-            line-height: 1.4;
+            padding: 8px;
+            line-height: 1.3;
+            font-size: 12px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
         }
 
         .tool-section {
             background: #1a1d3a;
-            border-radius: 8px;
-            padding: 12px 15px;
-            margin: 8px 0;
+            border-radius: 6px;
+            padding: 8px 10px;
+            margin: 6px 0;
             border: 1px solid #333;
         }
 
         .section-title {
             color: #7fffd4;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 600;
-            margin: 0 0 8px 0;
+            margin: 0 0 6px 0;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
         }
 
         .button-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 6px;
-            margin-top: 8px;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 4px;
+            margin-top: 6px;
         }
 
         .btn-sm {
             background: #7fffd4;
             color: #000;
             border: none;
-            padding: 4px 8px;
-            border-radius: 4px;
+            padding: 4px 6px;
+            border-radius: 3px;
             cursor: pointer;
             font-weight: 500;
-            font-size: 11px;
+            font-size: 10px;
             transition: all 0.2s ease;
             text-align: center;
-            line-height: 1.3;
-            min-height: 24px;
+            line-height: 1.2;
+            min-height: 22px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -83,20 +89,20 @@
 
         .toast {
             position: fixed;
-            top: 15px;
-            right: 15px;
+            top: 10px;
+            right: 10px;
             background: #4caf50;
             color: white;
-            padding: 8px 12px;
-            border-radius: 6px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            padding: 6px 10px;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
             z-index: 1000;
             opacity: 0;
             transform: translateX(100%);
             transition: all 0.3s ease;
             font-weight: 500;
-            max-width: 300px;
-            font-size: 12px;
+            max-width: 250px;
+            font-size: 11px;
         }
 
         .toast.show {
@@ -116,40 +122,39 @@
             display: none;
             color: #7fffd4;
             font-style: italic;
-            margin-top: 6px;
-            font-size: 11px;
+            margin-top: 4px;
+            font-size: 10px;
         }
 
         .results-section {
             background: #111335;
-            border-radius: 6px;
-            padding: 8px;
-            margin-top: 8px;
+            border-radius: 4px;
+            padding: 6px;
+            margin-top: 6px;
             border: 1px solid #333;
         }
 
         .results-section h3 {
             color: #7fffd4;
-            margin: 0 0 6px 0;
-            font-size: 12px;
+            margin: 0 0 4px 0;
+            font-size: 11px;
         }
 
         .results-content {
             color: #ccc;
-            font-size: 11px;
+            font-size: 10px;
             font-family: 'Courier New', monospace;
-            max-height: 120px;
+            max-height: 80px;
             overflow-y: auto;
         }
 
         h1 {
             color: #7fffd4;
-            margin: 5px 0 15px 0;
-            font-size: 16px;
+            margin: 0 0 10px 0;
+            font-size: 14px;
             font-weight: 600;
         }
 
-        /* Confirmation dialog styles */
         .confirm-dialog {
             position: fixed;
             top: 0;
@@ -161,44 +166,46 @@
             align-items: center;
             justify-content: center;
             z-index: 2000;
+            padding: 10px;
         }
 
         .confirm-content {
             background: #1a1d3a;
             border: 2px solid #333;
-            border-radius: 8px;
-            padding: 20px;
-            max-width: 400px;
+            border-radius: 6px;
+            padding: 15px;
+            max-width: 350px;
             text-align: center;
+            width: 100%;
         }
 
         .confirm-title {
             color: #ff9800;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 600;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .confirm-message {
             color: #ccc;
-            font-size: 13px;
-            margin-bottom: 20px;
-            line-height: 1.4;
+            font-size: 12px;
+            margin-bottom: 15px;
+            line-height: 1.3;
         }
 
         .confirm-buttons {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             justify-content: center;
         }
 
         .confirm-btn {
-            padding: 6px 16px;
+            padding: 5px 12px;
             border: none;
-            border-radius: 4px;
+            border-radius: 3px;
             cursor: pointer;
             font-weight: 500;
-            font-size: 12px;
+            font-size: 11px;
             transition: all 0.2s ease;
         }
 
@@ -220,30 +227,94 @@
             background: #777;
         }
 
+        /* Mobile Optimizations */
         @media (max-width: 768px) {
+            body {
+                padding: 4px;
+                font-size: 11px;
+            }
+
             .button-grid {
                 grid-template-columns: 1fr 1fr;
-            }
-            
-            body {
-                padding: 8px;
+                gap: 3px;
             }
             
             .toast {
-                right: 8px;
-                left: 8px;
+                right: 4px;
+                left: 4px;
                 max-width: none;
+                font-size: 10px;
             }
 
             .btn-sm {
+                font-size: 9px;
+                padding: 3px 5px;
+                min-height: 20px;
+            }
+
+            .tool-section {
+                padding: 6px 8px;
+                margin: 4px 0;
+            }
+
+            .confirm-content {
+                padding: 12px;
+                margin: 0 5px;
+            }
+
+            .confirm-title {
+                font-size: 13px;
+            }
+
+            .confirm-message {
+                font-size: 11px;
+            }
+
+            .confirm-btn {
+                padding: 4px 10px;
                 font-size: 10px;
-                padding: 3px 6px;
             }
         }
 
         @media (max-width: 480px) {
             .button-grid {
                 grid-template-columns: 1fr;
+            }
+
+            body {
+                padding: 3px;
+                font-size: 10px;
+            }
+
+            .btn-sm {
+                font-size: 9px;
+                padding: 3px 4px;
+                min-height: 18px;
+            }
+
+            .section-title {
+                font-size: 11px;
+            }
+
+            h1 {
+                font-size: 13px;
+            }
+        }
+
+        /* Ultra-compact for very small screens */
+        @media (max-width: 360px) {
+            .tool-section {
+                padding: 4px 6px;
+            }
+
+            .btn-sm {
+                font-size: 8px;
+                padding: 2px 4px;
+                min-height: 16px;
+            }
+
+            .section-title {
+                font-size: 10px;
             }
         }
     </style>
@@ -275,48 +346,50 @@
             });
     </script>
 
-    <h1>🔧 Developer Tools – Question Management</h1>
+    <div class="container">
+        <h1>🔧 Developer Tools – Question Management</h1>
 
-    <!-- Add Questions Section -->
-    <div class="tool-section">
-        <div class="section-title">➕ Add Questions</div>
-        <div class="button-grid">
-            <button class="btn-sm" onclick="addQuestionsToCategory('Movies', 10)">Add 10 to Movies</button>
-            <button class="btn-sm" onclick="addQuestionsToAllCategories()">Add 10 to Each Category</button>
-            <button class="btn-sm btn-warning" onclick="confirmBulkAdd()">Bulk Add 120 Questions</button>
+        <!-- Add Questions Section -->
+        <div class="tool-section">
+            <div class="section-title">➕ Add Questions</div>
+            <div class="button-grid">
+                <button class="btn-sm" onclick="addQuestionsToCategory('Movies', 10)">Add 10 to Movies</button>
+                <button class="btn-sm" onclick="addQuestionsToAllCategories()">Add 10 to Each Category</button>
+                <button class="btn-sm btn-warning" onclick="confirmBulkAdd()">Bulk Add 120 Questions</button>
+            </div>
         </div>
-    </div>
 
-    <!-- Test Tools Section -->
-    <div class="tool-section">
-        <div class="section-title">🧪 Test Tools</div>
-        <div class="button-grid">
-            <button class="btn-sm" onclick="getRandomQuestions(8)">Get 8 Random</button>
-            <button class="btn-sm" onclick="getRandomQuestions(12)">Get 12 Random</button>
-            <button class="btn-sm" onclick="testSessionDeduplication()">Check Deduplication</button>
+        <!-- Test Tools Section -->
+        <div class="tool-section">
+            <div class="section-title">🧪 Test Tools</div>
+            <div class="button-grid">
+                <button class="btn-sm" onclick="getRandomQuestions(8)">Get 8 Random</button>
+                <button class="btn-sm" onclick="getRandomQuestions(12)">Get 12 Random</button>
+                <button class="btn-sm" onclick="testSessionDeduplication()">Check Deduplication</button>
+            </div>
+            <div class="loading-indicator" id="testLoading">Processing...</div>
+            <div class="results-section" id="testResults" style="display: none;">
+                <h3>Test Results</h3>
+                <div class="results-content" id="testResultsContent"></div>
+            </div>
         </div>
-        <div class="loading-indicator" id="testLoading">Processing...</div>
-        <div class="results-section" id="testResults" style="display: none;">
-            <h3>Test Results</h3>
-            <div class="results-content" id="testResultsContent"></div>
-        </div>
-    </div>
 
-    <!-- Database Control Section -->
-    <div class="tool-section">
-        <div class="section-title">📊 Database Control</div>
-        <div class="button-grid">
-            <button class="btn-sm btn-warning" onclick="checkCategoryBalance()">Check Balance</button>
-            <button class="btn-sm btn-danger" onclick="confirmDeleteCategory()">Delete Category</button>
+        <!-- Database Control Section -->
+        <div class="tool-section">
+            <div class="section-title">📊 Database Control</div>
+            <div class="button-grid">
+                <button class="btn-sm btn-warning" onclick="checkCategoryBalance()">Check Balance</button>
+                <button class="btn-sm btn-danger" onclick="confirmDeleteCategory()">Delete Category</button>
+            </div>
         </div>
-    </div>
 
-    <!-- View Questions Section -->
-    <div class="tool-section">
-        <div class="section-title">👁️ View Questions</div>
-        <div class="button-grid">
-            <button class="btn-sm" onclick="openQuestionViewer()">Open Admin View</button>
-            <button class="btn-sm" onclick="checkQuestionCoverage()">Verify Coverage</button>
+        <!-- View Questions Section -->
+        <div class="tool-section">
+            <div class="section-title">👁️ View Questions</div>
+            <div class="button-grid">
+                <button class="btn-sm" onclick="openQuestionViewer()">Open Admin View</button>
+                <button class="btn-sm" onclick="checkQuestionCoverage()">Verify Coverage</button>
+            </div>
         </div>
     </div>
 
