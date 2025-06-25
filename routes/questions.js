@@ -337,6 +337,7 @@ router.get("/verify", async (req, res) => {
       expectedTotal,
       categoriesCount: stats.length,
       perfectBalance,
+      stats, // Include detailed stats for frontend
       issues: []
     };
     

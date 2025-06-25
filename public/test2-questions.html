@@ -74,6 +74,9 @@
             align-items: center;
             justify-content: center;
             margin-bottom: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .category-btn:hover {
@@ -191,6 +194,7 @@
                 font-size: 10px;
                 min-height: 20px;
                 margin-bottom: 2px;
+                max-width: 100%;
             }
 
             .main-section {
@@ -293,6 +297,8 @@
                 font-size: 8px;
                 padding: 2px 3px;
                 min-height: 16px;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
 
             .main-section {
@@ -363,5 +369,52 @@
 
     <script src="scripts/questionManager.js"></script>
     <script src="scripts/test-questions.js"></script>
+    
+    <script>
+        // Function to fetch and display question counts for each category
+        async function loadCategoryCounts() {
+            try {
+                const response = await fetch('/api/questions/verify');
+                const data = await response.json();
+                
+                if (data.stats && Array.isArray(data.stats)) {
+                    // Create a map of category counts
+                    const categoryCounts = {};
+                    data.stats.forEach(stat => {
+                        categoryCounts[stat._id] = stat.count;
+                    });
+                    
+                    // Update category buttons with counts
+                    const categoryButtons = document.querySelectorAll('.category-btn[data-category]');
+                    categoryButtons.forEach(button => {
+                        const category = button.getAttribute('data-category');
+                        
+                        if (category === 'all') {
+                            // For "All" button, show total count
+                            const totalCount = data.totalQuestions || 0;
+                            button.textContent = `All (${totalCount})`;
+                        } else {
+                            // For specific categories, show individual counts
+                            const count = categoryCounts[category] || 0;
+                            button.textContent = `${category} (${count})`;
+                        }
+                    });
+                    
+                    console.log('✅ Category counts loaded:', categoryCounts);
+                } else {
+                    console.warn('⚠️ No category stats found in response');
+                }
+                
+            } catch (error) {
+                console.error('❌ Error loading category counts:', error);
+                // If loading fails, keep original button text
+            }
+        }
+        
+        // Load counts when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCategoryCounts();
+        });
+    </script>
 </body>
 </html>
