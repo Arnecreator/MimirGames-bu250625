@@ -48,10 +48,23 @@
   border: 1px solid rgba(127, 255, 212, 0.3);
 }
 
-.topbar a[onclick="logout()"] {
+.topbar button[onclick="logout()"], .topbar a[onclick="logout()"] {
   color: #ffb366;
   background: rgba(255, 179, 102, 0.1);
   border: 1px solid rgba(255, 179, 102, 0.3);
+  cursor: pointer;
+}
+
+.topbar button {
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  padding: inherit;
+  margin: inherit;
+  border-radius: inherit;
+  transition: inherit;
 }
 
 .topbar-left {
@@ -154,14 +167,6 @@
     <a href="test-questions.html">🧪 Test</a>
     <a href="test2-questions.html">🧪 Test2</a>
     <a href="users.html">🛡️ Admin</a>
-    <a href="#" onclick="logout()">🔒 Logout</a>
+    <button id="logoutBtn" onclick="logout()">🔒 Logout</button>
   </div>
 </nav>
-
-<script>
-function logout() {
-  localStorage.removeItem('mimirIsLoggedIn');
-  localStorage.removeItem('mimirUsername');
-  window.location.href = 'index.html';
-}
-</script>
