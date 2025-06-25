@@ -1,0 +1,134 @@
+Feature: Detect and Handle Duplicate Questions
+Button: Check Duplicates
+Goal:
+
+Automatically delete exact duplicates
+
+Show a modal summarizing:
+
+Number of exact duplicates removed
+
+Number of similar duplicates detected (≥90% match)
+
+Ask: Delete All Similar | Review Duplicates | Cancel
+
+🛠️ Implementation Instructions
+1. Frontend (JavaScript/HTML):
+
+Add a button:
+
+html
+Copy
+Edit
+<button id="checkDuplicatesBtn">Check Duplicates</button>
+On click, trigger a fetch to backend:
+
+js
+Copy
+Edit
+document.getElementById("checkDuplicatesBtn").addEventListener("click", async () => {
+  const res = await fetch("/api/check-duplicates");
+  const data = await res.json();
+
+  // Show modal
+  showDuplicateModal(data.exact, data.similar);
+});
+Modal function:
+
+js
+Copy
+Edit
+function showDuplicateModal(exact, similar) {
+  Swal.fire({
+    icon: 'success',
+    title: 'Duplicates Found',
+    html: `
+      ✅ <b>${exact}</b> exact duplicates were automatically deleted.<br>
+      ⚠️ <b>${similar}</b> similar duplicates detected (≥90% match).<br><br>
+      What would you like to do?
+    `,
+    showCancelButton: true,
+    showDenyButton: true,
+    confirmButtonText: 'Delete All Similar',
+    denyButtonText: 'Review Duplicates',
+    cancelButtonText: 'Cancel'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      fetch("/api/delete-similar", { method: "POST" }).then(() => {
+        Swal.fire("Similar duplicates deleted!", "", "success");
+      });
+    } else if (result.isDenied) {
+      window.location.href = "/review-duplicates";
+    }
+  });
+}
+2. Backend (Node.js/Express):
+
+Add route to check for duplicates:
+
+js
+Copy
+Edit
+app.get("/api/check-duplicates", async (req, res) => {
+  const questions = await Question.find({});
+  const seen = new Set();
+  let exactCount = 0;
+  let similarCount = 0;
+
+  for (let i = questions.length - 1; i >= 0; i--) {
+    const q = questions[i];
+    const key = `${q.question}|${q.answer}`;
+    if (seen.has(key)) {
+      await Question.deleteOne({ _id: q._id });
+      exactCount++;
+    } else {
+      seen.add(key);
+    }
+  }
+
+  for (let i = 0; i < questions.length; i++) {
+    for (let j = i + 1; j < questions.length; j++) {
+      const sim = stringSimilarity.compareTwoStrings(
+        questions[i].question,
+        questions[j].question
+      );
+      if (sim >= 0.9) {
+        similarCount++;
+        break;
+      }
+    }
+  }
+
+  res.json({ exact: exactCount, similar: similarCount });
+});
+Add route to delete similar duplicates (optional logic):
+
+js
+Copy
+Edit
+app.post("/api/delete-similar", async (req, res) => {
+  const questions = await Question.find({});
+  const toDelete = new Set();
+
+  for (let i = 0; i < questions.length; i++) {
+    for (let j = i + 1; j < questions.length; j++) {
+      const sim = stringSimilarity.compareTwoStrings(
+        questions[i].question,
+        questions[j].question
+      );
+      if (sim >= 0.9 && !toDelete.has(questions[j]._id.toString())) {
+        toDelete.add(questions[j]._id.toString());
+      }
+    }
+  }
+
+  await Question.deleteMany({ _id: { $in: Array.from(toDelete) } });
+  res.sendStatus(200);
+});
+3. Install Helper Library
+Install string-similarity:
+
+bash
+Copy
+Edit
+npm install string-similarity
