@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test-n – Compact Admin Interface</title>
+    <title>Test-n – Clean Admin Interface</title>
     <style>
         body {
             font-family: 'Inter', 'Segoe UI', sans-serif;
@@ -54,8 +53,8 @@
 
         .category-buttons {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 6px;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 4px;
             margin: 6px 0;
         }
 
@@ -63,13 +62,13 @@
             background: #252951;
             color: #7fffd4;
             border: 1px solid #333;
-            padding: 6px 8px;
-            border-radius: 4px;
+            padding: 4px 8px;
+            border-radius: 3px;
             font-size: 11px;
             cursor: pointer;
             transition: all 0.2s ease;
             text-align: center;
-            min-height: 26px;
+            min-height: 22px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -77,77 +76,73 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            font-weight: 500;
         }
 
         .category-btn:hover {
             background: #333669;
             border-color: #7fffd4;
             filter: brightness(1.1);
-            transform: translateY(-1px);
         }
 
         .category-btn.add-btn {
-            background: #7fffd4;
-            color: #000;
-            font-weight: 500;
+            background: #252951;
+            color: #7fffd4;
         }
 
         .category-btn.add-btn:hover {
-            background: #5fb3a3;
-            transform: translateY(-1px);
+            background: #333669;
         }
 
         .category-btn.delete-btn {
-            background: transparent;
-            border: 2px solid #ff4d4d;
-            color: #ff4d4d;
-            font-weight: 500;
+            background: #252951;
+            color: #ff6b6b;
+            border-color: #ff6b6b;
         }
 
         .category-btn.delete-btn:hover {
-            background: rgba(255, 77, 77, 0.1);
-            transform: translateY(-1px);
-            border-color: #ff6666;
-            color: #ff6666;
+            background: rgba(255, 107, 107, 0.1);
+            border-color: #ff8a8a;
         }
 
-        .action-button {
-            background: #7fffd4;
-            color: #000;
-            border: none;
-            padding: 6px 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 500;
+        .action-btn {
+            background: #252951;
+            color: #7fffd4;
+            border: 1px solid #333;
+            padding: 4px 8px;
+            border-radius: 3px;
             font-size: 11px;
+            cursor: pointer;
             transition: all 0.2s ease;
             text-align: center;
-            min-height: 26px;
+            min-height: 22px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 6px 0 0 0;
+            margin-top: 6px;
             white-space: nowrap;
-            width: auto;
-            max-width: 180px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: fit-content;
         }
 
-        .action-button:hover {
-            background: #5fb3a3;
-            transform: translateY(-1px);
+        .action-btn:hover {
+            background: #333669;
+            border-color: #7fffd4;
+            filter: brightness(1.1);
         }
 
-        .action-button.delete-all {
-            background: transparent;
-            border: 2px solid #ff4d4d;
-            color: #ff4d4d;
+        .action-btn.add-all {
+            color: #7fffd4;
         }
 
-        .action-button.delete-all:hover {
-            background: rgba(255, 77, 77, 0.1);
-            border-color: #ff6666;
-            color: #ff6666;
+        .action-btn.delete-all {
+            color: #ff6b6b;
+            border-color: #ff6b6b;
+        }
+
+        .action-btn.delete-all:hover {
+            background: rgba(255, 107, 107, 0.1);
+            border-color: #ff8a8a;
         }
 
         .toast {
@@ -182,42 +177,13 @@
             background: #f39c12;
         }
 
-        .badge {
-            background-color: #2ecc71;
-            color: white;
-            font-size: 9px;
-            padding: 2px 5px;
-            border-radius: 10px;
-            margin-left: 4px;
-            opacity: 1;
-            transition: opacity 0.3s ease;
-            font-weight: bold;
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 10;
-        }
-
-        .badge.fade-out {
-            opacity: 0;
-        }
-
-        .loading-indicator {
-            display: none;
-            color: #7fffd4;
-            font-style: italic;
-            margin-top: 4px;
-            font-size: 11px;
-        }
-
         /* Desktop optimizations */
         @media (min-width: 1001px) {
             .category-buttons {
-                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-                gap: 8px;
+                grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+                gap: 6px;
             }
-            
+
             .main-section {
                 margin: 3px 0;
             }
@@ -235,21 +201,22 @@
             }
 
             .category-buttons {
-                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-                gap: 4px;
+                grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+                gap: 3px;
             }
 
             .category-btn {
-                padding: 4px 6px;
+                padding: 3px 6px;
                 font-size: 10px;
-                min-height: 22px;
+                min-height: 20px;
                 margin-bottom: 2px;
+                max-width: 100%;
             }
 
-            .action-button {
-                padding: 4px 6px;
+            .action-btn {
+                padding: 3px 6px;
                 font-size: 10px;
-                min-height: 22px;
+                min-height: 20px;
             }
 
             .main-section {
@@ -273,11 +240,6 @@
                 max-width: none;
                 font-size: 12px;
             }
-
-            .badge {
-                font-size: 8px;
-                padding: 1px 4px;
-            }
         }
 
         @media (max-width: 480px) {
@@ -288,19 +250,19 @@
 
             .category-buttons {
                 grid-template-columns: repeat(3, 1fr);
-                gap: 3px;
+                gap: 2px;
             }
 
             .category-btn {
                 padding: 3px 4px;
                 font-size: 9px;
-                min-height: 20px;
+                min-height: 18px;
             }
 
-            .action-button {
+            .action-btn {
                 padding: 3px 4px;
                 font-size: 9px;
-                min-height: 20px;
+                min-height: 18px;
             }
 
             .main-section {
@@ -322,19 +284,20 @@
         @media (max-width: 360px) {
             .category-buttons {
                 grid-template-columns: repeat(2, 1fr);
-                gap: 2px;
             }
 
             .category-btn {
                 font-size: 8px;
                 padding: 2px 3px;
-                min-height: 18px;
+                min-height: 16px;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
 
-            .action-button {
+            .action-btn {
                 font-size: 8px;
                 padding: 2px 3px;
-                min-height: 18px;
+                min-height: 16px;
             }
 
             .main-section {
@@ -345,11 +308,6 @@
         /* Active state for sections */
         .main-section:hover {
             background: rgba(26, 29, 58, 0.8);
-        }
-
-        .glow {
-            box-shadow: 0 0 10px 2px #00ff99;
-            transition: box-shadow 0.3s ease;
         }
     </style>
 </head>
@@ -369,9 +327,8 @@
     <div id="toast" class="toast"></div>
 
     <div class="container">
-        <h1><span class="emoji">🔧</span>Test-n – Compact Admin Interface</h1>
+        <h1><span class="emoji">🧩</span>Test-n – Clean Admin Interface</h1>
 
-        <!-- Add Questions Section -->
         <div class="main-section">
             <h2><span class="emoji">➕</span>Add Questions by Category</h2>
             <div class="category-buttons">
@@ -388,35 +345,33 @@
                 <button class="category-btn add-btn" data-category="Food">Add to Food (20)</button>
                 <button class="category-btn add-btn" data-category="Misc">Add to Misc (10)</button>
             </div>
-            <button id="add-all-btn" class="action-button">➕ Add 10 per Category</button>
+            <button class="action-btn add-all" id="add-all-btn">➕ Add 10 per Category</button>
         </div>
 
-        <!-- Delete Questions Section -->
         <div class="main-section">
             <h2><span class="emoji">🗑️</span>Delete Questions by Category</h2>
             <div class="category-buttons">
-                <button class="category-btn delete-btn" onclick="confirmDeleteCategory('History')">Delete History</button>
-                <button class="category-btn delete-btn" onclick="confirmDeleteCategory('Science')">Delete Science</button>
-                <button class="category-btn delete-btn" onclick="confirmDeleteCategory('Sports')">Delete Sports</button>
-                <button class="category-btn delete-btn" onclick="confirmDeleteCategory('Geography')">Delete Geography</button>
-                <button class="category-btn delete-btn" onclick="confirmDeleteCategory('Literature')">Delete Literature</button>
-                <button class="category-btn delete-btn" onclick="confirmDeleteCategory('Math')">Delete Math</button>
-                <button class="category-btn delete-btn" onclick="confirmDeleteCategory('Movies')">Delete Movies</button>
-                <button class="category-btn delete-btn" onclick="confirmDeleteCategory('Music')">Delete Music</button>
-                <button class="category-btn delete-btn" onclick="confirmDeleteCategory('Art')">Delete Art</button>
-                <button class="category-btn delete-btn" onclick="confirmDeleteCategory('Technology')">Delete Technology</button>
-                <button class="category-btn delete-btn" onclick="confirmDeleteCategory('Food')">Delete Food</button>
-                <button class="category-btn delete-btn" onclick="confirmDeleteCategory('Misc')">Delete Misc</button>
+                <button class="category-btn delete-btn" data-category="History">Delete History</button>
+                <button class="category-btn delete-btn" data-category="Science">Delete Science</button>
+                <button class="category-btn delete-btn" data-category="Sports">Delete Sports</button>
+                <button class="category-btn delete-btn" data-category="Geography">Delete Geography</button>
+                <button class="category-btn delete-btn" data-category="Literature">Delete Literature</button>
+                <button class="category-btn delete-btn" data-category="Math">Delete Math</button>
+                <button class="category-btn delete-btn" data-category="Movies">Delete Movies</button>
+                <button class="category-btn delete-btn" data-category="Music">Delete Music</button>
+                <button class="category-btn delete-btn" data-category="Art">Delete Art</button>
+                <button class="category-btn delete-btn" data-category="Technology">Delete Technology</button>
+                <button class="category-btn delete-btn" data-category="Food">Delete Food</button>
+                <button class="category-btn delete-btn" data-category="Misc">Delete Misc</button>
             </div>
-            <button class="action-button delete-all" onclick="confirmDeleteAll()">❌ Delete All Categories</button>
+            <button class="action-btn delete-all" id="delete-all-btn">❌ Delete All Categories</button>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="scripts/global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="scripts/questionManager.js"></script>
     <script src="scripts/test-questions.js"></script>
-
     <script>
         // Store category counts
         let categoryCounts = {};
@@ -433,34 +388,6 @@
             }, 4000);
         }
 
-        // Add badge to category button
-        function addBadgeToCategory(category, count) {
-            const container = document.querySelector(`.add-btn[data-category="${category}"]`).parentNode;
-            if (container) {
-                // Remove existing badge if any
-                const existingBadge = container.querySelector('.badge');
-                if (existingBadge) {
-                    existingBadge.remove();
-                }
-
-                // Add new badge
-                const badge = document.createElement('span');
-                badge.className = 'badge';
-                badge.textContent = `+${count}`;
-                container.appendChild(badge);
-
-                // Auto-fade after 10 seconds
-                setTimeout(() => {
-                    badge.classList.add('fade-out');
-                    setTimeout(() => {
-                        if (badge.parentNode) {
-                            badge.remove();
-                        }
-                    }, 300);
-                }, 10000);
-            }
-        }
-
         // Function to fetch and display question counts for each category
         async function loadCategoryCounts() {
             try {
@@ -475,11 +402,10 @@
                     });
 
                     // Update category buttons with counts
-                    const categoryButtons = document.querySelectorAll('.add-btn[data-category]');
-                    categoryButtons.forEach(button => {
+                    const addButtons = document.querySelectorAll('.add-btn[data-category]');
+                    addButtons.forEach(button => {
                         const category = button.getAttribute('data-category');
                         const count = categoryCounts[category] || 0;
-                        button.setAttribute('data-count', count);
                         button.textContent = `Add to ${category} (${count})`;
                     });
 
@@ -496,269 +422,125 @@
             }
         }
 
-        // Update specific category count
-        function updateCategoryCount(category, newCount, addedCount = 0) {
-            const button = document.querySelector(`.add-btn[data-category="${category}"]`);
-            if (button) {
-                // Update data-count attribute
-                button.setAttribute('data-count', newCount);
-                button.textContent = `Add to ${category} (${newCount})`;
-                categoryCounts[category] = newCount;
-
-                // Add badge if questions were added
-                if (addedCount > 0) {
-                    addBadgeToCategory(category, addedCount);
-                }
-
-                // Add glow effect for visual feedback
-                if (addedCount > 0) {
-                    button.classList.add('glow');
-                    setTimeout(() => button.classList.remove('glow'), 1000);
-                }
-            }
-        }
-
-        // Add event listeners to all add category buttons
+        // Add questions functionality
         document.addEventListener('DOMContentLoaded', function() {
-            // Single clean event listener for add buttons
+            // Add event listeners for add buttons
             document.querySelectorAll('.add-btn').forEach(button => {
                 button.addEventListener('click', async (e) => {
-                    // Prevent double-firing
                     if (e.target.classList.contains('processing')) return;
                     e.target.classList.add('processing');
 
                     const category = button.getAttribute('data-category');
-
                     if (!category) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'Category not specified'
-                        });
+                        showToast('Category not specified', 'error');
                         e.target.classList.remove('processing');
                         return;
                     }
 
                     try {
                         const response = await fetch(`/api/addQuestions?category=${category}`);
-
-                        if (!response.ok) {
-                            throw new Error(`Server responded with status ${response.status}`);
-                        }
-
                         const data = await response.json();
 
                         if (data.success) {
-                            // ✅ SUCCESS – update count & show popup
-                            let count = parseInt(button.getAttribute('data-count')) || 0;
-                            count += 10;
-                            button.setAttribute('data-count', count);
-                            button.textContent = `Add to ${category} (${count})`;
-                            categoryCounts[category] = count;
-
-                            // Add visual feedback
-                            button.classList.add('glow');
-                            setTimeout(() => button.classList.remove('glow'), 1000);
-
-                            // Add badge for visual confirmation
-                            addBadgeToCategory(category, 10);
-
-                            // Success popup
-                            Swal.fire({
-                                position: 'top-end',
-                                icon: 'success',
-                                title: `10 questions added to ${category}!`,
-                                showConfirmButton: false,
-                                timer: 1500,
-                                toast: true,
-                                background: '#a0ffbf'
-                            });
-
+                            showToast(`10 questions added to ${category}!`);
+                            loadCategoryCounts(); // Refresh counts
                         } else {
-                            throw new Error(data.message || "Unknown backend response");
+                            throw new Error(data.message || "Unknown error");
                         }
-
                     } catch (err) {
-                        // ❌ ONLY show this if fetch failed or backend returned error
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Network error',
-                            text: err.message || 'Failed to add questions'
-                        });
+                        showToast(`Failed to add questions: ${err.message}`, 'error');
                     } finally {
-                        // Remove processing class
                         e.target.classList.remove('processing');
                     }
                 });
             });
-        });
 
-        // Add event listener for "Add 10 per Category" button
-        document.addEventListener('DOMContentLoaded', function() {
-            const addAllBtn = document.getElementById('add-all-btn');
-            if (addAllBtn) {
-                addAllBtn.addEventListener('click', async () => {
-                    const categories = [
-                        "History", "Science", "Sports", "Geography",
-                        "Literature", "Math", "Movies", "Music",
-                        "Art", "Technology", "Food", "Misc"
-                    ];
+            // Add event listener for "Add 10 per Category" button
+            document.getElementById('add-all-btn').addEventListener('click', async () => {
+                const categories = [
+                    "History", "Science", "Sports", "Geography",
+                    "Literature", "Math", "Movies", "Music",
+                    "Art", "Technology", "Food", "Misc"
+                ];
 
-                    let successCount = 0;
-                    let failureCount = 0;
+                let successCount = 0;
+                const addAllBtn = document.getElementById('add-all-btn');
 
-                    // Show loading state
-                    addAllBtn.disabled = true;
-                    addAllBtn.textContent = '⏳ Adding...';
+                addAllBtn.disabled = true;
+                addAllBtn.textContent = '⏳ Adding...';
 
-                    for (const category of categories) {
-                        try {
-                            const res = await fetch(`/api/addQuestions?category=${category}`);
-                            const data = await res.json();
+                for (const category of categories) {
+                    try {
+                        const res = await fetch(`/api/addQuestions?category=${category}`);
+                        const data = await res.json();
 
-                            if (data.success) {
-                                successCount++;
-                                // Find the corresponding button and update count
-                                const btn = document.querySelector(`.add-btn[data-category="${category}"]`);
-                                if (btn) {
-                                    let count = parseInt(btn.getAttribute('data-count')) || 0;
-                                    count += 10;
-                                    btn.setAttribute('data-count', count);
-                                    btn.textContent = `Add to ${category} (${count})`;
-                                }
-                            } else {
-                                failureCount++;
-                                console.error(`Error adding to ${category}:`, data.message);
-                            }
-                        } catch (err) {
-                            failureCount++;
-                            console.error(`Network error for ${category}:`, err);
+                        if (data.success) {
+                            successCount++;
                         }
+                    } catch (err) {
+                        console.error(`Error adding to ${category}:`, err);
                     }
-
-                    // Reset button state
-                    addAllBtn.disabled = false;
-                    addAllBtn.textContent = '➕ Add 10 per Category';
-
-                    // Show success message
-                    if (successCount > 0) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: `✅ Added 10 questions to ${successCount} categories!`,
-                            text: failureCount > 0 ? `${failureCount} categories failed` : '',
-                            showConfirmButton: false,
-                            timer: 2000,
-                            toast: true,
-                            position: 'top-end',
-                            background: '#a0ffbf'
-                        });
-
-                        // Refresh category counts
-                        loadCategoryCounts();
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Failed to add questions',
-                            text: 'All categories failed to update'
-                        });
-                    }
-                });
-            }
-        });
-
-        // Delete functions
-        function confirmDeleteCategory(category) {
-            Swal.fire({
-                title: 'Confirm Delete',
-                text: `Are you sure you want to delete all questions in ${category}?`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, delete it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    deleteCategory(category);
                 }
-            });
-        }
 
-        function confirmDeleteAll() {
-            Swal.fire({
-                title: 'Confirm Delete ALL',
-                text: `Are you sure you want to delete ALL questions in ALL categories? This is irreversible!`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, delete ALL!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    deleteAllCategories();
-                }
-            });
-        }
+                addAllBtn.disabled = false;
+                addAllBtn.textContent = '➕ Add 10 per Category';
 
-        function deleteCategory(category) {
-            fetch(`/api/deleteCategory?category=${category}`, {
-                method: 'GET'
-            })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: `Category "${category}" deleted.`,
-                            timer: 1500,
-                            toast: true,
-                            position: 'top-end'
-                        });
-                        // Refresh category counts after deletion
-                        loadCategoryCounts();
-                    } else {
-                        throw new Error(data.message);
-                    }
-                })
-                .catch(err => {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Failed to delete category',
-                        text: err.message
-                    });
-                });
-        }
-
-        async function deleteAllCategories() {
-            try {
-                const response = await fetch('/api/deleteAllCategories');
-                const data = await response.json();
-                
-                if (data.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'All categories deleted successfully!',
-                        timer: 1500,
-                        toast: true,
-                        position: 'top-end'
-                    });
-                    // Refresh category counts after deletion
+                if (successCount > 0) {
+                    showToast(`✅ Added 10 questions to ${successCount} categories!`);
                     loadCategoryCounts();
                 } else {
-                    throw new Error(data.message);
+                    showToast('Failed to add questions to any category', 'error');
                 }
-            } catch (error) {
-                console.error('Failed to delete all categories:', error);
-                showToast('Failed to delete all categories', 'error');
-            }
-        }
+            });
 
-        // Load counts when page loads
-        document.addEventListener('DOMContentLoaded', function() {
+            // Add event listeners for delete buttons
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', async (e) => {
+                    const category = button.getAttribute('data-category');
+                    if (!category) return;
+
+                    if (confirm(`Are you sure you want to delete all questions in ${category}?`)) {
+                        try {
+                            const response = await fetch(`/api/deleteCategory?category=${category}`);
+                            const data = await response.json();
+
+                            if (data.success) {
+                                showToast(`${category} category deleted successfully!`);
+                                loadCategoryCounts();
+                            } else {
+                                throw new Error(data.message || "Unknown error");
+                            }
+                        } catch (err) {
+                            showToast(`Failed to delete ${category}: ${err.message}`, 'error');
+                        }
+                    }
+                });
+            });
+
+            // Add event listener for "Delete All Categories" button
+            document.getElementById('delete-all-btn').addEventListener('click', async () => {
+                if (confirm('Are you sure you want to delete ALL questions in ALL categories? This is irreversible!')) {
+                    try {
+                        const response = await fetch('/api/deleteAllCategories');
+                        const data = await response.json();
+
+                        if (data.success) {
+                            showToast('All categories deleted successfully!');
+                            loadCategoryCounts();
+                        } else {
+                            throw new Error(data.message || "Unknown error");
+                        }
+                    } catch (err) {
+                        showToast(`Failed to delete all categories: ${err.message}`, 'error');
+                    }
+                }
+            });
+
+            // Load initial counts
             loadCategoryCounts();
-            console.log('✅ Test-n loaded successfully');
         });
 
-        // Listen for storage events to sync with other tabs
+         // Listen for storage events to sync with other tabs
         window.addEventListener('storage', function(e) {
             if (e.key === 'questionsAdded') {
                 try {
