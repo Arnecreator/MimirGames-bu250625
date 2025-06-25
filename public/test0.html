@@ -329,6 +329,7 @@
                 <button class="tool-btn" onclick="getCategoryStats()">Category Stats</button>
                 <button class="tool-btn" onclick="logLastAdded()">Log Last Added</button>
                 <button class="tool-btn" onclick="qaShuffleTest()">QA Shuffle Test</button>
+                <button class="tool-btn" onclick="generateQuestions()">Generate Questions</button>
             </div>
         </div>
     </div>
@@ -865,6 +866,32 @@
             console.log('🔀 Running QA shuffle test (1000 iterations)...');
             showToast('Running shuffle test...', 'warning');
             // Placeholder - will implement shuffle test simulation
+        }
+
+        async function generateQuestions() {
+            try {
+                showToast('Generating questions...', 'warning');
+                
+                const response = await fetch('/api/generate-questions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ category: 'Science' })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showToast(`✅ ${data.count} questions were generated and saved!`);
+                    loadCategoryCounts(); // Refresh counts
+                } else {
+                    showToast(data.message || 'Failed to generate questions', 'error');
+                }
+            } catch (error) {
+                console.error('Error generating questions:', error);
+                showToast('Error generating questions', 'error');
+            }
         }
 
     // Add Creative Questions
