@@ -116,6 +116,15 @@
             padding: 20px;
             font-style: italic;
         }
+
+        .muted-text {
+            font-size: 0.9rem;
+            color: #888;
+            text-align: center;
+            margin-top: 1em;
+            padding: 20px;
+            font-style: italic;
+        }
     </style>
 </head>
 
@@ -135,7 +144,7 @@
     <div class="main-section">
         <h2>View Questions by Category</h2>
         <div class="category-buttons">
-            <button class="category-btn active" data-category="all">All</button>
+            <button class="category-btn" data-category="all">All</button>
             <button class="category-btn" data-category="History">History</button>
             <button class="category-btn" data-category="Science">Science</button>
             <button class="category-btn" data-category="Sports">Sports</button>
@@ -150,20 +159,11 @@
             <button class="category-btn" data-category="Misc">Misc</button>
         </div>
         <div id="categoryQuestionsResult">
-            <div class="loading-message">Loading all questions...</div>
+            <p class="muted-text">Select a category above to view questions.</p>
         </div>
     </div>
 
     <script src="scripts/questionManager.js"></script>
     <script src="scripts/test-questions.js"></script>
-    <script>
-        // Auto-load all questions when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            // Wait a moment for other scripts to load
-            setTimeout(() => {
-                loadQuestionsByCategory('all');
-            }, 500);
-        });
-    </script>
 </body>
 </html>
