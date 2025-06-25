@@ -1,0 +1,775 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test-n – Compact Admin Interface</title>
+    <style>
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: #0a0b1e;
+            color: white;
+            margin: 0;
+            padding: 6px;
+            line-height: 1.4;
+            font-size: 13px;
+        }
+
+        body.admin-view {
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .main-section {
+            background: #1a1d3a;
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin: 4px 0;
+            border: 1px solid #333;
+        }
+
+        h1 {
+            color: #7fffd4;
+            margin: 0 0 8px 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        h2 {
+            color: #7fffd4;
+            margin: 0 0 6px 0;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        h2 .emoji {
+            margin-right: 4px;
+        }
+
+        .category-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 6px;
+            margin: 6px 0;
+        }
+
+        .category-btn {
+            background: #252951;
+            color: #7fffd4;
+            border: 1px solid #333;
+            padding: 6px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            min-height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-weight: 500;
+        }
+
+        .category-btn:hover {
+            background: #333669;
+            border-color: #7fffd4;
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+        }
+
+        .category-btn.add-btn {
+            background: #7fffd4;
+            color: #000;
+            font-weight: 500;
+        }
+
+        .category-btn.add-btn:hover {
+            background: #5fb3a3;
+            transform: translateY(-1px);
+        }
+
+        .category-btn.delete-btn {
+            background: transparent;
+            border: 2px solid #ff4d4d;
+            color: #ff4d4d;
+            font-weight: 500;
+        }
+
+        .category-btn.delete-btn:hover {
+            background: rgba(255, 77, 77, 0.1);
+            transform: translateY(-1px);
+            border-color: #ff6666;
+            color: #ff6666;
+        }
+
+        .action-button {
+            background: #7fffd4;
+            color: #000;
+            border: none;
+            padding: 6px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 11px;
+            transition: all 0.2s ease;
+            text-align: center;
+            min-height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 6px 0 0 0;
+            white-space: nowrap;
+            width: auto;
+            max-width: 180px;
+        }
+
+        .action-button:hover {
+            background: #5fb3a3;
+            transform: translateY(-1px);
+        }
+
+        .action-button.delete-all {
+            background: transparent;
+            border: 2px solid #ff4d4d;
+            color: #ff4d4d;
+        }
+
+        .action-button.delete-all:hover {
+            background: rgba(255, 77, 77, 0.1);
+            border-color: #ff6666;
+            color: #ff6666;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #2ecc71;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+            font-weight: 500;
+            max-width: 300px;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .toast.error {
+            background: #e74c3c;
+        }
+
+        .toast.warning {
+            background: #f39c12;
+        }
+
+        .badge {
+            background-color: #2ecc71;
+            color: white;
+            font-size: 9px;
+            padding: 2px 5px;
+            border-radius: 10px;
+            margin-left: 4px;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+            font-weight: bold;
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+        }
+
+        .badge.fade-out {
+            opacity: 0;
+        }
+
+        .loading-indicator {
+            display: none;
+            color: #7fffd4;
+            font-style: italic;
+            margin-top: 4px;
+            font-size: 11px;
+        }
+
+        /* Desktop optimizations */
+        @media (min-width: 1001px) {
+            .category-buttons {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                gap: 8px;
+            }
+            
+            .main-section {
+                margin: 3px 0;
+            }
+        }
+
+        /* Mobile Optimizations */
+        @media (max-width: 768px) {
+            body {
+                padding: 4px;
+                font-size: 13px;
+            }
+
+            .container {
+                padding: 0 2px;
+            }
+
+            .category-buttons {
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+                gap: 4px;
+            }
+
+            .category-btn {
+                padding: 4px 6px;
+                font-size: 10px;
+                min-height: 22px;
+                margin-bottom: 2px;
+            }
+
+            .action-button {
+                padding: 4px 6px;
+                font-size: 10px;
+                min-height: 22px;
+            }
+
+            .main-section {
+                padding: 6px 8px;
+                margin: 3px 0;
+            }
+
+            h1 {
+                font-size: 15px;
+                margin: 0 0 6px 0;
+            }
+
+            h2 {
+                font-size: 14px;
+                margin: 0 0 4px 0;
+            }
+
+            .toast {
+                right: 10px;
+                left: 10px;
+                max-width: none;
+                font-size: 12px;
+            }
+
+            .badge {
+                font-size: 8px;
+                padding: 1px 4px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 3px;
+                font-size: 12px;
+            }
+
+            .category-buttons {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 3px;
+            }
+
+            .category-btn {
+                padding: 3px 4px;
+                font-size: 9px;
+                min-height: 20px;
+            }
+
+            .action-button {
+                padding: 3px 4px;
+                font-size: 9px;
+                min-height: 20px;
+            }
+
+            .main-section {
+                padding: 5px 6px;
+            }
+
+            h1 {
+                font-size: 14px;
+                margin: 0 0 5px 0;
+            }
+
+            h2 {
+                font-size: 13px;
+                margin: 0 0 4px 0;
+            }
+        }
+
+        /* Ultra-compact for very small screens */
+        @media (max-width: 360px) {
+            .category-buttons {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 2px;
+            }
+
+            .category-btn {
+                font-size: 8px;
+                padding: 2px 3px;
+                min-height: 18px;
+            }
+
+            .action-button {
+                font-size: 8px;
+                padding: 2px 3px;
+                min-height: 18px;
+            }
+
+            .main-section {
+                padding: 4px 5px;
+            }
+        }
+
+        /* Active state for sections */
+        .main-section:hover {
+            background: rgba(26, 29, 58, 0.8);
+        }
+
+        .glow {
+            box-shadow: 0 0 10px 2px #00ff99;
+            transition: box-shadow 0.3s ease;
+        }
+    </style>
+</head>
+
+<body class="admin-view">
+    <!-- Shared Topbar -->
+    <div id="topbar-placeholder"></div>
+    <script>
+        fetch("/components/topbar.html")
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById("topbar-placeholder").innerHTML = html;
+            });
+    </script>
+
+    <!-- Toast notification -->
+    <div id="toast" class="toast"></div>
+
+    <div class="container">
+        <h1><span class="emoji">🔧</span>Test-n – Compact Admin Interface</h1>
+
+        <!-- Add Questions Section -->
+        <div class="main-section">
+            <h2><span class="emoji">➕</span>Add Questions by Category</h2>
+            <div class="category-buttons">
+                <button class="category-btn add-btn" data-category="History">Add to History (10)</button>
+                <button class="category-btn add-btn" data-category="Science">Add to Science (10)</button>
+                <button class="category-btn add-btn" data-category="Sports">Add to Sports (10)</button>
+                <button class="category-btn add-btn" data-category="Geography">Add to Geography (10)</button>
+                <button class="category-btn add-btn" data-category="Literature">Add to Literature (20)</button>
+                <button class="category-btn add-btn" data-category="Math">Add to Math (10)</button>
+                <button class="category-btn add-btn" data-category="Movies">Add to Movies (20)</button>
+                <button class="category-btn add-btn" data-category="Music">Add to Music (20)</button>
+                <button class="category-btn add-btn" data-category="Art">Add to Art (20)</button>
+                <button class="category-btn add-btn" data-category="Technology">Add to Technology (20)</button>
+                <button class="category-btn add-btn" data-category="Food">Add to Food (20)</button>
+                <button class="category-btn add-btn" data-category="Misc">Add to Misc (10)</button>
+            </div>
+            <button id="add-all-btn" class="action-button">➕ Add 10 per Category</button>
+        </div>
+
+        <!-- Delete Questions Section -->
+        <div class="main-section">
+            <h2><span class="emoji">🗑️</span>Delete Questions by Category</h2>
+            <div class="category-buttons">
+                <button class="category-btn delete-btn" onclick="confirmDeleteCategory('History')">Delete History</button>
+                <button class="category-btn delete-btn" onclick="confirmDeleteCategory('Science')">Delete Science</button>
+                <button class="category-btn delete-btn" onclick="confirmDeleteCategory('Sports')">Delete Sports</button>
+                <button class="category-btn delete-btn" onclick="confirmDeleteCategory('Geography')">Delete Geography</button>
+                <button class="category-btn delete-btn" onclick="confirmDeleteCategory('Literature')">Delete Literature</button>
+                <button class="category-btn delete-btn" onclick="confirmDeleteCategory('Math')">Delete Math</button>
+                <button class="category-btn delete-btn" onclick="confirmDeleteCategory('Movies')">Delete Movies</button>
+                <button class="category-btn delete-btn" onclick="confirmDeleteCategory('Music')">Delete Music</button>
+                <button class="category-btn delete-btn" onclick="confirmDeleteCategory('Art')">Delete Art</button>
+                <button class="category-btn delete-btn" onclick="confirmDeleteCategory('Technology')">Delete Technology</button>
+                <button class="category-btn delete-btn" onclick="confirmDeleteCategory('Food')">Delete Food</button>
+                <button class="category-btn delete-btn" onclick="confirmDeleteCategory('Misc')">Delete Misc</button>
+            </div>
+            <button class="action-button delete-all" onclick="confirmDeleteAll()">❌ Delete All Categories</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="scripts/global.js"></script>
+    <script src="scripts/questionManager.js"></script>
+    <script src="scripts/test-questions.js"></script>
+
+    <script>
+        // Store category counts
+        let categoryCounts = {};
+
+        // Toast notification system
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        }
+
+        // Add badge to category button
+        function addBadgeToCategory(category, count) {
+            const container = document.querySelector(`.add-btn[data-category="${category}"]`).parentNode;
+            if (container) {
+                // Remove existing badge if any
+                const existingBadge = container.querySelector('.badge');
+                if (existingBadge) {
+                    existingBadge.remove();
+                }
+
+                // Add new badge
+                const badge = document.createElement('span');
+                badge.className = 'badge';
+                badge.textContent = `+${count}`;
+                container.appendChild(badge);
+
+                // Auto-fade after 10 seconds
+                setTimeout(() => {
+                    badge.classList.add('fade-out');
+                    setTimeout(() => {
+                        if (badge.parentNode) {
+                            badge.remove();
+                        }
+                    }, 300);
+                }, 10000);
+            }
+        }
+
+        // Function to fetch and display question counts for each category
+        async function loadCategoryCounts() {
+            try {
+                const response = await fetch('/api/questions/verify');
+                const data = await response.json();
+
+                if (data.stats && Array.isArray(data.stats)) {
+                    // Create a map of category counts
+                    categoryCounts = {};
+                    data.stats.forEach(stat => {
+                        categoryCounts[stat._id] = stat.count;
+                    });
+
+                    // Update category buttons with counts
+                    const categoryButtons = document.querySelectorAll('.add-btn[data-category]');
+                    categoryButtons.forEach(button => {
+                        const category = button.getAttribute('data-category');
+                        const count = categoryCounts[category] || 0;
+                        button.setAttribute('data-count', count);
+                        button.textContent = `Add to ${category} (${count})`;
+                    });
+
+                    console.log('✅ Category counts loaded:', categoryCounts);
+                    return categoryCounts;
+                } else {
+                    console.warn('⚠️ No category stats found in response');
+                    return {};
+                }
+
+            } catch (error) {
+                console.error('❌ Error loading category counts:', error);
+                return {};
+            }
+        }
+
+        // Update specific category count
+        function updateCategoryCount(category, newCount, addedCount = 0) {
+            const button = document.querySelector(`.add-btn[data-category="${category}"]`);
+            if (button) {
+                // Update data-count attribute
+                button.setAttribute('data-count', newCount);
+                button.textContent = `Add to ${category} (${newCount})`;
+                categoryCounts[category] = newCount;
+
+                // Add badge if questions were added
+                if (addedCount > 0) {
+                    addBadgeToCategory(category, addedCount);
+                }
+
+                // Add glow effect for visual feedback
+                if (addedCount > 0) {
+                    button.classList.add('glow');
+                    setTimeout(() => button.classList.remove('glow'), 1000);
+                }
+            }
+        }
+
+        // Add event listeners to all add category buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            // Single clean event listener for add buttons
+            document.querySelectorAll('.add-btn').forEach(button => {
+                button.addEventListener('click', async (e) => {
+                    // Prevent double-firing
+                    if (e.target.classList.contains('processing')) return;
+                    e.target.classList.add('processing');
+
+                    const category = button.getAttribute('data-category');
+
+                    if (!category) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Category not specified'
+                        });
+                        e.target.classList.remove('processing');
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch(`/api/addQuestions?category=${category}`);
+
+                        if (!response.ok) {
+                            throw new Error(`Server responded with status ${response.status}`);
+                        }
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                            // ✅ SUCCESS – update count & show popup
+                            let count = parseInt(button.getAttribute('data-count')) || 0;
+                            count += 10;
+                            button.setAttribute('data-count', count);
+                            button.textContent = `Add to ${category} (${count})`;
+                            categoryCounts[category] = count;
+
+                            // Add visual feedback
+                            button.classList.add('glow');
+                            setTimeout(() => button.classList.remove('glow'), 1000);
+
+                            // Add badge for visual confirmation
+                            addBadgeToCategory(category, 10);
+
+                            // Success popup
+                            Swal.fire({
+                                position: 'top-end',
+                                icon: 'success',
+                                title: `10 questions added to ${category}!`,
+                                showConfirmButton: false,
+                                timer: 1500,
+                                toast: true,
+                                background: '#a0ffbf'
+                            });
+
+                        } else {
+                            throw new Error(data.message || "Unknown backend response");
+                        }
+
+                    } catch (err) {
+                        // ❌ ONLY show this if fetch failed or backend returned error
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Network error',
+                            text: err.message || 'Failed to add questions'
+                        });
+                    } finally {
+                        // Remove processing class
+                        e.target.classList.remove('processing');
+                    }
+                });
+            });
+        });
+
+        // Add event listener for "Add 10 per Category" button
+        document.addEventListener('DOMContentLoaded', function() {
+            const addAllBtn = document.getElementById('add-all-btn');
+            if (addAllBtn) {
+                addAllBtn.addEventListener('click', async () => {
+                    const categories = [
+                        "History", "Science", "Sports", "Geography",
+                        "Literature", "Math", "Movies", "Music",
+                        "Art", "Technology", "Food", "Misc"
+                    ];
+
+                    let successCount = 0;
+                    let failureCount = 0;
+
+                    // Show loading state
+                    addAllBtn.disabled = true;
+                    addAllBtn.textContent = '⏳ Adding...';
+
+                    for (const category of categories) {
+                        try {
+                            const res = await fetch(`/api/addQuestions?category=${category}`);
+                            const data = await res.json();
+
+                            if (data.success) {
+                                successCount++;
+                                // Find the corresponding button and update count
+                                const btn = document.querySelector(`.add-btn[data-category="${category}"]`);
+                                if (btn) {
+                                    let count = parseInt(btn.getAttribute('data-count')) || 0;
+                                    count += 10;
+                                    btn.setAttribute('data-count', count);
+                                    btn.textContent = `Add to ${category} (${count})`;
+                                }
+                            } else {
+                                failureCount++;
+                                console.error(`Error adding to ${category}:`, data.message);
+                            }
+                        } catch (err) {
+                            failureCount++;
+                            console.error(`Network error for ${category}:`, err);
+                        }
+                    }
+
+                    // Reset button state
+                    addAllBtn.disabled = false;
+                    addAllBtn.textContent = '➕ Add 10 per Category';
+
+                    // Show success message
+                    if (successCount > 0) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: `✅ Added 10 questions to ${successCount} categories!`,
+                            text: failureCount > 0 ? `${failureCount} categories failed` : '',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            toast: true,
+                            position: 'top-end',
+                            background: '#a0ffbf'
+                        });
+
+                        // Refresh category counts
+                        loadCategoryCounts();
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Failed to add questions',
+                            text: 'All categories failed to update'
+                        });
+                    }
+                });
+            }
+        });
+
+        // Delete functions
+        function confirmDeleteCategory(category) {
+            Swal.fire({
+                title: 'Confirm Delete',
+                text: `Are you sure you want to delete all questions in ${category}?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    deleteCategory(category);
+                }
+            });
+        }
+
+        function confirmDeleteAll() {
+            Swal.fire({
+                title: 'Confirm Delete ALL',
+                text: `Are you sure you want to delete ALL questions in ALL categories? This is irreversible!`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete ALL!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    deleteAllCategories();
+                }
+            });
+        }
+
+        function deleteCategory(category) {
+            fetch(`/api/deleteCategory?category=${category}`, {
+                method: 'GET'
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: `Category "${category}" deleted.`,
+                            timer: 1500,
+                            toast: true,
+                            position: 'top-end'
+                        });
+                        // Refresh category counts after deletion
+                        loadCategoryCounts();
+                    } else {
+                        throw new Error(data.message);
+                    }
+                })
+                .catch(err => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Failed to delete category',
+                        text: err.message
+                    });
+                });
+        }
+
+        async function deleteAllCategories() {
+            try {
+                const response = await fetch('/api/deleteAllCategories');
+                const data = await response.json();
+                
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'All categories deleted successfully!',
+                        timer: 1500,
+                        toast: true,
+                        position: 'top-end'
+                    });
+                    // Refresh category counts after deletion
+                    loadCategoryCounts();
+                } else {
+                    throw new Error(data.message);
+                }
+            } catch (error) {
+                console.error('Failed to delete all categories:', error);
+                showToast('Failed to delete all categories', 'error');
+            }
+        }
+
+        // Load counts when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCategoryCounts();
+            console.log('✅ Test-n loaded successfully');
+        });
+
+        // Listen for storage events to sync with other tabs
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'questionsAdded') {
+                try {
+                    const data = JSON.parse(e.newValue);
+                    loadCategoryCounts(); // Refresh all counts
+                    localStorage.removeItem('questionsAdded');
+                } catch (error) {
+                    console.error('Error processing storage event:', error);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
