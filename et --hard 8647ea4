@@ -1,0 +1,73 @@
+[33m1800882[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m HEAD@{0}: reset: moving to HEAD
+[33m1800882[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m HEAD@{1}: reset: moving to 1800882cf3db4d975f7a3d4ad5f6189f10f1c147
+[33m55de095[m HEAD@{2}: reset: moving to 55de095d6f2bb4da69b870adb1ea22cf03331efe
+[33maf00de8[m HEAD@{3}: commit: Assistant checkpoint: Added creative trivia questions with engaging facts
+[33m8647e48[m HEAD@{4}: commit: Assistant checkpoint: Updated duplicate checker to auto-delete exact matches
+[33m37a7fea[m HEAD@{5}: commit: Assistant checkpoint: Remove leftover markdown text from test0.html
+[33m41ac36a[m HEAD@{6}: commit: Assistant checkpoint: Update Check Duplicates to show confirmation dialog
+[33m8d8e1d6[m HEAD@{7}: commit: Assistant checkpoint: Updated Check Duplicates to fast auto-cleanup system
+[33meb815dd[m HEAD@{8}: commit: Assistant checkpoint: Implement fast auto-duplicate cleanup with Levenshtein
+[33me96296d[m HEAD@{9}: commit: Assistant checkpoint: Improved Check Duplicates with safe fuzzy matching
+[33m6221864[m HEAD@{10}: commit: Assistant checkpoint: Enhanced Check Duplicates with auto-removal
+[33m7434065[m HEAD@{11}: commit: Assistant checkpoint: Implement duplicate checking with detailed feedback
+[33m7e8d515[m HEAD@{12}: commit: Assistant checkpoint: Add Other Tools section with 5 gray-styled buttons
+[33m783967c[m HEAD@{13}: commit: Assistant checkpoint: Replace confirm dialogs with SweetAlert2
+[33mc4e8168[m HEAD@{14}: commit: Assistant checkpoint: Add Delete section with red buttons and functionality
+[33mc93d686[m HEAD@{15}: commit: Assistant checkpoint: Style Test0 button to match Test2 in topbar
+[33mf24cd53[m HEAD@{16}: commit: Assistant checkpoint: Simplified test0.html to focus only on Add functionality
+[33m905eab0[m HEAD@{17}: commit: Assistant checkpoint: Updated Add buttons to match test2 compact style
+[33m98867b9[m HEAD@{18}: commit: Assistant checkpoint: Clean up test pages and rebuild test0.html
+[33m72565c4[m HEAD@{19}: commit: Assistant checkpoint: Add Test0 button to topbar navigation
+[33m4d8b7a2[m HEAD@{20}: commit: Assistant checkpoint: Add Delete Questions section with red buttons
+[33m195e213[m HEAD@{21}: commit: Assistant checkpoint: Add Add Questions section with category buttons
+[33m4936774[m HEAD@{22}: reset: moving to 4936774c61326963545febeda517a369521a468a
+[33m40bbd9a[m HEAD@{23}: commit: Assistant checkpoint: Created test-n.html page and updated topbar with Test 1 button
+[33m6a3dcb7[m HEAD@{24}: commit: Assistant checkpoint: Created compact test-n.html admin interface with topbar button
+[33m7355581[m HEAD@{25}: commit: Assistant checkpoint: Restored red text Delete buttons and original layout
+[33m2e3f35c[m HEAD@{26}: commit: Assistant checkpoint: Restore Add section to original flexbox layout
+[33me823dbf[m HEAD@{27}: reset: moving to e823dbf5fa06f23d51e3529961202fbf39d4ad88
+[33mabf3155[m HEAD@{28}: commit: Assistant checkpoint: Unified Add/Delete sections with grid layout and left-aligned buttons
+[33m1b8190f[m HEAD@{29}: commit: Checkpoint before assistant change: Unify add and delete question sections with aligned button layouts
+[33m90b7738[m HEAD@{30}: commit: Assistant checkpoint: Unified Add and Delete section layouts with consistent button styling
+[33m3bb7384[m HEAD@{31}: commit: Assistant checkpoint: Refined delete section UI and removed old danger zone
+[33mca47b8a[m HEAD@{32}: commit: Assistant checkpoint: Add delete section with per-category and delete-all buttons
+[33m182e9cf[m HEAD@{33}: commit: Checkpoint before assistant change: Enable the ability to delete questions, both by category or all at once
+[33m62b8676[m HEAD@{34}: commit: Assistant checkpoint: Add safe category deletion with modal selector
+[33mad66b98[m HEAD@{35}: commit: Checkpoint before assistant change: Require selection of a category before deletion to prevent accidental data loss
+[33m66d936d[m HEAD@{36}: commit: Assistant checkpoint: Minimize button styling for mobile-friendliness
+[33m2138861[m HEAD@{37}: commit: Assistant checkpoint: Refactor View Questions into Insights panel with styling
+[33mf744df5[m HEAD@{38}: commit: Assistant checkpoint: Improved Database Control section with Danger Zone
+[33m15b86a7[m HEAD@{39}: commit: Assistant checkpoint: Clean up Test Tools - remove redundant button, rename function
+[33m5307963[m HEAD@{40}: commit: Assistant checkpoint: Replace bulk buttons with unified Add 10 per Category button
+[33m774702d[m HEAD@{41}: commit: Checkpoint before assistant change: Add button to quickly populate all categories with new questions
+[33me032909[m HEAD@{42}: commit: Assistant checkpoint: Fix button click handler to prevent false network errors
+[33ma799554[m HEAD@{43}: commit: Assistant checkpoint: Add live count updates and visual feedback
+[33mc5fe728[m HEAD@{44}: commit: Assistant checkpoint: Implement actual question insertion to MongoDB
+[33md54afd4[m HEAD@{45}: commit: Assistant checkpoint: Add SweetAlert2 and button click handlers
+[33m6bb5c41[m HEAD@{46}: commit: Assistant checkpoint: Add /api/addQuestions route to backend
+[33m2d886bb[m HEAD@{47}: commit: Assistant checkpoint: Fix category button event handling and consistency
+[33ma3708b9[m HEAD@{48}: commit: Assistant checkpoint: Updated test-questions.html layout with live counts and badges
+[33m680276f[m HEAD@{49}: commit: Assistant checkpoint: Fixed global topbar logout button functionality
+[33m7d60356[m HEAD@{50}: commit: Assistant checkpoint: Added toast notifications, live count updates, and visual badges
+[33m23b9112[m HEAD@{51}: commit: Assistant checkpoint: Add question counts to category buttons
+[33m6316725[m HEAD@{52}: commit: Assistant checkpoint: Applied ultra-compact responsive admin UI design
+[33ma8251b1[m HEAD@{53}: commit: Assistant checkpoint: Mobile-optimized admin pages with ultra-compact layout
+[33m2036d31[m HEAD@{54}: commit: Assistant checkpoint: Refactor test-questions.html: compact UI + confirmations
+[33m8a8db32[m HEAD@{55}: commit: Assistant checkpoint: Refactored test-questions.html into compact tool hub
+[33m98b6727[m HEAD@{56}: commit: Checkpoint before assistant change: Transform test question page into a compact tool hub with user feedback
+[33m743317e[m HEAD@{57}: commit: Assistant checkpoint: Disable auto-loading, add placeholder text
+[33mab8c24d[m HEAD@{58}: commit: Assistant checkpoint: Refactor test2-questions.html into minimalist admin view
+[33m6168dfe[m HEAD@{59}: commit: Assistant checkpoint: Add category view section to test2-questions.html
+[33me002e62[m HEAD@{60}: commit: Assistant checkpoint: Created test2-questions.html and added Test2 to navigation
+[33m98a6f82[m HEAD@{61}: commit: Assistant checkpoint: Create test-questions.js with functional buttons
+[33m8577454[m HEAD@{62}: commit: Assistant checkpoint: Fix test-questions.html by creating proper JS file and cleaning up HTML
+[33m17ae0e6[m HEAD@{63}: commit: Assistant checkpoint: Add Test navigation link to topbar
+[33mf1cfb88[m HEAD@{64}: commit: Assistant checkpoint: Enhanced quiz system with proper randomization verification
+[33m144da2a[m HEAD@{65}: commit: Assistant checkpoint: Fixed syntax error in seedQuestions.js and ran seeding
+[33m4b7ef13[m HEAD@{66}: commit: Assistant checkpoint: Set up 120-question pool with session deduplication
+[33m39ce794[m HEAD@{67}: commit: Assistant checkpoint: Implemented balanced question selection system
+[33m68cded2[m HEAD@{68}: commit: Assistant checkpoint: Fix admin heading color and improve navigation typography
+[33maa0bd79[m HEAD@{69}: commit: Assistant checkpoint: Updated admin table styling for minimalistic design
+[33mf1fd4c4[m HEAD@{70}: commit: Assistant checkpoint: Fix Mimir Quiz status badge styling to match other cards
+[33mfc5be73[m HEAD@{71}: commit: Assistant checkpoint: Update topbar: Music Quiz → Mimir Quiz, improve mobile UI
+[33ma86828d[m HEAD@{72}: commit: Assistant checkpoint: Improved mobile responsiveness, softer colors, compact layout
