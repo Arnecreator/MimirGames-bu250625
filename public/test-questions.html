@@ -525,62 +525,62 @@
             <h3>➕ Add Questions by Category</h3>
             <div class="category-buttons">
                 <div class="category-btn-container">
-                    <button class="category-btn" data-category="History">
+                    <button class="category-btn add-btn" data-category="History">
                         Add to History
                     </button>
                 </div>
                 <div class="category-btn-container">
-                    <button class="category-btn" data-category="Science">
+                    <button class="category-btn add-btn" data-category="Science">
                         Add to Science
                     </button>
                 </div>
                 <div class="category-btn-container">
-                    <button class="category-btn" data-category="Sports">
+                    <button class="category-btn add-btn" data-category="Sports">
                         Add to Sports
                     </button>
                 </div>
                 <div class="category-btn-container">
-                    <button class="category-btn" data-category="Geography">
+                    <button class="category-btn add-btn" data-category="Geography">
                         Add to Geography
                     </button>
                 </div>
                 <div class="category-btn-container">
-                    <button class="category-btn" data-category="Literature">
+                    <button class="category-btn add-btn" data-category="Literature">
                         Add to Literature
                     </button>
                 </div>
                 <div class="category-btn-container">
-                    <button class="category-btn" data-category="Math">
+                    <button class="category-btn add-btn" data-category="Math">
                         Add to Math
                     </button>
                 </div>
                 <div class="category-btn-container">
-                    <button class="category-btn" data-category="Movies">
+                    <button class="category-btn add-btn" data-category="Movies">
                         Add to Movies
                     </button>
                 </div>
                 <div class="category-btn-container">
-                    <button class="category-btn" data-category="Music">
+                    <button class="category-btn add-btn" data-category="Music">
                         Add to Music
                     </button>
                 </div>
                 <div class="category-btn-container">
-                    <button class="category-btn" data-category="Art">
+                    <button class="category-btn add-btn" data-category="Art">
                         Add to Art
                     </button>
                 </div>
                 <div class="category-btn-container">
-                    <button class="category-btn" data-category="Technology">
+                    <button class="category-btn add-btn" data-category="Technology">
                         Add to Technology
                     </button>
                 </div>
                 <div class="category-btn-container">
-                    <button class="category-btn" data-category="Food">
+                    <button class="category-btn add-btn" data-category="Food">
                         Add to Food
                     </button>
                 </div>
                 <div class="category-btn-container">
-                    <button class="category-btn" data-category="Misc">
+                    <button class="category-btn add-btn" data-category="Misc">
                         Add to Misc
                     </button>
                 </div>
@@ -625,6 +625,7 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="scripts/global.js"></script>
     <script src="scripts/questionManager.js"></script>
     <script src="scripts/test-questions.js"></script>
@@ -779,11 +780,68 @@
         // Add event listeners to all category buttons
         document.addEventListener('DOMContentLoaded', function() {
             // Add click handlers to all category buttons
-            document.querySelectorAll('.category-btn[data-category]').forEach(button => {
+            document.querySelectorAll('.add-btn[data-category]').forEach(button => {
                 button.addEventListener('click', async function() {
                     const category = this.getAttribute('data-category');
                     if (category) {
                         await handleAddQuestions(category, 10);
+                    }
+                });
+            });
+
+            // Alternative event listener setup for add buttons (with SweetAlert2)
+            document.querySelectorAll('.add-btn').forEach(button => {
+                button.addEventListener('click', async (e) => {
+                    // Prevent double-firing if both handlers are active
+                    if (e.target.classList.contains('processed')) return;
+                    e.target.classList.add('processed');
+                    
+                    const category = button.getAttribute('data-category');
+                    
+                    if (!category) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Category not specified'
+                        });
+                        return;
+                    }
+
+                    try {
+                        const res = await fetch(`/api/addQuestions?category=${category}`);
+                        const data = await res.json();
+
+                        if (data.success) {
+                            // ✅ Success message
+                            Swal.fire({
+                                position: 'top-end',
+                                icon: 'success',
+                                title: `10 questions added to ${category}!`,
+                                showConfirmButton: false,
+                                timer: 1500,
+                                toast: true,
+                                background: '#a0ffbf'
+                            });
+                            
+                            // Update the button count
+                            const newCount = (categoryCounts[category] || 0) + 10;
+                            updateCategoryCount(category, newCount, 10);
+                            
+                        } else {
+                            throw new Error(data.message || "Unknown error");
+                        }
+                    } catch (err) {
+                        // ❌ Error popup
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Network error',
+                            text: err.message || 'Failed to add questions'
+                        });
+                    } finally {
+                        // Remove processed class after a short delay
+                        setTimeout(() => {
+                            e.target.classList.remove('processed');
+                        }, 100);
                     }
                 });
             });
