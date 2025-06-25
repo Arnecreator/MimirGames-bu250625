@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test0 – Question Management</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body {
             font-family: 'Inter', 'Segoe UI', sans-serif;
@@ -212,6 +213,23 @@
         .toast.warning {
             background: #f39c12;
         }
+
+        /* SweetAlert2 custom styling */
+        .swal2-popup.small-confirm-popup {
+            font-size: 0.9rem;
+            padding: 1.2rem;
+            border-radius: 8px;
+        }
+
+        .swal2-popup.small-confirm-popup .swal2-title {
+            font-size: 1.1rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .swal2-popup.small-confirm-popup .swal2-content {
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
     </style>
 </head>
 
@@ -390,7 +408,24 @@
         async function addToAllCategories() {
             const categories = ['History', 'Science', 'Sports', 'Geography', 'Literature', 'Math', 'Movies', 'Music', 'Art', 'Technology', 'Food', 'Misc'];
             
-            if (!confirm(`Add 10 questions to each of the ${categories.length} categories?`)) {
+            const result = await Swal.fire({
+                title: `Add to all categories?`,
+                text: `This will add 10 questions to each of the ${categories.length} categories.`,
+                icon: 'question',
+                background: '#1e1e2f',
+                color: '#ffffff',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, add them!',
+                cancelButtonText: 'Cancel',
+                width: '350px',
+                customClass: {
+                    popup: 'small-confirm-popup',
+                }
+            });
+
+            if (!result.isConfirmed) {
                 return;
             }
 
@@ -429,18 +464,52 @@
             document.querySelectorAll('.delete-btn[data-category]').forEach(button => {
                 button.addEventListener('click', function() {
                     const category = this.getAttribute('data-category');
-                    if (confirm(`Are you sure you want to delete all questions from ${category}?`)) {
-                        deleteQuestions(category);
-                    }
+                    Swal.fire({
+                        title: `Delete all questions from ${category}?`,
+                        text: 'This action cannot be undone.',
+                        icon: 'warning',
+                        background: '#1e1e2f',
+                        color: '#ffffff',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Yes, delete them!',
+                        cancelButtonText: 'Cancel',
+                        width: '350px',
+                        customClass: {
+                            popup: 'small-confirm-popup',
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            deleteQuestions(category);
+                        }
+                    });
                 });
             });
 
             // Special buttons
             document.getElementById('add-all-btn').addEventListener('click', addToAllCategories);
             document.getElementById('delete-all-btn').addEventListener('click', function() {
-                if (confirm('Are you sure you want to delete ALL questions from ALL categories? This cannot be undone!')) {
-                    deleteAllCategories();
-                }
+                Swal.fire({
+                    title: 'Delete ALL categories?',
+                    text: 'This will permanently delete ALL questions from ALL categories. This cannot be undone!',
+                    icon: 'warning',
+                    background: '#1e1e2f',
+                    color: '#ffffff',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete everything!',
+                    cancelButtonText: 'Cancel',
+                    width: '350px',
+                    customClass: {
+                        popup: 'small-confirm-popup',
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        deleteAllCategories();
+                    }
+                });
             });
         });
     </script>
