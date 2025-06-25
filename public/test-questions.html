@@ -516,6 +516,42 @@
             transform: translateY(-1px);
         }
 
+        /* Insights Panel Styling */
+        .insights-panel {
+            border: 2px solid #3d6df1;
+            background: rgba(61, 109, 241, 0.05);
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .insights-panel .section-title {
+            color: #5d8aff;
+        }
+
+        .insights-panel .btn-secondary {
+            background-color: #3d6df1;
+            color: white;
+            border: 1px solid #2a55c9;
+        }
+
+        .insights-panel .btn-secondary:hover {
+            background-color: #2a55c9;
+            border-color: #1e3fa0;
+            transform: translateY(-1px);
+        }
+
+        .insight-description {
+            margin-top: 10px;
+            text-align: center;
+            color: #999;
+            font-style: italic;
+        }
+
+        .insight-description small {
+            font-size: 11px;
+        }
+
         /* Danger Zone Styling */
         .danger-zone {
             border: 2px solid #ff4757;
@@ -684,12 +720,15 @@
             </div>
         </div>
 
-        <!-- View Questions Section -->
-        <div class="tool-section">
-            <div class="section-title"><span class="emoji">👁️</span>View Questions</div>
+        <!-- Insights Panel -->
+        <div class="tool-section insights-panel">
+            <div class="section-title"><span class="emoji">📊</span>Insights</div>
             <div class="button-grid">
-                <button class="admin-btn" onclick="openQuestionViewer()">Open Admin View</button>
-                <button class="admin-btn" onclick="checkQuestionCoverage()">Verify Coverage</button>
+                <button class="admin-btn btn-secondary" onclick="openQuestionViewer()">Open Admin View</button>
+                <button class="admin-btn btn-secondary" onclick="checkQuestionCoverage()">Verify Coverage</button>
+            </div>
+            <div class="insight-description">
+                <small>👁️ Use these tools to review data quality and coverage per category</small>
             </div>
         </div>
     </div>
