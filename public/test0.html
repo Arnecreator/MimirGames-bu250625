@@ -507,6 +507,21 @@ The code implements the auto-remove duplicates functionality for the "Check Dupl
             loadCategoryCounts(); // Refresh counts
         }
 
+        // Smart duplicate detection with fuzzy matching
+        function isSimilar(str1, str2) {
+            const normalize = s => s.toLowerCase().replace(/[^\w\s]/gi, '').trim();
+            const words1 = normalize(str1).split(' ');
+            const words2 = normalize(str2).split(' ');
+
+            const commonWords = words1.filter(word => words2.includes(word));
+            const similarity = commonWords.length / Math.max(words1.length, words2.length);
+
+            return similarity > 0.9; // Higher threshold to avoid false positives
+        }
+
+        // Global variables to store duplicate results
+        let lastDuplicateResults = null;
+
         // Other Tools functions
         async function checkDuplicates() {
             console.log('🔍 Checking for duplicate questions...');
@@ -522,97 +537,244 @@ The code implements the auto-remove duplicates functionality for the "Check Dupl
                 const data = await response.json();
                 const questions = data.questions || [];
 
-                console.log(`📊 Starting duplicate check on ${questions.length} total questions`);
+                console.log(`📊 Starting smart duplicate check on ${questions.length} total questions`);
 
-                // Check for duplicates (case-insensitive)
-                const duplicates = [];
-                const seen = new Map();
+                // Check for exact duplicates
+                const exactDuplicates = [];
+                const exactSeen = new Map();
 
                 questions.forEach(question => {
                     const normalizedText = question.question.toLowerCase().trim();
 
-                    if (seen.has(normalizedText)) {
-                        // Found a duplicate
-                        const original = seen.get(normalizedText);
-                        duplicates.push({
+                    if (exactSeen.has(normalizedText)) {
+                        const original = exactSeen.get(normalizedText);
+                        exactDuplicates.push({
+                            type: 'exact',
                             original: original,
                             duplicate: question,
                             text: normalizedText
                         });
-
-                        // Log to console for debugging
-                        console.warn("Duplicate found:", {
-                            id: question._id,
-                            question: question.question,
-                            category: question.category,
-                            originalId: original._id,
-                            originalCategory: original.category
-                        });
                     } else {
-                        seen.set(normalizedText, question);
+                        exactSeen.set(normalizedText, question);
                     }
                 });
 
+                // Check for similar duplicates (fuzzy matching)
+                const similarDuplicates = [];
+                const processed = new Set();
+
+                for (let i = 0; i < questions.length; i++) {
+                    if (processed.has(i)) continue;
+                    
+                    const question1 = questions[i];
+                    
+                    for (let j = i + 1; j < questions.length; j++) {
+                        if (processed.has(j)) continue;
+                        
+                        const question2 = questions[j];
+                        
+                        // Skip if already found as exact duplicate
+                        const isExactDupe = exactDuplicates.some(dup => 
+                            (dup.original._id === question1._id && dup.duplicate._id === question2._id) ||
+                            (dup.original._id === question2._id && dup.duplicate._id === question1._id)
+                        );
+                        
+                        if (!isExactDupe && isSimilar(question1.question, question2.question)) {
+                            similarDuplicates.push({
+                                type: 'similar',
+                                original: question1,
+                                duplicate: question2,
+                                similarity: calculateSimilarity(question1.question, question2.question)
+                            });
+                            processed.add(j);
+                        }
+                    }
+                }
+
                 // Calculate summary stats
                 const totalQuestions = questions.length;
-                const duplicatesFound = duplicates.length;
-                const uniqueQuestions = totalQuestions - duplicatesFound;
+                const exactCount = exactDuplicates.length;
+                const similarCount = similarDuplicates.length;
+                const uniqueQuestions = totalQuestions - exactCount - similarCount;
 
-                // Show results
-                if (duplicatesFound === 0) {
-                    showToast(`🎉 No duplicates found among ${totalQuestions} questions.`, 'success');
-                    console.log(`✅ Duplicate check complete: ${totalQuestions} questions, no duplicates found`);
-                } else {
-                    // Show confirmation dialog for auto-removal
-                    const result = await Swal.fire({
-                        title: 'Duplicates found',
-                        text: `${duplicatesFound} duplicates found among ${totalQuestions} questions. Do you want to delete all duplicate entries automatically?`,
-                        icon: 'warning',
-                        background: '#1e1e2f',
-                        color: '#ffffff',
-                        showCancelButton: true,
-                        confirmButtonColor: '#d33',
-                        cancelButtonColor: '#3085d6',
-                        confirmButtonText: 'Yes, delete',
-                        cancelButtonText: 'Cancel',
-                        width: '400px',
-                        customClass: {
-                            popup: 'small-confirm-popup',
-                        }
-                    });
+                // Store results for potential review
+                lastDuplicateResults = {
+                    total: totalQuestions,
+                    exact: exactDuplicates,
+                    similar: similarDuplicates,
+                    unique: uniqueQuestions
+                };
 
-                    if (result.isConfirmed) {
-                        // User confirmed deletion
-                        await removeDuplicates(duplicates, totalQuestions, duplicatesFound);
-                    } else {
-                        // User cancelled
-                        showToast('❌ Duplicate cleanup cancelled', 'warning');
-                        console.log('⚠️ User cancelled duplicate removal');
-                    }
+                // Log detailed results to console
+                console.log(`✅ Smart duplicate check complete:`, {
+                    totalQuestions,
+                    exactDuplicates: exactCount,
+                    similarDuplicates: similarCount,
+                    uniqueQuestions,
+                    exactDetails: exactDuplicates,
+                    similarDetails: similarDuplicates
+                });
 
-                    console.log(`⚠️ Duplicate check complete:`, {
-                        totalQuestions,
-                        duplicatesFound,
-                        uniqueQuestions,
-                        duplicateDetails: duplicates
-                    });
+                // Show read-only results
+                const summaryMessage = `🔍 Duplicate Check Complete:\n• ${totalQuestions} questions checked\n• ${exactCount} exact duplicates\n• ${similarCount} similar (over 90% match)\n• ${uniqueQuestions} unique\n✅ No changes were made`;
+                
+                showToast(summaryMessage, exactCount > 0 || similarCount > 0 ? 'warning' : 'success', 8000);
 
-                    // Log each duplicate pair for detailed review
-                    duplicates.forEach((dup, index) => {
-                        console.warn(`Duplicate #${index + 1}:`, {
-                            question: dup.duplicate.question,
-                            duplicate_id: dup.duplicate._id,
-                            duplicate_category: dup.duplicate.category,
-                            original_id: dup.original._id,
-                            original_category: dup.original.category
-                        });
-                    });
+                // Show action buttons if duplicates found
+                if (exactCount > 0 || similarCount > 0) {
+                    setTimeout(() => {
+                        showDuplicateActions(exactCount, similarCount);
+                    }, 1000);
                 }
 
             } catch (error) {
                 console.error('❌ Error during duplicate check:', error);
                 showToast('❌ Error during duplicate check.', 'error');
             }
+        }
+
+        // Calculate similarity percentage for display
+        function calculateSimilarity(str1, str2) {
+            const normalize = s => s.toLowerCase().replace(/[^\w\s]/gi, '').trim();
+            const words1 = normalize(str1).split(' ');
+            const words2 = normalize(str2).split(' ');
+            const commonWords = words1.filter(word => words2.includes(word));
+            return Math.round((commonWords.length / Math.max(words1.length, words2.length)) * 100);
+        }
+
+        // Show duplicate action options
+        function showDuplicateActions(exactCount, similarCount) {
+            let buttons = [];
+            
+            if (exactCount > 0 || similarCount > 0) {
+                buttons.push({
+                    text: '📋 Review Duplicates',
+                    value: 'review',
+                    className: 'swal2-confirm'
+                });
+            }
+            
+            if (exactCount > 0) {
+                buttons.push({
+                    text: '❌ Delete Exact Duplicates (Safe)',
+                    value: 'delete-exact',
+                    className: 'swal2-deny'
+                });
+            }
+            
+            if (similarCount > 0) {
+                buttons.push({
+                    text: '⚠️ Delete Similar Duplicates (Advanced)',
+                    value: 'delete-similar',
+                    className: 'swal2-cancel'
+                });
+            }
+
+            Swal.fire({
+                title: 'Duplicate Actions',
+                text: `Found ${exactCount} exact and ${similarCount} similar duplicates. What would you like to do?`,
+                icon: 'question',
+                background: '#1e1e2f',
+                color: '#ffffff',
+                showCancelButton: true,
+                showDenyButton: exactCount > 0,
+                showConfirmButton: true,
+                confirmButtonText: '📋 Review Duplicates',
+                denyButtonText: exactCount > 0 ? '❌ Delete Exact (Safe)' : undefined,
+                cancelButtonText: 'Cancel',
+                width: '450px',
+                customClass: {
+                    popup: 'small-confirm-popup',
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    reviewDuplicates();
+                } else if (result.isDenied && exactCount > 0) {
+                    confirmDeleteExactDuplicates();
+                }
+            });
+        }
+
+        // Review duplicates in a scrollable display
+        function reviewDuplicates() {
+            if (!lastDuplicateResults) {
+                showToast('❌ No duplicate results to review', 'error');
+                return;
+            }
+
+            let reviewHtml = '<div style="text-align: left; max-height: 400px; overflow-y: auto; font-size: 13px;">';
+            
+            // Show exact duplicates
+            if (lastDuplicateResults.exact.length > 0) {
+                reviewHtml += '<h4 style="color: #ff6b6b; margin: 0 0 10px 0;">🔴 Exact Duplicates:</h4>';
+                lastDuplicateResults.exact.forEach((dup, index) => {
+                    reviewHtml += `
+                        <div style="margin-bottom: 15px; padding: 10px; background: rgba(255,107,107,0.1); border-radius: 5px;">
+                            <div style="font-weight: bold;">${index + 1}. [${dup.original.category}] vs [${dup.duplicate.category}]</div>
+                            <div style="margin: 5px 0; color: #ccc;">"${dup.original.question}"</div>
+                            <div style="margin: 5px 0; color: #ccc; padding-left: 20px;">≡ "${dup.duplicate.question}"</div>
+                        </div>
+                    `;
+                });
+            }
+
+            // Show similar duplicates
+            if (lastDuplicateResults.similar.length > 0) {
+                reviewHtml += '<h4 style="color: #f39c12; margin: 15px 0 10px 0;">🟡 Similar Duplicates:</h4>';
+                lastDuplicateResults.similar.forEach((dup, index) => {
+                    reviewHtml += `
+                        <div style="margin-bottom: 15px; padding: 10px; background: rgba(243,156,18,0.1); border-radius: 5px;">
+                            <div style="font-weight: bold;">${index + 1}. [${dup.original.category}] vs [${dup.duplicate.category}] (${dup.similarity}% match)</div>
+                            <div style="margin: 5px 0; color: #ccc;">"${dup.original.question}"</div>
+                            <div style="margin: 5px 0; color: #ccc; padding-left: 20px;">≈ "${dup.duplicate.question}"</div>
+                        </div>
+                    `;
+                });
+            }
+
+            reviewHtml += '</div>';
+
+            Swal.fire({
+                title: 'Duplicate Review',
+                html: reviewHtml,
+                background: '#1e1e2f',
+                color: '#ffffff',
+                width: '700px',
+                showConfirmButton: true,
+                confirmButtonText: 'Close',
+                customClass: {
+                    popup: 'small-confirm-popup',
+                }
+            });
+        }
+
+        // Confirm deletion of exact duplicates only
+        function confirmDeleteExactDuplicates() {
+            if (!lastDuplicateResults || lastDuplicateResults.exact.length === 0) {
+                showToast('❌ No exact duplicates to delete', 'error');
+                return;
+            }
+
+            Swal.fire({
+                title: 'Delete Exact Duplicates?',
+                text: `This will delete ${lastDuplicateResults.exact.length} exact duplicate questions. This action cannot be undone.`,
+                icon: 'warning',
+                background: '#1e1e2f',
+                color: '#ffffff',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete exact duplicates',
+                cancelButtonText: 'Cancel',
+                width: '400px',
+                customClass: {
+                    popup: 'small-confirm-popup',
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    removeDuplicates(lastDuplicateResults.exact, lastDuplicateResults.total, lastDuplicateResults.exact.length);
+                }
+            });
         }
 
         // Remove duplicates function
