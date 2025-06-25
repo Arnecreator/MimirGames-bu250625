@@ -1,0 +1,97 @@
+Instruction for Replit – Unified “Add 10 per Category” Button
+🧠 Goal
+Replace the two existing bottom buttons:
+
+"Add 10 to Each Category"
+
+"Bulk Add 120 Questions"
+
+…with a single, clearly labeled button:
+
+text
+Copy
+Edit
+➕ Add 10 per Category
+This button should:
+
+Be placed centered below the two rows of category buttons.
+
+Add exactly 10 questions to each of the 12 predefined categories.
+
+Update the number counters on each category button after success.
+
+Remove any old bulk logic – no extra database or generic insertion logic should be kept.
+
+🔧 Implementation Steps
+HTML – Replace both old buttons with this:
+
+html
+Copy
+Edit
+<div style="text-align: center; margin-top: 10px;">
+  <button id="add-all-btn" class="main-action-btn">➕ Add 10 per Category</button>
+</div>
+CSS (add to your main style file or <style> block):
+
+css
+Copy
+Edit
+.main-action-btn {
+  background-color: #a0ffbf;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+}
+JavaScript – Add this logic in your frontend script (e.g. index.js):
+
+js
+Copy
+Edit
+document.getElementById('add-all-btn').addEventListener('click', async () => {
+  const categories = [
+    "History", "Science", "Sports", "Geography",
+    "Literature", "Math", "Movies", "Music",
+    "Art", "Technology", "Food", "Misc"
+  ];
+
+  for (const category of categories) {
+    try {
+      const res = await fetch(`/api/addQuestions?category=${category}`);
+      const data = await res.json();
+
+      if (data.success) {
+        // Find the corresponding button
+        const btn = document.querySelector(`.add-btn[data-category="${category}"]`);
+        if (btn) {
+          let count = parseInt(btn.getAttribute('data-count')) || 0;
+          count += 10;
+          btn.setAttribute('data-count', count);
+          btn.textContent = `Add to ${category} (${count})`;
+        }
+      } else {
+        console.error(`Error adding to ${category}:`, data.message);
+      }
+    } catch (err) {
+      console.error(`Network error for ${category}:`, err);
+    }
+  }
+
+  Swal.fire({
+    icon: 'success',
+    title: '✅ Added 10 questions to all categories!',
+    showConfirmButton: false,
+    timer: 2000,
+    toast: true,
+    position: 'top-end',
+    background: '#a0ffbf'
+  });
+});
+✅ Final Notes
+This version uses your real categories – no bulk/unknown insertions.
+
+All buttons update immediately with their new question counts.
+
+Error handling is per-category in the console, but the user only sees a popup if the entire operation finishes.
