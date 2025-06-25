@@ -720,7 +720,7 @@
         <div class="tool-section danger-zone">
             <div class="section-title"><span class="emoji">⚠️</span>Danger Zone</div>
             <div class="button-grid">
-                <button class="admin-btn btn-danger" onclick="confirmDeleteCategory()">Delete Category</button>
+                <button class="admin-btn btn-danger" onclick="showDeleteCategoryModal()">Delete Category</button>
             </div>
             <div class="danger-warning">
                 <small>⚠️ These actions are irreversible and can permanently delete data</small>
@@ -1111,8 +1111,65 @@
                 });
         }
 
-        function confirmDeleteCategory() {
-            showToast('❌ Delete category feature not implemented', 'error');
+        function showDeleteCategoryModal() {
+            const categories = [
+                "History", "Science", "Sports", "Geography", "Literature", "Math",
+                "Movies", "Music", "Art", "Technology", "Food", "Misc"
+            ];
+
+            let optionsHtml = categories.map(cat =>
+                `<option value="${cat}">${cat}</option>`
+            ).join('');
+
+            Swal.fire({
+                title: 'Select category to delete',
+                html: `
+                    <select id="category-to-delete" class="swal2-input">
+                        ${optionsHtml}
+                    </select>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Delete',
+                confirmButtonColor: '#d33',
+                cancelButtonText: 'Cancel',
+                preConfirm: () => {
+                    const selected = document.getElementById('category-to-delete').value;
+                    return selected;
+                }
+            }).then((result) => {
+                if (result.isConfirmed && result.value) {
+                    deleteCategory(result.value);
+                }
+            });
+        }
+
+        function deleteCategory(category) {
+            fetch(`/api/deleteCategory?category=${category}`, {
+                method: 'DELETE'
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: `Category "${category}" deleted.`,
+                            timer: 1500,
+                            toast: true,
+                            position: 'top-end'
+                        });
+                        // Refresh category counts after deletion
+                        loadCategoryCounts();
+                    } else {
+                        throw new Error(data.message);
+                    }
+                })
+                .catch(err => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Failed to delete category',
+                        text: err.message
+                    });
+                });
         }
 
         function openQuestionViewer() {

@@ -25,6 +25,41 @@ app.get("/api", (req, res) => {
   res.send("✅ Mimir API is running!");
 });
 
+// Delete category route
+app.get('/api/deleteCategory', async (req, res) => {
+  const category = req.query.category;
+  console.log("Received request to delete category:", category);
+  
+  if (!category) {
+    return res.status(400).json({ success: false, message: "Category parameter required" });
+  }
+  
+  // Import Question model
+  const Question = require('./models/Question');
+  
+  try {
+    // Delete all questions in the specified category
+    const deleteResult = await Question.deleteMany({ category: category });
+    
+    console.log(`🗑️ Deleted ${deleteResult.deletedCount} questions from category: ${category}`);
+    
+    res.json({ 
+      success: true, 
+      message: `Successfully deleted ${deleteResult.deletedCount} questions from ${category} category`,
+      deletedCount: deleteResult.deletedCount,
+      category: category
+    });
+    
+  } catch (error) {
+    console.error("❌ Error deleting category:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Database error while deleting category",
+      error: error.message 
+    });
+  }
+});
+
 // Add questions to category route
 app.get('/api/addQuestions', async (req, res) => {
   const category = req.query.category;

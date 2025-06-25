@@ -143,4 +143,37 @@ router.get("/cleanup-status", async (req, res) => {
   }
 });
 
+// Delete category endpoint
+router.delete('/deleteCategory', async (req, res) => {
+  try {
+    const { category } = req.query;
+    
+    if (!category) {
+      return res.status(400).json({ success: false, message: "Category parameter required" });
+    }
+
+    const Question = require('../models/Question');
+    
+    // Delete all questions in the specified category
+    const deleteResult = await Question.deleteMany({ category: category });
+    
+    console.log(`🗑️ Deleted ${deleteResult.deletedCount} questions from category: ${category}`);
+    
+    res.json({ 
+      success: true, 
+      message: `Successfully deleted ${deleteResult.deletedCount} questions from ${category} category`,
+      deletedCount: deleteResult.deletedCount,
+      category: category
+    });
+    
+  } catch (error) {
+    console.error("❌ Error deleting category:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Database error while deleting category",
+      error: error.message 
+    });
+  }
+});
+
 module.exports = router;
