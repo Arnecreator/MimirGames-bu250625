@@ -34,9 +34,42 @@ app.get('/api/addQuestions', async (req, res) => {
     return res.status(400).json({ success: false, message: "Category parameter required" });
   }
   
-  // TODO: Insert logic to add 10 questions to this category
-  // For now, just return success to test the route
-  res.json({ success: true, message: `10 questions would be added to ${category}` });
+  // Import Question model
+  const Question = require('./models/Question');
+  
+  // Create 10 sample questions for the category
+  const questionsToAdd = Array.from({ length: 10 }, (_, i) => ({
+    category: category,
+    question: `Sample ${category} Question ${i + 1}: What is a key concept in ${category}?`,
+    answers: [
+      `Correct answer for ${category}`,
+      `Wrong answer 1 for ${category}`,
+      `Wrong answer 2 for ${category}`,
+      `Wrong answer 3 for ${category}`
+    ],
+    correct: 0, // First answer is correct
+    difficulty: ['easy', 'medium', 'hard'][i % 3], // Rotate difficulties
+    isActive: true
+  }));
+  
+  try {
+    const insertedQuestions = await Question.insertMany(questionsToAdd);
+    console.log(`✅ Successfully added ${insertedQuestions.length} questions to ${category}`);
+    
+    res.json({ 
+      success: true, 
+      message: `10 questions added to ${category}!`,
+      inserted: insertedQuestions.length,
+      category: category
+    });
+  } catch (error) {
+    console.error("❌ Error adding questions:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Database error while adding questions",
+      error: error.message 
+    });
+  }
 });
 
 // 🧩 API-routes
