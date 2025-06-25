@@ -521,16 +521,19 @@
         }
         
         .btn-delete {
-            background-color: #ff9999;
-            color: #400000;
-            font-size: 0.85rem;
+            background: transparent;
+            border: 2px solid #ff4d4d;
+            color: #ff4d4d;
             padding: 6px 12px;
-            border: none;
+            font-size: 0.85rem;
+            font-weight: 500;
             border-radius: 6px;
+            transition: background 0.2s ease;
+            cursor: pointer;
         }
 
         .btn-delete:hover {
-            background-color: #ff7777;
+            background: rgba(255, 77, 77, 0.1);
             transform: translateY(-1px);
         }
 
@@ -583,39 +586,7 @@
             font-size: 11px;
         }
 
-        /* Danger Zone Styling */
-        .danger-zone {
-            border: 2px solid #ff4757;
-            background: rgba(255, 71, 87, 0.1);
-            position: relative;
-        }
-
-        .danger-zone .section-title {
-            color: #ff6b6b;
-        }
-
-        .danger-zone .btn-danger {
-            background: #ff4757;
-            color: white;
-            border: 1px solid #ff3838;
-        }
-
-        .danger-zone .btn-danger:hover {
-            background: #ff3838;
-            border-color: #e63946;
-            transform: translateY(-1px);
-        }
-
-        .danger-warning {
-            margin-top: 8px;
-            text-align: center;
-            color: #ff9999;
-            font-style: italic;
-        }
-
-        .danger-warning small {
-            font-size: 11px;
-        }
+        
     </style>
 </head>
 
@@ -762,16 +733,7 @@
             </div>
         </div>
 
-        <!-- Danger Zone Section -->
-        <div class="tool-section danger-zone">
-            <div class="section-title"><span class="emoji">⚠️</span>Danger Zone</div>
-            <div class="button-grid">
-                <button class="admin-btn btn-danger" onclick="showDeleteCategoryModal()">Delete Category</button>
-            </div>
-            <div class="danger-warning">
-                <small>⚠️ These actions are irreversible and can permanently delete data</small>
-            </div>
-        </div>
+        
 
         <!-- Insights Panel -->
         <div class="tool-section insights-panel">
