@@ -490,6 +490,33 @@
             }, 3000);
         }
 
+        // Notify other tabs about question additions
+        function notifyQuestionAddition(category, count, message) {
+            // Store in localStorage to trigger storage event in other tabs
+            const data = {
+                category: category,
+                count: count,
+                message: message,
+                timestamp: Date.now()
+            };
+            
+            localStorage.setItem('questionsAdded', JSON.stringify(data));
+            
+            // Also try postMessage for same-origin communication
+            try {
+                if (window.opener) {
+                    window.opener.postMessage({
+                        type: 'questionsAdded',
+                        category: category,
+                        count: count,
+                        message: message
+                    }, window.location.origin);
+                }
+            } catch (error) {
+                console.log('Could not notify parent window:', error);
+            }
+        }
+
         function showLoading(show = true) {
             const loading = document.getElementById('testLoading');
             loading.style.display = show ? 'block' : 'none';
@@ -512,7 +539,11 @@
                 
                 if (response.ok) {
                     const data = await response.json();
-                    showToast(`✅ ${count} questions added to ${category}!`);
+                    const message = `✅ ${count} questions added to ${category}!`;
+                    showToast(message);
+                    
+                    // Notify other tabs
+                    notifyQuestionAddition(category, count, message);
                 } else {
                     throw new Error(`HTTP ${response.status}`);
                 }
@@ -541,7 +572,11 @@
                     }
                 }
                 
-                showToast(`✅ Added 10 questions to ${successCount}/${categories.length} categories`);
+                const message = `✅ Added 10 questions to ${successCount}/${categories.length} categories`;
+                showToast(message);
+                
+                // Notify other tabs
+                notifyQuestionAddition('multiple', 10, message);
             } catch (error) {
                 console.error('Error in bulk add:', error);
                 showToast('❌ Failed to add questions to all categories', 'error');
@@ -570,7 +605,11 @@
                 
                 if (response.ok) {
                     const data = await response.json();
-                    showToast(`✅ Successfully added ${data.added || 120} test questions!`);
+                    const message = `✅ Successfully added ${data.added || 120} test questions!`;
+                    showToast(message);
+                    
+                    // Notify other tabs
+                    notifyQuestionAddition('bulk', data.added || 120, message);
                 } else {
                     throw new Error(`HTTP ${response.status}`);
                 }

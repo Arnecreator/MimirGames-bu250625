@@ -327,6 +327,71 @@
         .main-section:hover {
             background: rgba(26, 29, 58, 0.8);
         }
+
+        /* Toast notification system */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #2ecc71;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+            font-weight: 500;
+            max-width: 300px;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .toast.error {
+            background: #e74c3c;
+        }
+
+        .toast.warning {
+            background: #f39c12;
+        }
+
+        /* Badge styling */
+        .badge {
+            background-color: #2ecc71;
+            color: white;
+            font-size: 9px;
+            padding: 2px 5px;
+            border-radius: 10px;
+            margin-left: 4px;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+            font-weight: bold;
+        }
+
+        .badge.fade-out {
+            opacity: 0;
+        }
+
+        /* Mobile toast adjustments */
+        @media (max-width: 768px) {
+            .toast {
+                right: 10px;
+                left: 10px;
+                max-width: none;
+                font-size: 12px;
+            }
+
+            .badge {
+                font-size: 8px;
+                padding: 1px 4px;
+            }
+        }
     </style>
 </head>
 
@@ -340,6 +405,9 @@
                 document.getElementById("topbar-placeholder").innerHTML = html;
             });
     </script>
+
+    <!-- Toast notification -->
+    <div id="toast" class="toast"></div>
 
     <div class="container">
         <h1><span class="emoji">📂</span>Question Admin View</h1>
@@ -371,6 +439,46 @@
     <script src="scripts/test-questions.js"></script>
     
     <script>
+        // Toast notification system
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        }
+
+        // Add badge to category button
+        function addBadgeToCategory(category, count) {
+            const button = document.querySelector(`.category-btn[data-category="${category}"]`);
+            if (button) {
+                // Remove existing badge if any
+                const existingBadge = button.querySelector('.badge');
+                if (existingBadge) {
+                    existingBadge.remove();
+                }
+
+                // Add new badge
+                const badge = document.createElement('span');
+                badge.className = 'badge';
+                badge.textContent = `+${count}`;
+                button.appendChild(badge);
+
+                // Auto-fade after 3 seconds
+                setTimeout(() => {
+                    badge.classList.add('fade-out');
+                    setTimeout(() => {
+                        if (badge.parentNode) {
+                            badge.remove();
+                        }
+                    }, 300);
+                }, 3000);
+            }
+        }
+
         // Function to fetch and display question counts for each category
         async function loadCategoryCounts() {
             try {
@@ -389,6 +497,12 @@
                     categoryButtons.forEach(button => {
                         const category = button.getAttribute('data-category');
                         
+                        // Remove any existing badges when refreshing counts
+                        const existingBadge = button.querySelector('.badge');
+                        if (existingBadge) {
+                            existingBadge.remove();
+                        }
+                        
                         if (category === 'all') {
                             // For "All" button, show total count
                             const totalCount = data.totalQuestions || 0;
@@ -401,20 +515,117 @@
                     });
                     
                     console.log('✅ Category counts loaded:', categoryCounts);
+                    return categoryCounts;
                 } else {
                     console.warn('⚠️ No category stats found in response');
+                    return {};
                 }
                 
             } catch (error) {
                 console.error('❌ Error loading category counts:', error);
                 // If loading fails, keep original button text
+                return {};
             }
         }
+
+        // Update specific category count
+        function updateCategoryCount(category, newCount, addedCount = 0) {
+            const button = document.querySelector(`.category-btn[data-category="${category}"]`);
+            if (button) {
+                // Remove existing badge
+                const existingBadge = button.querySelector('.badge');
+                if (existingBadge) {
+                    existingBadge.remove();
+                }
+                
+                button.textContent = `${category} (${newCount})`;
+                
+                // Add badge if questions were added
+                if (addedCount > 0) {
+                    addBadgeToCategory(category, addedCount);
+                }
+            }
+            
+            // Also update "All" button with new total
+            refreshAllCount();
+        }
+
+        // Refresh the "All" button count
+        async function refreshAllCount() {
+            try {
+                const response = await fetch('/api/questions/verify');
+                const data = await response.json();
+                const allButton = document.querySelector('.category-btn[data-category="all"]');
+                if (allButton && data.totalQuestions) {
+                    // Remove existing badge
+                    const existingBadge = allButton.querySelector('.badge');
+                    if (existingBadge) {
+                        existingBadge.remove();
+                    }
+                    allButton.textContent = `All (${data.totalQuestions})`;
+                }
+            } catch (error) {
+                console.error('Error refreshing all count:', error);
+            }
+        }
+
+        // Listen for storage events to detect when questions are added from other tabs
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'questionsAdded') {
+                try {
+                    const data = JSON.parse(e.newValue);
+                    const { category, count, message } = data;
+                    
+                    // Show toast notification
+                    showToast(message);
+                    
+                    // Refresh counts
+                    loadCategoryCounts();
+                    
+                    // Clear the storage event
+                    localStorage.removeItem('questionsAdded');
+                    
+                } catch (error) {
+                    console.error('Error processing storage event:', error);
+                }
+            }
+        });
+
+        // Listen for cross-tab messages
+        window.addEventListener('message', function(e) {
+            if (e.data && e.data.type === 'questionsAdded') {
+                const { category, count, message } = e.data;
+                
+                // Show toast notification
+                showToast(message);
+                
+                // If it's a specific category, update that count
+                if (category && category !== 'multiple') {
+                    // Refresh counts to get accurate numbers
+                    loadCategoryCounts().then(() => {
+                        // Add badge to show what was added
+                        addBadgeToCategory(category, count);
+                    });
+                } else {
+                    // Multiple categories or bulk add - refresh all counts
+                    loadCategoryCounts();
+                }
+            }
+        });
         
         // Load counts when page loads
         document.addEventListener('DOMContentLoaded', function() {
             loadCategoryCounts();
         });
+
+        // Expose functions globally for testing
+        window.testToast = function(message, type) {
+            showToast(message, type);
+        };
+
+        window.testBadge = function(category, count) {
+            addBadgeToCategory(category, count);
+        };
     </script>
 </body>
 </html>
