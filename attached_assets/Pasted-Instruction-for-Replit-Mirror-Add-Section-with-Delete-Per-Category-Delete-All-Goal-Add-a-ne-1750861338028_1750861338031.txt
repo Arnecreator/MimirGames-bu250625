@@ -1,0 +1,123 @@
+Instruction for Replit – Mirror Add Section with “Delete Per Category” + Delete All
+🎯 Goal
+Add a new section called “🗑️ Delete Questions by Category” below the Add-section.
+This section should:
+
+Display one delete button per category
+
+Include a red “Delete All Categories” button at the bottom
+
+Ask for confirmation before any deletion
+
+🧩 Step-by-step
+1. HTML – Create a new section:
+html
+Copy
+Edit
+<!-- Delete Questions Section -->
+<div class="tool-section">
+  <div class="section-title"><span class="emoji">🗑️</span> Delete Questions by Category</div>
+  <div class="button-grid">
+    <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('History')">Delete History</button>
+    <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Science')">Delete Science</button>
+    <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Sports')">Delete Sports</button>
+    <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Geography')">Delete Geography</button>
+    <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Literature')">Delete Literature</button>
+    <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Math')">Delete Math</button>
+    <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Movies')">Delete Movies</button>
+    <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Music')">Delete Music</button>
+    <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Art')">Delete Art</button>
+    <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Technology')">Delete Technology</button>
+    <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Food')">Delete Food</button>
+    <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Misc')">Delete Misc</button>
+  </div>
+  <div style="text-align: center; margin-top: 12px;">
+    <button class="admin-btn btn-danger" onclick="confirmDeleteAll()">❌ Delete All Categories</button>
+  </div>
+</div>
+2. CSS – Reuse or define minimal delete styling:
+css
+Copy
+Edit
+.btn-delete {
+  background-color: #ff9999;
+  color: #400000;
+  font-size: 0.85rem;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+}
+3. JavaScript – Add confirmation logic:
+js
+Copy
+Edit
+function confirmDeleteCategory(category) {
+  Swal.fire({
+    title: `Delete all questions in ${category}?`,
+    text: "This action cannot be undone.",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    confirmButtonText: 'Delete',
+    cancelButtonText: 'Cancel'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      deleteCategory(category);
+    }
+  });
+}
+
+function confirmDeleteAll() {
+  Swal.fire({
+    title: 'Delete ALL categories?',
+    text: "This will remove all questions from all categories.",
+    icon: 'error',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete everything',
+    cancelButtonText: 'No',
+    confirmButtonColor: '#a00'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      deleteAllCategories();
+    }
+  });
+}
+
+function deleteCategory(category) {
+  fetch(`/api/deleteCategory?category=${category}`, { method: 'DELETE' })
+    .then(res => res.json())
+    .then(data => {
+      Swal.fire({
+        icon: 'success',
+        title: `Deleted ${category}`,
+        timer: 1500,
+        toast: true,
+        position: 'top-end'
+      });
+    });
+}
+
+function deleteAllCategories() {
+  fetch(`/api/deleteAllCategories`, { method: 'DELETE' })
+    .then(res => res.json())
+    .then(data => {
+      Swal.fire({
+        icon: 'success',
+        title: 'All categories deleted',
+        timer: 2000,
+        toast: true,
+        position: 'top-end'
+      });
+    });
+}
+✅ Result:
+You now have a mirrored structure:
+➕ Add buttons per category
+🗑️ Delete buttons per category
+
+One red “Delete All Categories” button, fully confirmed
+
+Mobile-friendly and safe
+
+Matches your visual structure perfectly
+
