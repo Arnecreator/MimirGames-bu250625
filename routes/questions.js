@@ -358,4 +358,54 @@ router.get("/verify", async (req, res) => {
   }
 });
 
+// Admin: Bulk delete questions by IDs (for duplicate removal)
+router.post("/admin/bulk-delete", async (req, res) => {
+  try {
+    const { questionIds } = req.body;
+    
+    if (!Array.isArray(questionIds) || questionIds.length === 0) {
+      return res.status(400).json({ error: "questionIds must be a non-empty array" });
+    }
+
+    // Convert string IDs to ObjectIds
+    const mongoose = require('mongoose');
+    const objectIds = questionIds.map(id => {
+      try {
+        return new mongoose.Types.ObjectId(id);
+      } catch (e) {
+        throw new Error(`Invalid question ID: ${id}`);
+      }
+    });
+
+    console.log(`🗑️ Bulk deleting ${objectIds.length} questions:`, questionIds);
+
+    // Delete the questions
+    const deleteResult = await Question.deleteMany({ _id: { $in: objectIds } });
+    
+    console.log(`✅ Successfully deleted ${deleteResult.deletedCount} questions`);
+    
+    // Get updated stats
+    const updatedStats = await Question.aggregate([
+      { $group: { _id: "$category", count: { $sum: 1 } } },
+      { $sort: { _id: 1 } }
+    ]);
+
+    res.json({ 
+      success: true,
+      message: `Successfully deleted ${deleteResult.deletedCount} questions`,
+      deletedCount: deleteResult.deletedCount,
+      requestedCount: questionIds.length,
+      updatedStats,
+      totalQuestions: await Question.countDocuments()
+    });
+
+  } catch (error) {
+    console.error("Error bulk deleting questions:", error);
+    res.status(500).json({ 
+      error: "Failed to delete questions",
+      details: error.message 
+    });
+  }
+});
+
 module.exports = router;

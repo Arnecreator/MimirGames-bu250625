@@ -1,4 +1,7 @@
+The code implements the auto-remove duplicates functionality for the "Check Duplicates" button, including confirmation and automatic removal, as requested.
+```
 
+```replit_final_file
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -88,7 +91,7 @@
             color: white;
         }
 
-        
+
 
         .special-btn {
             margin-top: 6px;
@@ -101,7 +104,7 @@
             .category-buttons {
                 gap: 6px;
             }
-            
+
             .main-section {
                 margin: 3px 0;
             }
@@ -144,6 +147,10 @@
             body {
                 padding: 3px;
                 font-size: 12px;
+            }
+
+            .container {
+                padding: 0 2px;
             }
 
             .category-buttons {
@@ -330,26 +337,26 @@
         </div>
     </div>
 
-    
+
 
     <script>
         // Toast notification system
         function showToast(message, type = 'success', duration = 4000) {
             const toast = document.getElementById('toast');
-            
+
             // Handle multiline messages
             if (message.includes('\n')) {
                 toast.innerHTML = message.replace(/\n/g, '<br>');
             } else {
                 toast.textContent = message;
             }
-            
+
             toast.className = `toast ${type}`;
             toast.classList.add('show');
-            
+
             // Use longer duration for detailed messages
             const displayTime = message.length > 60 ? Math.max(duration, 6000) : duration;
-            
+
             setTimeout(() => {
                 toast.classList.remove('show');
             }, displayTime);
@@ -398,10 +405,10 @@
         async function addQuestions(category) {
             try {
                 showToast(`Adding 10 questions to ${category}...`, 'warning');
-                
+
                 const response = await fetch(`/api/addQuestions?category=${category}`);
                 const data = await response.json();
-                
+
                 if (data.success) {
                     showToast(data.message);
                     loadCategoryCounts(); // Refresh counts
@@ -414,16 +421,16 @@
             }
         }
 
-        
+
 
         // Delete questions from category
         async function deleteQuestions(category) {
             try {
                 showToast(`Deleting questions from ${category}...`, 'warning');
-                
+
                 const response = await fetch(`/api/deleteCategory?category=${category}`);
                 const data = await response.json();
-                
+
                 if (data.success) {
                     showToast(data.message);
                     loadCategoryCounts(); // Refresh counts
@@ -440,10 +447,10 @@
         async function deleteAllCategories() {
             try {
                 showToast('Deleting all categories...', 'warning');
-                
+
                 const response = await fetch('/api/deleteAllCategories');
                 const data = await response.json();
-                
+
                 if (data.success) {
                     showToast(data.message);
                     loadCategoryCounts(); // Refresh counts
@@ -459,7 +466,7 @@
         // Add 10 questions to all categories
         async function addToAllCategories() {
             const categories = ['History', 'Science', 'Sports', 'Geography', 'Literature', 'Math', 'Movies', 'Music', 'Art', 'Technology', 'Food', 'Misc'];
-            
+
             const result = await Swal.fire({
                 title: `Add to all categories?`,
                 text: `This will add 10 questions to each of the ${categories.length} categories.`,
@@ -504,26 +511,26 @@
         async function checkDuplicates() {
             console.log('🔍 Checking for duplicate questions...');
             showToast('Checking duplicates...', 'warning');
-            
+
             try {
                 // Fetch all questions from the database
                 const response = await fetch('/api/questions/admin/all');
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
-                
+
                 const data = await response.json();
                 const questions = data.questions || [];
-                
+
                 console.log(`📊 Starting duplicate check on ${questions.length} total questions`);
-                
+
                 // Check for duplicates (case-insensitive)
                 const duplicates = [];
                 const seen = new Map();
-                
+
                 questions.forEach(question => {
                     const normalizedText = question.question.toLowerCase().trim();
-                    
+
                     if (seen.has(normalizedText)) {
                         // Found a duplicate
                         const original = seen.get(normalizedText);
@@ -532,7 +539,7 @@
                             duplicate: question,
                             text: normalizedText
                         });
-                        
+
                         // Log to console for debugging
                         console.warn("Duplicate found:", {
                             id: question._id,
@@ -545,27 +552,51 @@
                         seen.set(normalizedText, question);
                     }
                 });
-                
+
                 // Calculate summary stats
                 const totalQuestions = questions.length;
                 const duplicatesFound = duplicates.length;
                 const uniqueQuestions = totalQuestions - duplicatesFound;
-                
+
                 // Show results
                 if (duplicatesFound === 0) {
                     showToast(`🎉 No duplicates found among ${totalQuestions} questions.`, 'success');
                     console.log(`✅ Duplicate check complete: ${totalQuestions} questions, no duplicates found`);
                 } else {
-                    const summaryMessage = `✅ Duplicate check complete:\n• ${totalQuestions} total questions checked\n• ${duplicatesFound} duplicates found\n• ${uniqueQuestions} unique questions`;
-                    showToast(summaryMessage, duplicatesFound > 5 ? 'error' : 'warning');
-                    
+                    // Show confirmation dialog for auto-removal
+                    const result = await Swal.fire({
+                        title: 'Duplicates found',
+                        text: `${duplicatesFound} duplicates found among ${totalQuestions} questions. Do you want to delete all duplicate entries automatically?`,
+                        icon: 'warning',
+                        background: '#1e1e2f',
+                        color: '#ffffff',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Yes, delete',
+                        cancelButtonText: 'Cancel',
+                        width: '400px',
+                        customClass: {
+                            popup: 'small-confirm-popup',
+                        }
+                    });
+
+                    if (result.isConfirmed) {
+                        // User confirmed deletion
+                        await removeDuplicates(duplicates, totalQuestions, duplicatesFound);
+                    } else {
+                        // User cancelled
+                        showToast('❌ Duplicate cleanup cancelled', 'warning');
+                        console.log('⚠️ User cancelled duplicate removal');
+                    }
+
                     console.log(`⚠️ Duplicate check complete:`, {
                         totalQuestions,
                         duplicatesFound,
                         uniqueQuestions,
                         duplicateDetails: duplicates
                     });
-                    
+
                     // Log each duplicate pair for detailed review
                     duplicates.forEach((dup, index) => {
                         console.warn(`Duplicate #${index + 1}:`, {
@@ -577,10 +608,51 @@
                         });
                     });
                 }
-                
+
             } catch (error) {
                 console.error('❌ Error during duplicate check:', error);
                 showToast('❌ Error during duplicate check.', 'error');
+            }
+        }
+
+        // Remove duplicates function
+        async function removeDuplicates(duplicates, totalQuestions, duplicatesFound) {
+            try {
+                showToast('Removing duplicates...', 'warning');
+
+                // Extract duplicate IDs to delete (keep the original, delete the duplicate)
+                const duplicateIds = duplicates.map(dup => dup.duplicate._id);
+
+                console.log(`🗑️ Removing ${duplicateIds.length} duplicate questions:`, duplicateIds);
+
+                // Send DELETE request to remove duplicates
+                const response = await fetch('/api/questions/admin/bulk-delete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ questionIds: duplicateIds })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                const remainingQuestions = totalQuestions - duplicatesFound;
+
+                // Show success message
+                const successMessage = `✅ Duplicate cleanup complete\n• ${duplicatesFound} duplicates removed\n• ${remainingQuestions} unique questions remain`;
+                showToast(successMessage, 'success', 6000);
+
+                console.log(`✅ Successfully removed ${result.deletedCount || duplicatesFound} duplicates`);
+
+                // Refresh category counts
+                loadCategoryCounts();
+
+            } catch (error) {
+                console.error('❌ Error removing duplicates:', error);
+                showToast('❌ Error removing duplicates. Please try again.', 'error');
             }
         }
 
