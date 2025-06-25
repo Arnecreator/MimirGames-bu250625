@@ -25,6 +25,20 @@ app.get("/api", (req, res) => {
   res.send("✅ Mimir API is running!");
 });
 
+// Add questions to category route
+app.get('/api/addQuestions', async (req, res) => {
+  const category = req.query.category;
+  console.log("Received request to add questions to:", category);
+  
+  if (!category) {
+    return res.status(400).json({ success: false, message: "Category parameter required" });
+  }
+  
+  // TODO: Insert logic to add 10 questions to this category
+  // For now, just return success to test the route
+  res.json({ success: true, message: `10 questions would be added to ${category}` });
+});
+
 // 🧩 API-routes
 app.use("/api/auth", authRoutes);
 app.use("/api/friends", friendRoutes);
