@@ -97,6 +97,82 @@
         small {
             color: #aaa;
         }
+
+        .category-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 15px 0;
+        }
+
+        .category-btn {
+            background: #252951;
+            color: #7fffd4;
+            border: 1px solid #333;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .category-btn:hover {
+            background: #333669;
+            border-color: #7fffd4;
+        }
+
+        .category-btn.active {
+            background: #7fffd4;
+            color: #000;
+            font-weight: bold;
+        }
+
+        .questions-display {
+            margin-top: 20px;
+            font-size: 13px;
+        }
+
+        .question-entry {
+            background: #111335;
+            margin: 8px 0;
+            padding: 12px;
+            border-radius: 4px;
+            border-left: 3px solid #333;
+        }
+
+        .question-text {
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .answers-list {
+            margin: 8px 0;
+        }
+
+        .answer-option {
+            padding: 3px 8px;
+            margin: 2px 0;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+
+        .answer-correct {
+            background: rgba(127, 255, 212, 0.2);
+            color: #7fffd4;
+            font-weight: 500;
+        }
+
+        .answer-incorrect {
+            background: rgba(255, 255, 255, 0.05);
+            color: #ccc;
+        }
+
+        .question-meta {
+            font-size: 11px;
+            color: #666;
+            margin-top: 8px;
+        }
     </style>
 </head>
 
@@ -125,6 +201,26 @@
         <button id="get12QuestionsBtn">Get 12 Random Questions</button>
         <button id="testDeduplicationBtn">🧪 Test Session Deduplication</button>
         <div id="selectionResult"></div>
+    </div>
+
+    <div class="section">
+        <h2>📂 View Questions by Category</h2>
+        <div class="category-buttons">
+            <button class="category-btn" data-category="all">All</button>
+            <button class="category-btn" data-category="History">History</button>
+            <button class="category-btn" data-category="Science">Science</button>
+            <button class="category-btn" data-category="Sports">Sports</button>
+            <button class="category-btn" data-category="Geography">Geography</button>
+            <button class="category-btn" data-category="Literature">Literature</button>
+            <button class="category-btn" data-category="Math">Math</button>
+            <button class="category-btn" data-category="Movies">Movies</button>
+            <button class="category-btn" data-category="Music">Music</button>
+            <button class="category-btn" data-category="Art">Art</button>
+            <button class="category-btn" data-category="Technology">Technology</button>
+            <button class="category-btn" data-category="Food">Food</button>
+            <button class="category-btn" data-category="Misc">Misc</button>
+        </div>
+        <div id="categoryQuestionsResult"></div>
     </div>
 
     <script src="scripts/questionManager.js"></script>

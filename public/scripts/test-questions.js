@@ -120,5 +120,91 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Category button functionality
+    const categoryButtons = document.querySelectorAll('.category-btn');
+    categoryButtons.forEach(button => {
+        button.addEventListener('click', async function() {
+            const category = this.getAttribute('data-category');
+            
+            // Update active button
+            categoryButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            
+            await loadQuestionsByCategory(category);
+        });
+    });
+
+    async function loadQuestionsByCategory(category) {
+        const resultDiv = document.getElementById('categoryQuestionsResult');
+        
+        try {
+            console.log(`🔍 Loading questions for category: ${category}`);
+            
+            let url;
+            if (category === 'all') {
+                url = '/api/questions/admin/all';
+            } else {
+                url = `/api/questions/category/${category}`;
+            }
+            
+            const response = await fetch(url);
+            const data = await response.json();
+            
+            let questions;
+            if (category === 'all') {
+                questions = data.questions || [];
+                console.log(`📊 Loaded ${questions.length} total questions`, data.stats);
+            } else {
+                questions = data.questions || [];
+                console.log(`📋 Loaded ${questions.length} questions for ${category}`);
+            }
+            
+            // Display questions
+            displayQuestions(questions, category, resultDiv);
+            
+        } catch (error) {
+            console.error('❌ Error loading questions by category:', error);
+            resultDiv.innerHTML = `<div style="color: #ff6b6b; padding: 20px; text-align: center;">Error loading questions for ${category}</div>`;
+        }
+    }
+
+    function displayQuestions(questions, category, container) {
+        if (questions.length === 0) {
+            container.innerHTML = `<div style="color: #666; padding: 20px; text-align: center;">No questions found for ${category}</div>`;
+            return;
+        }
+
+        const questionsHtml = questions.map((q, index) => {
+            const answersHtml = q.answers.map((answer, answerIndex) => {
+                const isCorrect = answerIndex === q.correct;
+                const className = isCorrect ? 'answer-correct' : 'answer-incorrect';
+                const prefix = isCorrect ? '✓' : ' ';
+                return `<div class="answer-option ${className}">${prefix} ${answerIndex + 1}. ${answer}</div>`;
+            }).join('');
+
+            return `
+                <div class="question-entry">
+                    <div class="question-text">${index + 1}. ${q.question}</div>
+                    <div class="answers-list">${answersHtml}</div>
+                    <div class="question-meta">
+                        Category: ${q.category} | Difficulty: ${q.difficulty || 'medium'} | 
+                        ID: ${q._id}
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        const headerText = category === 'all' ? 
+            `All Questions (${questions.length} total)` : 
+            `${category} Questions (${questions.length} found)`;
+
+        container.innerHTML = `
+            <div class="questions-display">
+                <h3>${headerText}</h3>
+                ${questionsHtml}
+            </div>
+        `;
+    }
+
     console.log('✅ Test Questions script loaded and event listeners attached');
 });
