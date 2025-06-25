@@ -214,6 +214,35 @@
             background: #f39c12;
         }
 
+        /* Tool buttons styling */
+        .tool-btn {
+            background: transparent;
+            color: white;
+            border: 1px solid #aaa;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            min-height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: auto;
+            flex: 0 0 auto;
+        }
+
+        .tool-btn:hover {
+            background: #333;
+            border-color: #aaa;
+            filter: brightness(1.1);
+        }
+
         /* SweetAlert2 custom styling */
         .swal2-popup.small-confirm-popup {
             font-size: 0.9rem;
@@ -285,6 +314,17 @@
                 <button class="category-btn delete-btn" data-category="Misc">DEL Misc (0)</button>
             </div>
             <button id="delete-all-btn" class="category-btn special-btn delete-btn">❌ DEL All Categories</button>
+        </div>
+
+        <div class="main-section">
+            <h1><span class="emoji">🧪</span>Other Tools</h1>
+            <div class="category-buttons">
+                <button class="tool-btn" onclick="checkDuplicates()">Check Duplicates</button>
+                <button class="tool-btn" onclick="runRandomizer()">Randomize x8</button>
+                <button class="tool-btn" onclick="getCategoryStats()">Category Stats</button>
+                <button class="tool-btn" onclick="logLastAdded()">Log Last Added</button>
+                <button class="tool-btn" onclick="qaShuffleTest()">QA Shuffle Test</button>
+            </div>
         </div>
     </div>
 
@@ -446,6 +486,37 @@
 
             showToast(`Successfully added questions to ${successCount}/${categories.length} categories`);
             loadCategoryCounts(); // Refresh counts
+        }
+
+        // Other Tools functions
+        function checkDuplicates() {
+            console.log('🔍 Checking for duplicate questions...');
+            showToast('Checking for duplicates...', 'warning');
+            // Placeholder - will implement duplicate checking logic
+        }
+
+        function runRandomizer() {
+            console.log('🎲 Running randomizer for 8 questions...');
+            showToast('Getting 8 random questions...', 'warning');
+            // Placeholder - will implement random question picker
+        }
+
+        function getCategoryStats() {
+            console.log('📊 Getting category statistics...');
+            showToast('Loading category stats...', 'warning');
+            // Placeholder - will implement category statistics
+        }
+
+        function logLastAdded() {
+            console.log('📝 Logging last 10 added questions...');
+            showToast('Finding last added questions...', 'warning');
+            // Placeholder - will implement last added logging
+        }
+
+        function qaShuffleTest() {
+            console.log('🔀 Running QA shuffle test (1000 iterations)...');
+            showToast('Running shuffle test...', 'warning');
+            // Placeholder - will implement shuffle test simulation
         }
 
         // Event listeners
