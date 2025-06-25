@@ -48,23 +48,17 @@
         }
 
         .button-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .category-buttons {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        /* Left-aligned small button under the grid */
-        .bottom-left-button {
-            margin-top: 10px;
-            text-align: left;
-        }
-
-        /* Smaller button style */
-        .small-btn {
-            font-size: 0.85rem;
-            padding: 6px 12px;
-            height: auto;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 6px;
+            margin: 6px 0;
         }
 
         .category-btn-container {
@@ -522,8 +516,8 @@
         }
 
         .btn-delete {
-            border: 1px solid #ff4d4d;
-            background-color: transparent;
+            background: transparent;
+            border: 2px solid #ff4d4d;
             color: white;
             font-size: 0.85rem;
             padding: 6px 12px;
@@ -534,19 +528,17 @@
         }
 
         .btn-delete:hover {
-            background-color: #ff4d4d;
-            color: white;
+            background: rgba(255, 77, 77, 0.1);
             transform: translateY(-1px);
         }
 
         .btn-danger {
-            background-color: #ff3b3b;
+            background-color: #dc2626;
             color: white;
-            border: none;
         }
 
         .btn-danger:hover {
-            background-color: #e52a2a;
+            background-color: #c82333;
             transform: translateY(-1px);
         }
 
@@ -624,33 +616,77 @@
 
         <!-- Add Questions Section -->
         <div class="tool-section">
-            <div class="section-title"><span class="emoji">➕</span>Add Questions by Category</div>
-            
-            <div class="button-grid">
-                <button class="admin-btn add-btn" data-category="History">Add to History (10)</button>
-                <button class="admin-btn add-btn" data-category="Science">Add to Science (10)</button>
-                <button class="admin-btn add-btn" data-category="Sports">Add to Sports (10)</button>
-                <button class="admin-btn add-btn" data-category="Geography">Add to Geography (10)</button>
-                <button class="admin-btn add-btn" data-category="Literature">Add to Literature (20)</button>
-                <button class="admin-btn add-btn" data-category="Math">Add to Math (10)</button>
-                <button class="admin-btn add-btn" data-category="Movies">Add to Movies (20)</button>
-                <button class="admin-btn add-btn" data-category="Music">Add to Music (20)</button>
-                <button class="admin-btn add-btn" data-category="Art">Add to Art (20)</button>
-                <button class="admin-btn add-btn" data-category="Technology">Add to Technology (20)</button>
-                <button class="admin-btn add-btn" data-category="Food">Add to Food (20)</button>
-                <button class="admin-btn add-btn" data-category="Misc">Add to Misc (10)</button>
+            <h3>➕ Add Questions by Category</h3>
+            <div class="category-buttons">
+                <div class="category-btn-container">
+                    <button class="category-btn add-btn" data-category="History">
+                        Add to History
+                    </button>
+                </div>
+                <div class="category-btn-container">
+                    <button class="category-btn add-btn" data-category="Science">
+                        Add to Science
+                    </button>
+                </div>
+                <div class="category-btn-container">
+                    <button class="category-btn add-btn" data-category="Sports">
+                        Add to Sports
+                    </button>
+                </div>
+                <div class="category-btn-container">
+                    <button class="category-btn add-btn" data-category="Geography">
+                        Add to Geography
+                    </button>
+                </div>
+                <div class="category-btn-container">
+                    <button class="category-btn add-btn" data-category="Literature">
+                        Add to Literature
+                    </button>
+                </div>
+                <div class="category-btn-container">
+                    <button class="category-btn add-btn" data-category="Math">
+                        Add to Math
+                    </button>
+                </div>
+                <div class="category-btn-container">
+                    <button class="category-btn add-btn" data-category="Movies">
+                        Add to Movies
+                    </button>
+                </div>
+                <div class="category-btn-container">
+                    <button class="category-btn add-btn" data-category="Music">
+                        Add to Music
+                    </button>
+                </div>
+                <div class="category-btn-container">
+                    <button class="category-btn add-btn" data-category="Art">
+                        Add to Art
+                    </button>
+                </div>
+                <div class="category-btn-container">
+                    <button class="category-btn add-btn" data-category="Technology">
+                        Add to Technology
+                    </button>
+                </div>
+                <div class="category-btn-container">
+                    <button class="category-btn add-btn" data-category="Food">
+                        Add to Food
+                    </button>
+                </div>
+                <div class="category-btn-container">
+                    <button class="category-btn add-btn" data-category="Misc">
+                        Add to Misc
+                    </button>
+                </div>
             </div>
-
-            <!-- Left-aligned small button -->
-            <div class="bottom-left-button">
-                <button id="add-all-btn" class="admin-btn small-btn">➕ Add 10 per Category</button>
+            <div class="button-grid">
+                <button id="add-all-btn" class="admin-btn btn-add">➕ Add 10 per Category</button>
             </div>
         </div>
 
         <!-- Delete Questions Section -->
         <div class="tool-section">
             <div class="section-title"><span class="emoji">🗑️</span>Delete Questions by Category</div>
-            
             <div class="button-grid">
                 <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('History')">Delete History</button>
                 <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Science')">Delete Science</button>
@@ -664,11 +700,7 @@
                 <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Technology')">Delete Technology</button>
                 <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Food')">Delete Food</button>
                 <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Misc')">Delete Misc</button>
-            </div>
-
-            <!-- Left-aligned small button -->
-            <div class="bottom-left-button">
-                <button class="admin-btn btn-danger small-btn" onclick="confirmDeleteAll()">❌ Delete All Categories</button>
+                <button class="admin-btn btn-danger" onclick="confirmDeleteAll()">❌ Delete All Categories</button>
             </div>
         </div>
 
