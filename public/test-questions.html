@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -495,11 +496,6 @@
             transition: box-shadow 0.3s ease;
         }
 
-        .btn-danger:hover {
-            background-color: #c82333;
-            transform: translateY(-1px);
-        }
-
         .btn-add {
             background-color: #a0ffbf;
             color: #000;
@@ -515,31 +511,25 @@
             transform: translateY(-1px);
         }
 
+        /* Delete buttons with RED text and outline */
         .btn-delete {
             background: transparent;
             border: 2px solid #ff4d4d;
-            color: white;
+            color: #ff4d4d;
             font-size: 0.85rem;
             padding: 6px 12px;
             border-radius: 6px;
             font-weight: 500;
-            transition: background 0.2s ease;
+            transition: all 0.2s ease;
             cursor: pointer;
+            min-width: 140px;
         }
 
         .btn-delete:hover {
             background: rgba(255, 77, 77, 0.1);
             transform: translateY(-1px);
-        }
-
-        .btn-danger {
-            background-color: #dc2626;
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background-color: #c82333;
-            transform: translateY(-1px);
+            border-color: #ff6666;
+            color: #ff6666;
         }
 
         /* Insights Panel Styling */
@@ -580,8 +570,6 @@
         .insight-description small {
             font-size: 11px;
         }
-
-
     </style>
 </head>
 
@@ -638,19 +626,19 @@
         <div class="tool-section">
             <div class="section-title"><span class="emoji">🗑️</span>Delete Questions by Category</div>
             <div class="button-grid">
-                <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('History')">Delete History</button>
-                <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Science')">Delete Science</button>
-                <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Sports')">Delete Sports</button>
-                <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Geography')">Delete Geography</button>
-                <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Literature')">Delete Literature</button>
-                <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Math')">Delete Math</button>
-                <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Movies')">Delete Movies</button>
-                <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Music')">Delete Music</button>
-                <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Art')">Delete Art</button>
-                <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Technology')">Delete Technology</button>
-                <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Food')">Delete Food</button>
-                <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Misc')">Delete Misc</button>
-                <button class="admin-btn btn-danger" onclick="confirmDeleteAll()">❌ Delete All Categories</button>
+                <button class="btn-delete" onclick="confirmDeleteCategory('History')">Delete History</button>
+                <button class="btn-delete" onclick="confirmDeleteCategory('Science')">Delete Science</button>
+                <button class="btn-delete" onclick="confirmDeleteCategory('Sports')">Delete Sports</button>
+                <button class="btn-delete" onclick="confirmDeleteCategory('Geography')">Delete Geography</button>
+                <button class="btn-delete" onclick="confirmDeleteCategory('Literature')">Delete Literature</button>
+                <button class="btn-delete" onclick="confirmDeleteCategory('Math')">Delete Math</button>
+                <button class="btn-delete" onclick="confirmDeleteCategory('Movies')">Delete Movies</button>
+                <button class="btn-delete" onclick="confirmDeleteCategory('Music')">Delete Music</button>
+                <button class="btn-delete" onclick="confirmDeleteCategory('Art')">Delete Art</button>
+                <button class="btn-delete" onclick="confirmDeleteCategory('Technology')">Delete Technology</button>
+                <button class="btn-delete" onclick="confirmDeleteCategory('Food')">Delete Food</button>
+                <button class="btn-delete" onclick="confirmDeleteCategory('Misc')">Delete Misc</button>
+                <button class="btn-delete" onclick="confirmDeleteAll()">❌ Delete All Categories</button>
             </div>
         </div>
 
@@ -675,8 +663,6 @@
                 <button class="admin-btn btn-warning" onclick="checkCategoryBalance()">View Category Stats</button>
             </div>
         </div>
-
-
 
         <!-- Insights Panel -->
         <div class="tool-section insights-panel">
@@ -754,7 +740,7 @@
                     });
 
                     // Update category buttons with counts
-                    const categoryButtons = document.querySelectorAll('.category-btn[data-category]');
+                    const categoryButtons = document.querySelectorAll('.add-btn[data-category]');
                     categoryButtons.forEach(button => {
                         const category = button.getAttribute('data-category');
                         const count = categoryCounts[category] || 0;
@@ -777,7 +763,7 @@
 
         // Update specific category count
         function updateCategoryCount(category, newCount, addedCount = 0) {
-            const button = document.querySelector(`.category-btn[data-category="${category}"]`);
+            const button = document.querySelector(`.add-btn[data-category="${category}"]`);
             if (button) {
                 // Update data-count attribute
                 button.setAttribute('data-count', newCount);
@@ -795,61 +781,6 @@
                     setTimeout(() => button.classList.remove('glow'), 1000);
                 }
             }
-        }
-
-        // Add questions to specific category
-        async function addQuestionsToCategory(category, count) {
-            try {
-                showToast(`Adding ${count} questions to ${category}...`, 'warning');
-
-                const response = await fetch('/api/questions/generate', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        category: category,
-                        count: count
-                    })
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    const newCount = (categoryCounts[category] || 0) + count;
-                    updateCategoryCount(category, newCount, count);
-                    showToast(`✅ ${count} questions successfully added to ${category}!`);
-
-                    // Notify other tabs
-                    try {
-                        localStorage.setItem('questionsAdded', JSON.stringify({
-                            category: category,
-                            count: count,
-                            message: `✅ ${count} questions successfully added to ${category}!`
-                        }));
-
-                        // Send message to other windows
-                        window.postMessage({
-                            type: 'questionsAdded',
-                            category: category,
-                            count: count,
-                            message: `✅ ${count} questions successfully added to ${category}!`
-                        }, '*');
-                    } catch (e) {
-                        console.warn('Could not notify other tabs:', e);
-                    }
-                } else {
-                    showToast(`❌ Error: ${data.error || 'Failed to add questions'}`, 'error');
-                }
-            } catch (error) {
-                console.error('Error adding questions:', error);
-                showToast('❌ Network error. Please try again.', 'error');
-            }
-        }
-
-        // Alternative function for direct button event listeners
-        async function handleAddQuestions(category, count = 10) {
-            return addQuestionsToCategory(category, count);
         }
 
         // Add event listeners to all category buttons
@@ -999,7 +930,7 @@
             }
         });
 
-        // Test functions (keeping existing functionality)
+        // Test functions
         async function getRandomQuestions(count) {
             try {
                 document.getElementById('testLoading').style.display = 'block';
@@ -1062,41 +993,9 @@
                 });
         }
 
-        function showDeleteCategoryModal() {
-            const categories = [
-                "History", "Science", "Sports", "Geography", "Literature", "Math",
-                "Movies", "Music", "Art", "Technology", "Food", "Misc"
-            ];
-
-            let optionsHtml = categories.map(cat =>
-                `<option value="${cat}">${cat}</option>`
-            ).join('');
-
-            Swal.fire({
-                title: 'Select category to delete',
-                html: `
-                    <select id="category-to-delete" class="swal2-input">
-                        ${optionsHtml}
-                    </select>
-                `,
-                showCancelButton: true,
-                confirmButtonText: 'Delete',
-                confirmButtonColor: '#d33',
-                cancelButtonText: 'Cancel',
-                preConfirm: () => {
-                    const selected = document.getElementById('category-to-delete').value;
-                    return selected;
-                }
-            }).then((result) => {
-                if (result.isConfirmed && result.value) {
-                    deleteCategory(result.value);
-                }
-            });
-        }
-
         function deleteCategory(category) {
             fetch(`/api/deleteCategory?category=${category}`, {
-                method: 'DELETE'
+                method: 'GET'
             })
                 .then(res => res.json())
                 .then(data => {
@@ -1140,25 +1039,6 @@
                 });
         }
 
-        // Load counts when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            loadCategoryCounts();
-            console.log('✅ Developer Tools loaded successfully');
-        });
-
-        // Listen for storage events to sync with other tabs
-        window.addEventListener('storage', function(e) {
-            if (e.key === 'questionsAdded') {
-                try {
-                    const data = JSON.parse(e.newValue);
-                    loadCategoryCounts(); // Refresh all counts
-                    localStorage.removeItem('questionsAdded');
-                } catch (error) {
-                    console.error('Error processing storage event:', error);
-                }
-            }
-        });
-
         // New delete category functions
         function confirmDeleteCategory(category) {
             Swal.fire({
@@ -1193,21 +1073,47 @@
         }
 
         async function deleteAllCategories() {
-            const categories = [
-                "History", "Science", "Sports", "Geography", "Literature", "Math",
-                "Movies", "Music", "Art", "Technology", "Food", "Misc"
-            ];
+            try {
+                const response = await fetch('/api/deleteAllCategories');
+                const data = await response.json();
+                
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'All categories deleted successfully!',
+                        timer: 1500,
+                        toast: true,
+                        position: 'top-end'
+                    });
+                    // Refresh category counts after deletion
+                    loadCategoryCounts();
+                } else {
+                    throw new Error(data.message);
+                }
+            } catch (error) {
+                console.error('Failed to delete all categories:', error);
+                showToast('Failed to delete all categories', 'error');
+            }
+        }
 
-            for (const category of categories) {
+        // Load counts when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCategoryCounts();
+            console.log('✅ Developer Tools loaded successfully');
+        });
+
+        // Listen for storage events to sync with other tabs
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'questionsAdded') {
                 try {
-                    await deleteCategory(category);
+                    const data = JSON.parse(e.newValue);
+                    loadCategoryCounts(); // Refresh all counts
+                    localStorage.removeItem('questionsAdded');
                 } catch (error) {
-                    console.error(`Failed to delete ${category}:`, error);
-                    showToast(`Failed to delete ${category}`, 'error');
+                    console.error('Error processing storage event:', error);
                 }
             }
-            showToast('All categories deletion process initiated.');
-        }
+        });
     </script>
 </body>
 </html>
