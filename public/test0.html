@@ -20,6 +20,28 @@
         </div>
     </div>
 
+    <div class="container">
+        <h1><span class="emoji">🗑️</span>Delete Questions by Category</h1>
+
+        <div class="main-section">
+            <div class="category-buttons">
+                <button class="category-btn delete-btn" data-category="History">Delete History</button>
+                <button class="category-btn delete-btn" data-category="Science">Delete Science</button>
+                <button class="category-btn delete-btn" data-category="Sports">Delete Sports</button>
+                <button class="category-btn delete-btn" data-category="Geography">Delete Geography</button>
+                <button class="category-btn delete-btn" data-category="Literature">Delete Literature</button>
+                <button class="category-btn delete-btn" data-category="Math">Delete Math</button>
+                <button class="category-btn delete-btn" data-category="Movies">Delete Movies</button>
+                <button class="category-btn delete-btn" data-category="Music">Delete Music</button>
+                <button class="category-btn delete-btn" data-category="Art">Delete Art</button>
+                <button class="category-btn delete-btn" data-category="Technology">Delete Technology</button>
+                <button class="category-btn delete-btn" data-category="Food">Delete Food</button>
+                <button class="category-btn delete-btn" data-category="Misc">Delete Misc</button>
+            </div>
+            <button id="delete-all-btn" class="category-btn delete-btn">❌ Delete All Categories</button>
+        </div>
+    </div>
+
     <style>
         .container {
             max-width: 1000px;
@@ -79,6 +101,24 @@
         }
 
         #add-all-btn {
+            margin-top: 6px;
+            width: fit-content;
+        }
+
+        .delete-btn {
+            background: transparent !important;
+            border: 1px solid #ff4d4d !important;
+            color: #ff4d4d !important;
+        }
+
+        .delete-btn:hover {
+            background: rgba(255, 77, 77, 0.1) !important;
+            border-color: #ff6666 !important;
+            color: #ff6666 !important;
+            filter: brightness(1.1);
+        }
+
+        #delete-all-btn {
             margin-top: 6px;
             width: fit-content;
         }
