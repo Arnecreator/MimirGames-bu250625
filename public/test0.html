@@ -75,6 +75,18 @@
             filter: brightness(1.1);
         }
 
+        .delete-btn {
+            color: white;
+            border-color: #ff6b6b;
+            background: transparent;
+        }
+
+        .delete-btn:hover {
+            background: #ff6b6b;
+            border-color: #ff6b6b;
+            color: white;
+        }
+
         
 
         .special-btn {
@@ -237,6 +249,25 @@
             </div>
             <button id="add-all-btn" class="category-btn special-btn">➕ Add 10 per Category</button>
         </div>
+
+        <div class="main-section">
+            <h1><span class="emoji">🗑️</span>Delete Questions by Category</h1>
+            <div class="category-buttons">
+                <button class="category-btn delete-btn" data-category="History">DEL History (0)</button>
+                <button class="category-btn delete-btn" data-category="Science">DEL Science (0)</button>
+                <button class="category-btn delete-btn" data-category="Sports">DEL Sports (0)</button>
+                <button class="category-btn delete-btn" data-category="Geography">DEL Geography (0)</button>
+                <button class="category-btn delete-btn" data-category="Literature">DEL Literature (0)</button>
+                <button class="category-btn delete-btn" data-category="Math">DEL Math (0)</button>
+                <button class="category-btn delete-btn" data-category="Movies">DEL Movies (0)</button>
+                <button class="category-btn delete-btn" data-category="Music">DEL Music (0)</button>
+                <button class="category-btn delete-btn" data-category="Art">DEL Art (0)</button>
+                <button class="category-btn delete-btn" data-category="Technology">DEL Technology (0)</button>
+                <button class="category-btn delete-btn" data-category="Food">DEL Food (0)</button>
+                <button class="category-btn delete-btn" data-category="Misc">DEL Misc (0)</button>
+            </div>
+            <button id="delete-all-btn" class="category-btn special-btn delete-btn">❌ DEL All Categories</button>
+        </div>
     </div>
 
     
@@ -280,7 +311,7 @@
                     deleteButtons.forEach(button => {
                         const category = button.getAttribute('data-category');
                         const count = categoryCounts[category] || 0;
-                        button.textContent = `Delete ${category} (${count})`;
+                        button.textContent = `DEL ${category} (${count})`;
                     });
 
                     console.log('✅ Category counts loaded:', categoryCounts);
@@ -314,6 +345,46 @@
         }
 
         
+
+        // Delete questions from category
+        async function deleteQuestions(category) {
+            try {
+                showToast(`Deleting questions from ${category}...`, 'warning');
+                
+                const response = await fetch(`/api/deleteCategory?category=${category}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast(data.message);
+                    loadCategoryCounts(); // Refresh counts
+                } else {
+                    showToast(data.message || 'Failed to delete questions', 'error');
+                }
+            } catch (error) {
+                console.error('Error deleting questions:', error);
+                showToast('Error deleting questions', 'error');
+            }
+        }
+
+        // Delete all categories
+        async function deleteAllCategories() {
+            try {
+                showToast('Deleting all categories...', 'warning');
+                
+                const response = await fetch('/api/deleteAllCategories');
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast(data.message);
+                    loadCategoryCounts(); // Refresh counts
+                } else {
+                    showToast(data.message || 'Failed to delete all categories', 'error');
+                }
+            } catch (error) {
+                console.error('Error deleting all categories:', error);
+                showToast('Error deleting all categories', 'error');
+            }
+        }
 
         // Add 10 questions to all categories
         async function addToAllCategories() {
@@ -354,8 +425,23 @@
                 });
             });
 
+            // Delete button event listeners
+            document.querySelectorAll('.delete-btn[data-category]').forEach(button => {
+                button.addEventListener('click', function() {
+                    const category = this.getAttribute('data-category');
+                    if (confirm(`Are you sure you want to delete all questions from ${category}?`)) {
+                        deleteQuestions(category);
+                    }
+                });
+            });
+
             // Special buttons
             document.getElementById('add-all-btn').addEventListener('click', addToAllCategories);
+            document.getElementById('delete-all-btn').addEventListener('click', function() {
+                if (confirm('Are you sure you want to delete ALL questions from ALL categories? This cannot be undone!')) {
+                    deleteAllCategories();
+                }
+            });
         });
     </script>
 
