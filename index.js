@@ -60,6 +60,35 @@ app.get('/api/deleteCategory', async (req, res) => {
   }
 });
 
+// Delete all categories route
+app.get('/api/deleteAllCategories', async (req, res) => {
+  console.log("Received request to delete all categories");
+  
+  // Import Question model
+  const Question = require('./models/Question');
+  
+  try {
+    // Delete all questions
+    const deleteResult = await Question.deleteMany({});
+    
+    console.log(`🗑️ Deleted all ${deleteResult.deletedCount} questions from all categories`);
+    
+    res.json({ 
+      success: true, 
+      message: `Successfully deleted all ${deleteResult.deletedCount} questions from all categories`,
+      deletedCount: deleteResult.deletedCount
+    });
+    
+  } catch (error) {
+    console.error("❌ Error deleting all categories:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Database error while deleting all categories",
+      error: error.message 
+    });
+  }
+});
+
 // Add questions to category route
 app.get('/api/addQuestions', async (req, res) => {
   const category = req.query.category;

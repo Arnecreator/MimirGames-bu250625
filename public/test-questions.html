@@ -519,6 +519,30 @@
             background-color: #7fde9f;
             transform: translateY(-1px);
         }
+        
+        .btn-delete {
+            background-color: #ff9999;
+            color: #400000;
+            font-size: 0.85rem;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+        }
+
+        .btn-delete:hover {
+            background-color: #ff7777;
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background-color: #dc2626;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+            transform: translateY(-1px);
+        }
 
         /* Insights Panel Styling */
         .insights-panel {
@@ -691,6 +715,28 @@
             </div>
             <div class="button-grid">
                 <button id="add-all-btn" class="admin-btn btn-add">➕ Add 10 per Category</button>
+            </div>
+        </div>
+
+        <!-- Delete Questions Section -->
+        <div class="tool-section">
+            <div class="section-title"><span class="emoji">🗑️</span>Delete Questions by Category</div>
+            <div class="button-grid">
+                <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('History')">Delete History</button>
+                <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Science')">Delete Science</button>
+                <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Sports')">Delete Sports</button>
+                <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Geography')">Delete Geography</button>
+                <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Literature')">Delete Literature</button>
+                <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Math')">Delete Math</button>
+                <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Movies')">Delete Movies</button>
+                <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Music')">Delete Music</button>
+                <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Art')">Delete Art</button>
+                <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Technology')">Delete Technology</button>
+                <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Food')">Delete Food</button>
+                <button class="admin-btn btn-delete" onclick="confirmDeleteCategory('Misc')">Delete Misc</button>
+            </div>
+            <div style="text-align: center; margin-top: 12px;">
+                <button class="admin-btn btn-danger" onclick="confirmDeleteAll()">❌ Delete All Categories</button>
             </div>
         </div>
 
@@ -1179,8 +1225,7 @@
         function checkQuestionCoverage() {
             showToast('Check console for coverage details', 'warning');
             fetch('/api/questions/verify')
-                .then(```text
-res => res.json())
+                .then(res => res.json())
                 .then(data => {
                     console.log('📊 Question Coverage:', data);
                 })
@@ -1208,6 +1253,56 @@ res => res.json())
                 }
             }
         });
+
+        // New delete category functions
+        function confirmDeleteCategory(category) {
+            Swal.fire({
+                title: 'Confirm Delete',
+                text: `Are you sure you want to delete all questions in ${category}?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    deleteCategory(category);
+                }
+            });
+        }
+
+        function confirmDeleteAll() {
+            Swal.fire({
+                title: 'Confirm Delete ALL',
+                text: `Are you sure you want to delete ALL questions in ALL categories? This is irreversible!`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete ALL!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    deleteAllCategories();
+                }
+            });
+        }
+
+        async function deleteAllCategories() {
+            const categories = [
+                "History", "Science", "Sports", "Geography", "Literature", "Math",
+                "Movies", "Music", "Art", "Technology", "Food", "Misc"
+            ];
+
+            for (const category of categories) {
+                try {
+                    await deleteCategory(category);
+                } catch (error) {
+                    console.error(`Failed to delete ${category}:`, error);
+                    showToast(`Failed to delete ${category}`, 'error');
+                }
+            }
+            showToast('All categories deletion process initiated.');
+        }
     </script>
 </body>
 </html>
