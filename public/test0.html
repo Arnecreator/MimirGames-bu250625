@@ -404,6 +404,11 @@
                 showToast(`Adding 10 questions to ${category}...`, 'warning');
 
                 const response = await fetch(`/api/addQuestions?category=${category}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
                 const data = await response.json();
 
                 if (data.success) {
@@ -414,7 +419,7 @@
                 }
             } catch (error) {
                 console.error('Error adding questions:', error);
-                showToast('Error adding questions', 'error');
+                showToast(`Error adding questions: ${error.message}`, 'error');
             }
         }
 
@@ -488,19 +493,39 @@
             showToast('Adding questions to all categories...', 'warning');
 
             let successCount = 0;
+            let failureCount = 0;
+            
             for (const category of categories) {
                 try {
+                    console.log(`Adding questions to ${category}...`);
                     const response = await fetch(`/api/addQuestions?category=${category}`);
+                    
+                    if (!response.ok) {
+                        console.error(`HTTP error for ${category}:`, response.status, response.statusText);
+                        failureCount++;
+                        continue;
+                    }
+
                     const data = await response.json();
+                    console.log(`Response for ${category}:`, data);
+                    
                     if (data.success) {
                         successCount++;
+                    } else {
+                        console.error(`Backend error for ${category}:`, data.message);
+                        failureCount++;
                     }
                 } catch (error) {
-                    console.error(`Error adding to ${category}:`, error);
+                    console.error(`Network error for ${category}:`, error);
+                    failureCount++;
                 }
             }
 
-            showToast(`Successfully added questions to ${successCount}/${categories.length} categories`);
+            const message = failureCount > 0 ? 
+                `Added to ${successCount}/${categories.length} categories (${failureCount} failed)` :
+                `Successfully added questions to all ${successCount} categories`;
+                
+            showToast(message);
             loadCategoryCounts(); // Refresh counts
         }
 
