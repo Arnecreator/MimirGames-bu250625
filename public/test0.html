@@ -1,0 +1,220 @@
+<div class="container">
+        <h1><span class="emoji">🧩</span>Add Questions by Category</h1>
+
+        <div class="main-section">
+            <div class="category-buttons">
+                <button class="category-btn add-btn" data-category="History">Add to History (0)</button>
+                <button class="category-btn add-btn" data-category="Science">Add to Science (0)</button>
+                <button class="category-btn add-btn" data-category="Sports">Add to Sports (0)</button>
+                <button class="category-btn add-btn" data-category="Geography">Add to Geography (0)</button>
+                <button class="category-btn add-btn" data-category="Literature">Add to Literature (0)</button>
+                <button class="category-btn add-btn" data-category="Math">Add to Math (0)</button>
+                <button class="category-btn add-btn" data-category="Movies">Add to Movies (0)</button>
+                <button class="category-btn add-btn" data-category="Music">Add to Music (0)</button>
+                <button class="category-btn add-btn" data-category="Art">Add to Art (0)</button>
+                <button class="category-btn add-btn" data-category="Technology">Add to Technology (0)</button>
+                <button class="category-btn add-btn" data-category="Food">Add to Food (0)</button>
+                <button class="category-btn add-btn" data-category="Misc">Add to Misc (0)</button>
+            </div>
+            <button id="add-all-btn" class="category-btn">➕ Add 10 per Category</button>
+        </div>
+    </div>
+
+    <style>
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .main-section {
+            background: #1a1d3a;
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin: 4px 0;
+            border: 1px solid #333;
+        }
+
+        h1 {
+            color: #7fffd4;
+            margin: 0 0 8px 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        h1 .emoji {
+            margin-right: 4px;
+        }
+
+        .category-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 4px;
+            margin: 6px 0;
+        }
+
+        .category-btn {
+            background: #252951;
+            color: #7fffd4;
+            border: 1px solid #333;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            min-height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .category-btn:hover {
+            background: #333669;
+            border-color: #7fffd4;
+            filter: brightness(1.1);
+        }
+
+        #add-all-btn {
+            margin-top: 6px;
+            width: fit-content;
+        }
+
+        /* Desktop optimizations */
+        @media (min-width: 1001px) {
+            .category-buttons {
+                grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+                gap: 6px;
+            }
+
+            .main-section {
+                margin: 3px 0;
+            }
+        }
+
+        /* Mobile Optimizations */
+        @media (max-width: 768px) {
+            body {
+                padding: 4px;
+                font-size: 13px;
+            }
+
+            .container {
+                padding: 0 2px;
+            }
+
+            .category-buttons {
+                grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+                gap: 3px;
+            }
+
+            .category-btn {
+                padding: 3px 6px;
+                font-size: 10px;
+                min-height: 20px;
+                margin-bottom: 2px;
+                max-width: 100%;
+            }
+
+            .main-section {
+                padding: 6px 8px;
+                margin: 3px 0;
+            }
+
+            h1 {
+                font-size: 15px;
+                margin: 0 0 6px 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 3px;
+                font-size: 12px;
+            }
+
+            .category-buttons {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 2px;
+            }
+
+            .category-btn {
+                padding: 3px 4px;
+                font-size: 9px;
+                min-height: 18px;
+            }
+
+            .main-section {
+                padding: 5px 6px;
+            }
+
+            h1 {
+                font-size: 14px;
+                margin: 0 0 5px 0;
+            }
+        }
+
+        /* Ultra-compact for very small screens */
+        @media (max-width: 360px) {
+            .category-buttons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .category-btn {
+                font-size: 8px;
+                padding: 2px 3px;
+                min-height: 16px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .main-section {
+                padding: 4px 5px;
+            }
+        }
+    </style>
+
+    <script>
+        // Load question counts when page loads
+        async function loadCategoryCounts() {
+            try {
+                const response = await fetch('/api/questions/verify');
+                const data = await response.json();
+
+                if (data.stats && Array.isArray(data.stats)) {
+                    // Create a map of category counts
+                    const categoryCounts = {};
+                    data.stats.forEach(stat => {
+                        categoryCounts[stat._id] = stat.count;
+                    });
+
+                    // Update category buttons with counts
+                    const categoryButtons = document.querySelectorAll('.add-btn[data-category]');
+                    categoryButtons.forEach(button => {
+                        const category = button.getAttribute('data-category');
+                        const count = categoryCounts[category] || 0;
+                        button.textContent = `Add to ${category} (${count})`;
+                    });
+
+                    console.log('✅ Category counts loaded:', categoryCounts);
+                } else {
+                    console.warn('⚠️ No category stats found in response');
+                }
+
+            } catch (error) {
+                console.error('❌ Error loading category counts:', error);
+            }
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCategoryCounts();
+        });
+    </script>
+
+    <script src="scripts/global.js"></script>
+</body>
+</html>
