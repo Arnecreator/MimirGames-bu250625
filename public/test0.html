@@ -1,48 +1,21 @@
-<div class="container">
-        <h1><span class="emoji">🧩</span>Add Questions by Category</h1>
 
-        <div class="main-section">
-            <div class="category-buttons">
-                <button class="category-btn add-btn" data-category="History">Add to History (0)</button>
-                <button class="category-btn add-btn" data-category="Science">Add to Science (0)</button>
-                <button class="category-btn add-btn" data-category="Sports">Add to Sports (0)</button>
-                <button class="category-btn add-btn" data-category="Geography">Add to Geography (0)</button>
-                <button class="category-btn add-btn" data-category="Literature">Add to Literature (0)</button>
-                <button class="category-btn add-btn" data-category="Math">Add to Math (0)</button>
-                <button class="category-btn add-btn" data-category="Movies">Add to Movies (0)</button>
-                <button class="category-btn add-btn" data-category="Music">Add to Music (0)</button>
-                <button class="category-btn add-btn" data-category="Art">Add to Art (0)</button>
-                <button class="category-btn add-btn" data-category="Technology">Add to Technology (0)</button>
-                <button class="category-btn add-btn" data-category="Food">Add to Food (0)</button>
-                <button class="category-btn add-btn" data-category="Misc">Add to Misc (0)</button>
-            </div>
-            <button id="add-all-btn" class="category-btn">➕ Add 10 per Category</button>
-        </div>
-    </div>
-
-    <div class="container">
-        <h1><span class="emoji">🗑️</span>Delete Questions by Category</h1>
-
-        <div class="main-section">
-            <div class="category-buttons">
-                <button class="category-btn delete-btn" data-category="History">Delete History</button>
-                <button class="category-btn delete-btn" data-category="Science">Delete Science</button>
-                <button class="category-btn delete-btn" data-category="Sports">Delete Sports</button>
-                <button class="category-btn delete-btn" data-category="Geography">Delete Geography</button>
-                <button class="category-btn delete-btn" data-category="Literature">Delete Literature</button>
-                <button class="category-btn delete-btn" data-category="Math">Delete Math</button>
-                <button class="category-btn delete-btn" data-category="Movies">Delete Movies</button>
-                <button class="category-btn delete-btn" data-category="Music">Delete Music</button>
-                <button class="category-btn delete-btn" data-category="Art">Delete Art</button>
-                <button class="category-btn delete-btn" data-category="Technology">Delete Technology</button>
-                <button class="category-btn delete-btn" data-category="Food">Delete Food</button>
-                <button class="category-btn delete-btn" data-category="Misc">Delete Misc</button>
-            </div>
-            <button id="delete-all-btn" class="category-btn delete-btn">❌ Delete All Categories</button>
-        </div>
-    </div>
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test0 – Question Management</title>
     <style>
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: #0a0b1e;
+            color: white;
+            margin: 0;
+            padding: 6px;
+            line-height: 1.4;
+            font-size: 13px;
+        }
+
         .container {
             max-width: 1000px;
             margin: 0 auto;
@@ -69,7 +42,7 @@
 
         .category-buttons {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 4px;
             margin: 6px 0;
         }
@@ -100,11 +73,6 @@
             filter: brightness(1.1);
         }
 
-        #add-all-btn {
-            margin-top: 6px;
-            width: fit-content;
-        }
-
         .delete-btn {
             background: transparent !important;
             border: 1px solid #ff4d4d !important;
@@ -118,18 +86,19 @@
             filter: brightness(1.1);
         }
 
-        #delete-all-btn {
+        .special-btn {
             margin-top: 6px;
             width: fit-content;
+            grid-column: 1;
         }
 
         /* Desktop optimizations */
         @media (min-width: 1001px) {
             .category-buttons {
-                grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+                grid-template-columns: repeat(4, 1fr);
                 gap: 6px;
             }
-
+            
             .main-section {
                 margin: 3px 0;
             }
@@ -147,7 +116,7 @@
             }
 
             .category-buttons {
-                grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+                grid-template-columns: repeat(2, 1fr);
                 gap: 3px;
             }
 
@@ -156,7 +125,6 @@
                 font-size: 10px;
                 min-height: 20px;
                 margin-bottom: 2px;
-                max-width: 100%;
             }
 
             .main-section {
@@ -177,7 +145,7 @@
             }
 
             .category-buttons {
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns: repeat(2, 1fr);
                 gap: 2px;
             }
 
@@ -215,9 +183,113 @@
                 padding: 4px 5px;
             }
         }
+
+        /* Toast notification system */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #2ecc71;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+            font-weight: 500;
+            max-width: 300px;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .toast.error {
+            background: #e74c3c;
+        }
+
+        .toast.warning {
+            background: #f39c12;
+        }
     </style>
+</head>
+
+<body>
+    <!-- Shared Topbar -->
+    <div id="topbar-placeholder"></div>
+    <script>
+        fetch("/components/topbar.html")
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById("topbar-placeholder").innerHTML = html;
+            });
+    </script>
+
+    <!-- Toast notification -->
+    <div id="toast" class="toast"></div>
+
+    <div class="container">
+        <h1><span class="emoji">🧩</span>Add Questions by Category</h1>
+
+        <div class="main-section">
+            <div class="category-buttons">
+                <button class="category-btn add-btn" data-category="History">Add to History (0)</button>
+                <button class="category-btn add-btn" data-category="Science">Add to Science (0)</button>
+                <button class="category-btn add-btn" data-category="Sports">Add to Sports (0)</button>
+                <button class="category-btn add-btn" data-category="Geography">Add to Geography (0)</button>
+                <button class="category-btn add-btn" data-category="Literature">Add to Literature (0)</button>
+                <button class="category-btn add-btn" data-category="Math">Add to Math (0)</button>
+                <button class="category-btn add-btn" data-category="Movies">Add to Movies (0)</button>
+                <button class="category-btn add-btn" data-category="Music">Add to Music (0)</button>
+                <button class="category-btn add-btn" data-category="Art">Add to Art (0)</button>
+                <button class="category-btn add-btn" data-category="Technology">Add to Technology (0)</button>
+                <button class="category-btn add-btn" data-category="Food">Add to Food (0)</button>
+                <button class="category-btn add-btn" data-category="Misc">Add to Misc (0)</button>
+            </div>
+            <button id="add-all-btn" class="category-btn special-btn">➕ Add 10 per Category</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1><span class="emoji">🗑️</span>Delete Questions by Category</h1>
+
+        <div class="main-section">
+            <div class="category-buttons">
+                <button class="category-btn delete-btn" data-category="History">Delete History (0)</button>
+                <button class="category-btn delete-btn" data-category="Science">Delete Science (0)</button>
+                <button class="category-btn delete-btn" data-category="Sports">Delete Sports (0)</button>
+                <button class="category-btn delete-btn" data-category="Geography">Delete Geography (0)</button>
+                <button class="category-btn delete-btn" data-category="Literature">Delete Literature (0)</button>
+                <button class="category-btn delete-btn" data-category="Math">Delete Math (0)</button>
+                <button class="category-btn delete-btn" data-category="Movies">Delete Movies (0)</button>
+                <button class="category-btn delete-btn" data-category="Music">Delete Music (0)</button>
+                <button class="category-btn delete-btn" data-category="Art">Delete Art (0)</button>
+                <button class="category-btn delete-btn" data-category="Technology">Delete Technology (0)</button>
+                <button class="category-btn delete-btn" data-category="Food">Delete Food (0)</button>
+                <button class="category-btn delete-btn" data-category="Misc">Delete Misc (0)</button>
+            </div>
+            <button id="delete-all-btn" class="category-btn delete-btn special-btn">❌ Delete All Categories</button>
+        </div>
+    </div>
 
     <script>
+        // Toast notification system
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        }
+
         // Load question counts when page loads
         async function loadCategoryCounts() {
             try {
@@ -231,12 +303,20 @@
                         categoryCounts[stat._id] = stat.count;
                     });
 
-                    // Update category buttons with counts
-                    const categoryButtons = document.querySelectorAll('.add-btn[data-category]');
-                    categoryButtons.forEach(button => {
+                    // Update add buttons with counts
+                    const addButtons = document.querySelectorAll('.add-btn[data-category]');
+                    addButtons.forEach(button => {
                         const category = button.getAttribute('data-category');
                         const count = categoryCounts[category] || 0;
                         button.textContent = `Add to ${category} (${count})`;
+                    });
+
+                    // Update delete buttons with counts
+                    const deleteButtons = document.querySelectorAll('.delete-btn[data-category]');
+                    deleteButtons.forEach(button => {
+                        const category = button.getAttribute('data-category');
+                        const count = categoryCounts[category] || 0;
+                        button.textContent = `Delete ${category} (${count})`;
                     });
 
                     console.log('✅ Category counts loaded:', categoryCounts);
@@ -249,9 +329,124 @@
             }
         }
 
-        // Initialize page
+        // Add questions to category
+        async function addQuestions(category) {
+            try {
+                showToast(`Adding 10 questions to ${category}...`, 'warning');
+                
+                const response = await fetch(`/api/addQuestions?category=${category}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast(data.message);
+                    loadCategoryCounts(); // Refresh counts
+                } else {
+                    showToast(data.message || 'Failed to add questions', 'error');
+                }
+            } catch (error) {
+                console.error('Error adding questions:', error);
+                showToast('Error adding questions', 'error');
+            }
+        }
+
+        // Delete questions from category
+        async function deleteCategory(category) {
+            if (!confirm(`Are you sure you want to delete all questions from ${category} category?`)) {
+                return;
+            }
+
+            try {
+                showToast(`Deleting ${category} questions...`, 'warning');
+                
+                const response = await fetch(`/api/deleteCategory?category=${category}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast(data.message);
+                    loadCategoryCounts(); // Refresh counts
+                } else {
+                    showToast(data.message || 'Failed to delete questions', 'error');
+                }
+            } catch (error) {
+                console.error('Error deleting questions:', error);
+                showToast('Error deleting questions', 'error');
+            }
+        }
+
+        // Delete all categories
+        async function deleteAllCategories() {
+            if (!confirm('Are you sure you want to delete ALL questions from ALL categories? This cannot be undone!')) {
+                return;
+            }
+
+            try {
+                showToast('Deleting all questions...', 'warning');
+                
+                const response = await fetch('/api/deleteAllCategories');
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast(data.message);
+                    loadCategoryCounts(); // Refresh counts
+                } else {
+                    showToast(data.message || 'Failed to delete all questions', 'error');
+                }
+            } catch (error) {
+                console.error('Error deleting all questions:', error);
+                showToast('Error deleting all questions', 'error');
+            }
+        }
+
+        // Add 10 questions to all categories
+        async function addToAllCategories() {
+            const categories = ['History', 'Science', 'Sports', 'Geography', 'Literature', 'Math', 'Movies', 'Music', 'Art', 'Technology', 'Food', 'Misc'];
+            
+            if (!confirm(`Add 10 questions to each of the ${categories.length} categories?`)) {
+                return;
+            }
+
+            showToast('Adding questions to all categories...', 'warning');
+
+            let successCount = 0;
+            for (const category of categories) {
+                try {
+                    const response = await fetch(`/api/addQuestions?category=${category}`);
+                    const data = await response.json();
+                    if (data.success) {
+                        successCount++;
+                    }
+                } catch (error) {
+                    console.error(`Error adding to ${category}:`, error);
+                }
+            }
+
+            showToast(`Successfully added questions to ${successCount}/${categories.length} categories`);
+            loadCategoryCounts(); // Refresh counts
+        }
+
+        // Event listeners
         document.addEventListener('DOMContentLoaded', function() {
             loadCategoryCounts();
+
+            // Add button event listeners
+            document.querySelectorAll('.add-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const category = this.getAttribute('data-category');
+                    addQuestions(category);
+                });
+            });
+
+            // Delete button event listeners
+            document.querySelectorAll('.delete-btn[data-category]').forEach(button => {
+                button.addEventListener('click', function() {
+                    const category = this.getAttribute('data-category');
+                    deleteCategory(category);
+                });
+            });
+
+            // Special buttons
+            document.getElementById('add-all-btn').addEventListener('click', addToAllCategories);
+            document.getElementById('delete-all-btn').addEventListener('click', deleteAllCategories);
         });
     </script>
 
