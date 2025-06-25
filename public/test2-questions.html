@@ -1,101 +1,37 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test2 – Question Engine Debug</title>
+    <title>Test2 – Question Admin View</title>
     <style>
         body {
             font-family: 'Inter', 'Segoe UI', sans-serif;
             background: #0a0b1e;
             color: white;
             margin: 0;
-            padding: 20px;
+            padding: 10px 20px;
             line-height: 1.6;
         }
 
-        .section {
+        .main-section {
             background: #1a1d3a;
             border-radius: 10px;
-            padding: 20px;
-            margin: 20px 0;
-            border: 1px solid #333;
-        }
-
-        button {
-            background: #7fffd4;
-            color: #000;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            margin: 5px;
-            transition: all 0.2s ease;
-        }
-
-        button:hover {
-            background: #5fb3a3;
-            transform: translateY(-1px);
-        }
-
-        .category-item {
-            background: #252951;
-            padding: 8px 12px;
-            margin: 5px 0;
-            border-radius: 5px;
-            border-left: 4px solid #7fffd4;
-        }
-
-        .category-item.low-count {
-            border-left-color: #ff6b6b;
-            background: #3d1f1f;
-        }
-
-        .distribution-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
+            padding: 15px;
             margin: 10px 0;
-        }
-
-        .category-badge {
-            background: #111335;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 12px;
-            border: 1px solid #7fffd4;
-        }
-
-        .questions-list {
-            max-height: 400px;
-            overflow-y: auto;
             border: 1px solid #333;
-            border-radius: 5px;
-            background: #111335;
         }
 
-        .question-item {
-            padding: 10px;
-            border-bottom: 1px solid #333;
-            font-size: 14px;
-        }
-
-        .question-item:last-child {
-            border-bottom: none;
-        }
-
-        h1, h2, h3, h4 {
+        h1 {
             color: #7fffd4;
+            margin: 10px 0 15px 0;
+            font-size: 18px;
         }
 
-        p, li {
-            margin: 8px 0;
-        }
-
-        small {
-            color: #aaa;
+        h2 {
+            color: #7fffd4;
+            margin: 10px 0;
+            font-size: 16px;
         }
 
         .category-buttons {
@@ -173,6 +109,13 @@
             color: #666;
             margin-top: 8px;
         }
+
+        .loading-message {
+            color: #7fffd4;
+            text-align: center;
+            padding: 20px;
+            font-style: italic;
+        }
     </style>
 </head>
 
@@ -187,26 +130,12 @@
             });
     </script>
 
-    <h1>🔍 Question Engine Debug (Test2)</h1>
+    <h1>📂 Question Admin View</h1>
 
-    <div class="section">
-        <h2>Database Coverage</h2>
-        <button id="checkCoverageBtn">Check Question Coverage</button>
-        <div id="coverageResult"></div>
-    </div>
-
-    <div class="section">
-        <h2>Random Question Selection Test</h2>
-        <button id="get8QuestionsBtn">Get 8 Random Questions</button>
-        <button id="get12QuestionsBtn">Get 12 Random Questions</button>
-        <button id="testDeduplicationBtn">🧪 Test Session Deduplication</button>
-        <div id="selectionResult"></div>
-    </div>
-
-    <div class="section">
-        <h2>📂 View Questions by Category</h2>
+    <div class="main-section">
+        <h2>View Questions by Category</h2>
         <div class="category-buttons">
-            <button class="category-btn" data-category="all">All</button>
+            <button class="category-btn active" data-category="all">All</button>
             <button class="category-btn" data-category="History">History</button>
             <button class="category-btn" data-category="Science">Science</button>
             <button class="category-btn" data-category="Sports">Sports</button>
@@ -220,10 +149,21 @@
             <button class="category-btn" data-category="Food">Food</button>
             <button class="category-btn" data-category="Misc">Misc</button>
         </div>
-        <div id="categoryQuestionsResult"></div>
+        <div id="categoryQuestionsResult">
+            <div class="loading-message">Loading all questions...</div>
+        </div>
     </div>
 
     <script src="scripts/questionManager.js"></script>
     <script src="scripts/test-questions.js"></script>
+    <script>
+        // Auto-load all questions when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Wait a moment for other scripts to load
+            setTimeout(() => {
+                loadQuestionsByCategory('all');
+            }, 500);
+        });
+    </script>
 </body>
 </html>
