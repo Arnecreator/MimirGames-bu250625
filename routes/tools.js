@@ -1,144 +1,54 @@
 const express = require("express");
 const router = express.Router();
-const generateQuestions = require("../scripts/generateQuestions");
 const Question = require("../models/Question");
+const { Configuration, OpenAIApi } = require("openai");
+require("dotenv").config();
 
+const configuration = new Configuration({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+const openai = new OpenAIApi(configuration);
+
+// ✅ GENERATE 10 QUESTIONS VIA GPT
 router.post("/generate-questions", async (req, res) => {
+  const { category } = req.body;
+
+  if (!category) return res.status(400).json({ error: "Missing category" });
+
+  const prompt = `Generate 10 trivia quiz questions in the category "${category}". Format each exactly like this:
+Question: ...
+Answer: ...
+Make them clear and suitable for all ages.`;
+
   try {
-    const { category } = req.body;
-
-    if (!category) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Category is required" });
-    }
-
-    const questions = await generateQuestions(category);
-
-    if (!questions || questions.length === 0) {
-      return res
-        .status(500)
-        .json({ success: false, message: "No questions were generated" });
-    }
-
-    const saved = await Question.insertMany(questions);
-
-    res.json({ success: true, count: saved.length });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: error.message });
-  }
-});
-
-// Add questions to a specific category (GET route for compatibility)
-router.get("/addQuestions", async (req, res) => {
-  try {
-    const { category } = req.query;
-
-    if (!category) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Category is required" });
-    }
-
-    console.log(`Adding 10 questions to category: ${category}`);
-
-    const questions = await generateQuestions(category);
-
-    if (!questions || questions.length === 0) {
-      return res
-        .status(500)
-        .json({ success: false, message: "No questions were generated" });
-    }
-
-    const saved = await Question.insertMany(questions);
-
-    res.json({ 
-      success: true, 
-      message: `Successfully added ${saved.length} questions to ${category}`,
-      count: saved.length 
+    const completion = await openai.createChatCompletion({
+      model: "gpt-4",
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.7,
     });
-  } catch (error) {
-    console.error("Error adding questions:", error);
-    res.status(500).json({ success: false, message: error.message });
-  }
-});
 
-// Add questions to a specific category (POST route)
-router.post("/addQuestions", async (req, res) => {
-  try {
-    const { category } = req.body;
+    const raw = completion.data.choices[0].message.content;
 
-    if (!category) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Category is required" });
+    const lines = raw.split("\n").filter((line) => line.trim() !== "");
+    const parsed = [];
+
+    let current = {};
+    for (let line of lines) {
+      if (line.startsWith("Question:")) {
+        current.question = line.replace("Question:", "").trim();
+      } else if (line.startsWith("Answer:")) {
+        current.answer = line.replace("Answer:", "").trim();
+        current.category = category;
+        parsed.push(current);
+        current = {};
+      }
     }
 
-    console.log(`Adding 10 questions to category: ${category}`);
-
-    const questions = await generateQuestions(category);
-
-    if (!questions || questions.length === 0) {
-      return res
-        .status(500)
-        .json({ success: false, message: "No questions were generated" });
-    }
-
-    const saved = await Question.insertMany(questions);
-
-    res.json({ 
-      success: true, 
-      message: `Successfully added ${saved.length} questions to ${category}`,
-      count: saved.length 
-    });
-  } catch (error) {
-    console.error("Error adding questions:", error);
-    res.status(500).json({ success: false, message: error.message });
-  }
-});
-
-// Delete questions from a specific category
-router.get("/deleteCategory", async (req, res) => {
-  try {
-    const { category } = req.query;
-
-    if (!category) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Category is required" });
-    }
-
-    console.log(`Deleting questions from category: ${category}`);
-
-    const deleteResult = await Question.deleteMany({ category: category });
-
-    res.json({ 
-      success: true, 
-      message: `Successfully deleted ${deleteResult.deletedCount} questions from ${category}`,
-      deletedCount: deleteResult.deletedCount 
-    });
-  } catch (error) {
-    console.error("Error deleting questions:", error);
-    res.status(500).json({ success: false, message: error.message });
-  }
-});
-
-// Delete all questions from all categories
-router.get("/deleteAllCategories", async (req, res) => {
-  try {
-    console.log("Deleting all questions from all categories");
-
-    const deleteResult = await Question.deleteMany({});
-
-    res.json({ 
-      success: true, 
-      message: `Successfully deleted ${deleteResult.deletedCount} questions from all categories`,
-      deletedCount: deleteResult.deletedCount 
-    });
-  } catch (error) {
-    console.error("Error deleting all questions:", error);
-    res.status(500).json({ success: false, message: error.message });
+    await Question.insertMany(parsed);
+    res.json({ success: true, count: parsed.length });
+  } catch (err) {
+    console.error("GPT error:", err.message);
+    res.status(500).json({ error: "Failed to generate questions" });
   }
 });
 
